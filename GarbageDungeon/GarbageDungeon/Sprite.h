@@ -98,7 +98,7 @@ public:
 		}
 	}
 
-	void slowwalk(SDL_Renderer* renderer, SDL_Texture* bg, SDL_Texture* sprite, Sprite shield, SDL_Rect bgsrc, SDL_Rect bgdest)
+	void slowwalk(SDL_Renderer* renderer, SDL_Texture* bg, SDL_Texture* sprite, Sprite shield, SDL_Rect bgsrc, SDL_Rect bgdest, bool &done)
 	{
 		while (bgdest.x != 250) {
 			SDL_RenderClear(renderer);
@@ -126,6 +126,7 @@ public:
 				}
 			}
 		}
+		done = true;
 	}
 
 	void jump(SDL_Renderer* renderer, SDL_Texture* bg, SDL_Texture* sprite, SDL_Rect &bgsrc, SDL_Rect &bgdest, bool &right)

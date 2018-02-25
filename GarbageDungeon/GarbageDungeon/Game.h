@@ -9,6 +9,7 @@ using namespace std;
 
 class Game {
 protected:
+	bool done = false;
 	const int SCREEN_WIDTH = 640;
 	const int SCREEN_HEIGHT = 480;
 	SDL_Window* window = NULL;
@@ -22,7 +23,6 @@ public:
 
 	void run(string winName, string bgfile)
 	{
-		bool done = false;
 		createWindow(this->window, winName);
 		setBG(this->window, bgfile);
 		Sprite shield = shield.createSprite(renderer, "background.bmp");
@@ -37,10 +37,10 @@ public:
 		{
 			SDL_RenderClear(renderer);
 			SDL_RenderCopy(renderer, bg, NULL, NULL);
-			SDL_RenderCopy(renderer, shield.getSprite(), &shieldsrc, &shielddest);
+			SDL_RenderCopy(renderer, shield.getSprite(), NULL, NULL);
 			SDL_RenderCopy(renderer, carl.getSprite(), &carlsrc, &carldest);
-			carl.slowwalk(renderer, bg, carl.getSprite(), shield, carlsrc, carldest);
-			done = true;
+			carl.slowwalk(renderer, bg, carl.getSprite(), shield, carlsrc, carldest, done);
+			SDL_RenderPresent(renderer);
 		}
 	}
 	SDL_Window *getWindow() { return this->window; }
