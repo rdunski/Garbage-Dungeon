@@ -9,17 +9,25 @@ using namespace std;
 
 class Sprite {
 protected:
-	SDL_Texture* sprite = NULL;
+	SDL_Texture * sprite = NULL;
 	SDL_Surface* surface = NULL;
+	SDL_Rect src;
+	SDL_Rect dest;
+
 public:
-	SDL_Texture* createSprite(SDL_Renderer* renderer, string filename)
+	Sprite createSprite(SDL_Renderer* renderer, string filename)
 	{
-		surface = SDL_LoadBMP(filename.c_str());
-		sprite = SDL_CreateTextureFromSurface(renderer, surface);
-		SDL_Rect bgsrc = { 0,0,75,85};
-		SDL_Rect bgdest;
-		return sprite;
+		Sprite newS;
+		this->surface = SDL_LoadBMP(filename.c_str());
+		//SDL_SetColorKey(this->surface, SDL_TRUE, SDL_MapRGB(this->surface->format, 0, 0, 0));
+		this->sprite = SDL_CreateTextureFromSurface(renderer, this->surface);
+		return newS;
 	}
+
+
+	SDL_Texture* getSprite(){return this->sprite;}
+	SDL_Rect getsrc(){ return this->src; }
+	SDL_Rect getdest(){ return this->dest; }
 
 	void switchDirection(SDL_Surface* &surf, SDL_Texture* &sprite, SDL_Renderer* renderer, bool &right)
 	{
@@ -89,6 +97,37 @@ public:
 			}
 		}
 	}
+
+	void slowwalk(SDL_Renderer* renderer, SDL_Texture* bg, SDL_Texture* sprite, Sprite shield, SDL_Rect bgsrc, SDL_Rect bgdest)
+	{
+		while (bgdest.x != 250) {
+			SDL_RenderClear(renderer);
+			SDL_RenderCopy(renderer, bg, NULL, NULL);
+			SDL_RenderCopy(renderer, sprite, &bgsrc, &bgdest);
+			SDL_RenderCopy(renderer, shield.getSprite(), &shield.getsrc(), &shield.getdest());
+			SDL_RenderPresent(renderer);
+			int i = 0;
+			bgdest.x = bgdest.x + 10;
+			SDL_Delay(1000 / 24);
+			SDL_RenderClear(renderer);
+			if (bgsrc.y < 210) {
+				if (bgsrc.x < 450) bgsrc.x += 75;
+				else {
+					bgsrc.x = 0;
+					bgsrc.y += 85;
+				}
+			}
+			else
+			{
+				if (bgsrc.x < 375) bgsrc.x += 75;
+				else {
+					bgsrc.x = 0;
+					bgsrc.y = 0;
+				}
+			}
+		}
+	}
+
 	void jump(SDL_Renderer* renderer, SDL_Texture* bg, SDL_Texture* sprite, SDL_Rect &bgsrc, SDL_Rect &bgdest, bool &right)
 	{
 		bool complete = false;

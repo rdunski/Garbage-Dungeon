@@ -18,15 +18,32 @@ protected:
 	Sprite *s;
 	SDL_Event e;
 public:
-	void init() {SDL_Init(SDL_INIT_VIDEO);}
+	void init() { SDL_Init(SDL_INIT_VIDEO); }
 
 	void run(string winName, string bgfile)
 	{
+		bool done = false;
 		createWindow(this->window, winName);
 		setBG(this->window, bgfile);
+		Sprite shield = shield.createSprite(renderer, "background.bmp");
+		Sprite carl = carl.createSprite(renderer, "duderight.bmp");
+		SDL_Rect carlsrc = carl.getsrc();
+		SDL_Rect carldest = carl.getdest();
+		carldest.x = 0; carldest.y = 275; carldest.h = 75; carldest.w = 80;
+		SDL_Rect shieldsrc = shield.getsrc();
+		SDL_Rect shielddest = shield.getdest();
+		shielddest.x = 320; shielddest.y = 160; shielddest.h = NULL; shielddest.w = NULL;
+		while (!done)
+		{
+			SDL_RenderClear(renderer);
+			SDL_RenderCopy(renderer, bg, NULL, NULL);
+			SDL_RenderCopy(renderer, shield.getSprite(), &shieldsrc, &shielddest);
+			SDL_RenderCopy(renderer, carl.getSprite(), &carlsrc, &carldest);
+			carl.slowwalk(renderer, bg, carl.getSprite(), shield, carlsrc, carldest);
+			done = true;
+		}
 	}
-
-	SDL_Window *getWindow() { return this->window;}
+	SDL_Window *getWindow() { return this->window; }
 	SDL_Texture *getBackground() { return this->bg; }
 	SDL_Surface *getSurface() { return this->surface; }
 	SDL_Renderer *getRenderer() { return this->renderer; }
@@ -44,7 +61,6 @@ public:
 		SDL_RenderClear(renderer);
 		SDL_RenderCopy(renderer, bg, NULL, NULL);
 		SDL_RenderPresent(renderer);
-		SDL_Delay(1000);
 	}
 
 	void eventHandler(SDL_Event e, SDL_Renderer* renderer, SDL_Texture* sprite, SDL_Rect &bgsrc, SDL_Rect &bgdest, bool &quit, bool &right) {
@@ -69,13 +85,13 @@ public:
 		}
 	}
 
-void endGame(SDL_Window* window)
-{
-	//Wait two seconds
-	SDL_Delay(100);
-	//Destroy window
-	SDL_DestroyWindow(window);
-	//Quit SDL subsystems
-	SDL_Quit();
-}
+	void endGame(SDL_Window* window)
+	{
+		//Wait two seconds
+		SDL_Delay(100);
+		//Destroy window
+		SDL_DestroyWindow(window);
+		//Quit SDL subsystems
+		SDL_Quit();
+	}
 };
