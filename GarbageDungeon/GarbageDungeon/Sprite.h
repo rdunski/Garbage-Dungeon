@@ -18,33 +18,33 @@ public:
 	Sprite createSprite(SDL_Renderer* renderer, string filename)
 	{
 		Sprite newS;
-		this->surface = SDL_LoadBMP(filename.c_str());
-		//SDL_SetColorKey(this->surface, SDL_TRUE, SDL_MapRGB(this->surface->format, 0, 0, 0));
-		this->sprite = SDL_CreateTextureFromSurface(renderer, this->surface);
+		newS.surface = SDL_LoadBMP(filename.c_str());
+		SDL_SetColorKey(newS.surface, SDL_TRUE, SDL_MapRGB(newS.surface->format, 0, 0, 0));
+		newS.sprite = SDL_CreateTextureFromSurface(renderer, newS.surface);
 		return newS;
 	}
 
-
+	SDL_Surface* getSurface() { return this->surface; }
 	SDL_Texture* getSprite(){return this->sprite;}
 	SDL_Rect getsrc(){ return this->src; }
 	SDL_Rect getdest(){ return this->dest; }
 
-	void switchDirection(SDL_Surface* &surf, SDL_Texture* &sprite, SDL_Renderer* renderer, bool &right)
+	void switchDirection(Sprite &carl, SDL_Texture* &sprite, SDL_Renderer* renderer, bool &right)
 	{
 		if (right)
 		{
-			surf = SDL_LoadBMP("dudeleft.bmp");
-			SDL_SetColorKey(surf, SDL_TRUE, SDL_MapRGB(surf->format, 0, 0, 0));
+			carl.surface = SDL_LoadBMP("dudeleft.bmp");
+			SDL_SetColorKey(carl.surface, SDL_TRUE, SDL_MapRGB(carl.surface->format, 0, 0, 0));
 			right = false;
 		}
 		else
 		{
-			surf = SDL_LoadBMP("duderight.bmp");
-			SDL_SetColorKey(surf, SDL_TRUE, SDL_MapRGB(surf->format, 0, 0, 0));
+			carl.surface = SDL_LoadBMP("duderight.bmp");
+			SDL_SetColorKey(carl.surface, SDL_TRUE, SDL_MapRGB(carl.surface->format, 0, 0, 0));
 			right = true;
 		}
 
-		sprite = SDL_CreateTextureFromSurface(renderer, surf);
+		sprite = SDL_CreateTextureFromSurface(renderer, carl.surface);
 	}
 
 	void runright(SDL_Renderer* renderer, SDL_Texture* bg, SDL_Texture* texture, SDL_Rect &bgsrc, SDL_Rect &bgdest)
@@ -73,7 +73,7 @@ public:
 			}
 		}
 	}
-	void runleft(SDL_Renderer* renderer, SDL_Texture* bg, SDL_Texture* sprite, SDL_Rect &bgsrc, SDL_Rect &bgdest, bool &right)
+	void runleft(SDL_Renderer* renderer, SDL_Texture* bg, SDL_Texture* &sprite, SDL_Rect &bgsrc, SDL_Rect &bgdest, bool &right)
 	{
 		SDL_RenderCopy(renderer, bg, NULL, NULL);
 		SDL_RenderCopy(renderer, sprite, &bgsrc, &bgdest);
@@ -100,15 +100,15 @@ public:
 
 	void slowwalk(SDL_Renderer* renderer, SDL_Texture* bg, SDL_Texture* sprite, Sprite shield, SDL_Rect bgsrc, SDL_Rect bgdest, bool &done)
 	{
-		while (bgdest.x != 250) {
+		while (bgdest.x != 650) {
 			SDL_RenderClear(renderer);
 			SDL_RenderCopy(renderer, bg, NULL, NULL);
 			SDL_RenderCopy(renderer, sprite, &bgsrc, &bgdest);
 			SDL_RenderCopy(renderer, shield.getSprite(), &shield.getsrc(), &shield.getdest());
 			SDL_RenderPresent(renderer);
 			int i = 0;
-			bgdest.x = bgdest.x + 10;
-			SDL_Delay(1000 / 24);
+			bgdest.x = bgdest.x+10;
+			SDL_Delay(1000 / 12);
 			SDL_RenderClear(renderer);
 			if (bgsrc.y < 210) {
 				if (bgsrc.x < 450) bgsrc.x += 75;
@@ -126,7 +126,6 @@ public:
 				}
 			}
 		}
-		done = true;
 	}
 
 	void jump(SDL_Renderer* renderer, SDL_Texture* bg, SDL_Texture* sprite, SDL_Rect &bgsrc, SDL_Rect &bgdest, bool &right)

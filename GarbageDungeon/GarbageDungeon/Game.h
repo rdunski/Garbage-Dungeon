@@ -23,25 +23,19 @@ public:
 
 	void run(string winName, string bgfile)
 	{
+		bool right = true;
 		createWindow(this->window, winName);
 		setBG(this->window, bgfile);
 		Sprite shield = shield.createSprite(renderer, "background.bmp");
 		Sprite carl = carl.createSprite(renderer, "duderight.bmp");
-		SDL_Rect carlsrc = carl.getsrc();
-		SDL_Rect carldest = carl.getdest();
+		SDL_Rect carlsrc = { 0, 0, 75, 85 };
+		SDL_Rect carldest;
 		carldest.x = 0; carldest.y = 275; carldest.h = 75; carldest.w = 80;
-		SDL_Rect shieldsrc = shield.getsrc();
-		SDL_Rect shielddest = shield.getdest();
+		SDL_Rect shieldsrc = { 0, 0, NULL, NULL };
+		SDL_Rect shielddest;
 		shielddest.x = 320; shielddest.y = 160; shielddest.h = NULL; shielddest.w = NULL;
-		while (!done)
-		{
-			SDL_RenderClear(renderer);
-			SDL_RenderCopy(renderer, bg, NULL, NULL);
-			SDL_RenderCopy(renderer, shield.getSprite(), NULL, NULL);
-			SDL_RenderCopy(renderer, carl.getSprite(), &carlsrc, &carldest);
-			carl.slowwalk(renderer, bg, carl.getSprite(), shield, carlsrc, carldest, done);
-			SDL_RenderPresent(renderer);
-		}
+		carl.slowwalk(renderer, bg, carl.getSprite(), shield, carlsrc, carldest, done);
+		secscreen(carl, carl.getSprite(), carlsrc, carldest, right, done);
 	}
 	SDL_Window *getWindow() { return this->window; }
 	SDL_Texture *getBackground() { return this->bg; }
@@ -63,25 +57,37 @@ public:
 		SDL_RenderPresent(renderer);
 	}
 
-	void eventHandler(SDL_Event e, SDL_Renderer* renderer, SDL_Texture* sprite, SDL_Rect &bgsrc, SDL_Rect &bgdest, bool &quit, bool &right) {
+	void eventHandler(SDL_Event e, Sprite &carl, SDL_Renderer* renderer, SDL_Texture* sprite, SDL_Rect &bgsrc, SDL_Rect &bgdest, bool &right) {
 		if (e.type == SDL_KEYDOWN) {
 			switch (e.key.keysym.sym)
 			{
 			case SDLK_RIGHT:
-				if (!right) s->switchDirection(surface, sprite, renderer, right);
+				if (!right) carl.switchDirection(carl, sprite, renderer, right);
 				s->runright(renderer, bg, sprite, bgsrc, bgdest);
 				break;
 			case SDLK_ESCAPE:
-				quit = true;
+				done = true;
 				break;
 			case SDLK_LEFT:
-				if (right) s->switchDirection(surface, sprite, renderer, right);
+				if (right) carl.switchDirection(carl, sprite, renderer, right);
 				s->runleft(renderer, bg, sprite, bgsrc, bgdest, right);
 				break;
 			case SDLK_UP:
 				s->jump(renderer, bg, sprite, bgsrc, bgdest, right);
 				break;
 			}
+		}
+	}
+
+	void secscreen(Sprite carl, SDL_Texture* sprite, SDL_Rect &carlsrc, SDL_Rect &carldest, bool &right, bool &done)
+	{
+		while (!done)
+		{
+			SDL_RenderClear(renderer);
+			SDL_RenderCopy(renderer, bg, NULL, NULL);
+			SDL_RenderCopy(renderer, sprite, &carlsrc, &carldest);
+			SDL_RenderPresent(renderer);
+			if (SDL_PollEvent(&e)) eventHandler(e, carl, renderer, carl.getSprite(), carlsrc, carldest, right);
 		}
 	}
 
