@@ -13,6 +13,6 @@ Game GD;
 int main(int argc, char* argv[])
 {
 	GD.init();
-	GD.run("I LIIIIIIVE!", "Forest0.bmp");
+	GD.run("GARBAGE DUNGEON", "Forest0.bmp");
 	return 0;
 }
