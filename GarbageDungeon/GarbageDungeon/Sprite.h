@@ -13,11 +13,14 @@ protected:
 	SDL_Surface* surface = NULL;
 	SDL_Rect src;
 	SDL_Rect dest;
+	bool right = true;
 
 public:
 	Sprite createSprite(SDL_Renderer* renderer, string filename)
 	{
 		Sprite newS;
+		newS.src = { 0, 0, 75, 80 };
+		newS.dest.x = 0; newS.dest.y = 275; newS.dest.h = 75; newS.dest.w = 80;
 		newS.surface = SDL_LoadBMP(filename.c_str());
 		SDL_SetColorKey(newS.surface, SDL_TRUE, SDL_MapRGB(newS.surface->format, 0, 0, 0));
 		newS.sprite = SDL_CreateTextureFromSurface(renderer, newS.surface);
@@ -28,10 +31,11 @@ public:
 	SDL_Texture* getSprite(){return this->sprite;}
 	SDL_Rect getsrc(){ return this->src; }
 	SDL_Rect getdest(){ return this->dest; }
+	bool getdirection() { return right; }
 
-	void switchDirection(Sprite &carl, SDL_Texture* &sprite, SDL_Renderer* renderer, bool &right)
+	void switchDirection(Sprite carl, SDL_Texture* sprite, SDL_Renderer* renderer)
 	{
-		if (right)
+		if (right) //Add key directions for frame update
 		{
 			carl.surface = SDL_LoadBMP("dudeleft.bmp");
 			SDL_SetColorKey(carl.surface, SDL_TRUE, SDL_MapRGB(carl.surface->format, 0, 0, 0));
@@ -47,40 +51,43 @@ public:
 		sprite = SDL_CreateTextureFromSurface(renderer, carl.surface);
 	}
 
-	void runright(SDL_Renderer* renderer, SDL_Texture* bg, SDL_Texture* texture, SDL_Rect &bgsrc, SDL_Rect &bgdest)
+	void runright(SDL_Renderer* renderer, SDL_Texture* bg, SDL_Texture* texture, SDL_Rect bgsrc, SDL_Rect bgdest)
 	{
-		SDL_RenderClear(renderer);
-		SDL_RenderCopy(renderer, bg, NULL, NULL);
-		SDL_RenderCopy(renderer, texture, &bgsrc, &bgdest);
-		int i = 0;
-		SDL_RenderPresent(renderer);
-		bgdest.x = bgdest.x + 10;
-		SDL_Delay(1000 / 24);
-		SDL_RenderClear(renderer);
-		if (bgsrc.y < 255) {
-			if (bgsrc.x < 450) bgsrc.x += 75;
-			else {
-				bgsrc.x = 0;
-				bgsrc.y += 85;
-			}
-		}
-		else
-		{
-			if (bgsrc.x < 375) bgsrc.x += 75;
-			else {
-				bgsrc.x = 0;
-				bgsrc.y = 0;
-			}
-		}
-	}
-	void runleft(SDL_Renderer* renderer, SDL_Texture* bg, SDL_Texture* &sprite, SDL_Rect &bgsrc, SDL_Rect &bgdest, bool &right)
-	{
+		/*
 		SDL_RenderCopy(renderer, bg, NULL, NULL);
 		SDL_RenderCopy(renderer, sprite, &bgsrc, &bgdest);
 		SDL_RenderPresent(renderer);
 		bgdest.x = bgdest.x - 10;
 		SDL_Delay(1000 / 24);
 		SDL_RenderClear(renderer);
+		*/
+		if (bgsrc.y < 255) {
+			if (bgsrc.x < 450) bgsrc.x += 75;
+			else {
+				bgsrc.x = 0;
+				bgsrc.y += 85;
+			}
+		}
+		else
+		{
+			if (bgsrc.x < 375) bgsrc.x += 75;
+			else {
+				bgsrc.x = 0;
+				bgsrc.y = 0;
+			}
+		}
+	}
+	void runleft(SDL_Renderer* renderer, SDL_Texture* bg, SDL_Texture* sprite, SDL_Rect bgsrc, SDL_Rect bgdest)
+	{
+		/*
+		SDL_RenderCopy(renderer, bg, NULL, NULL);
+		SDL_RenderCopy(renderer, sprite, &bgsrc, &bgdest);
+		SDL_RenderPresent(renderer);
+		bgdest.x = bgdest.x - 10;
+		SDL_Delay(1000 / 24);
+		SDL_RenderClear(renderer);
+		*/
+		
 		if (bgsrc.y < 255) {
 			if (bgsrc.x < 450) bgsrc.x += 75;
 			else {
@@ -98,37 +105,20 @@ public:
 		}
 	}
 
-	void slowwalk(SDL_Renderer* renderer, SDL_Texture* bg, SDL_Texture* sprite, Sprite shield, SDL_Rect bgsrc, SDL_Rect bgdest, bool &done)
+
+	void move(SDL_Renderer* renderer, SDL_Texture* bg, SDL_Texture* sprite, SDL_Rect bgsrc, SDL_Rect bgdest)
 	{
-		while (bgdest.x != 650) {
-			SDL_RenderClear(renderer);
-			SDL_RenderCopy(renderer, bg, NULL, NULL);
-			SDL_RenderCopy(renderer, sprite, &bgsrc, &bgdest);
-			SDL_RenderCopy(renderer, shield.getSprite(), &shield.getsrc(), &shield.getdest());
-			SDL_RenderPresent(renderer);
-			int i = 0;
-			bgdest.x = bgdest.x+10;
-			SDL_Delay(1000 / 12);
-			SDL_RenderClear(renderer);
-			if (bgsrc.y < 210) {
-				if (bgsrc.x < 450) bgsrc.x += 75;
-				else {
-					bgsrc.x = 0;
-					bgsrc.y += 85;
-				}
-			}
-			else
-			{
-				if (bgsrc.x < 375) bgsrc.x += 75;
-				else {
-					bgsrc.x = 0;
-					bgsrc.y = 0;
-				}
-			}
-		}
+
+		SDL_RenderCopy(renderer, bg, NULL, NULL);
+		SDL_RenderCopy(renderer, sprite, &bgsrc, &bgdest);
+		SDL_RenderPresent(renderer);
+		bgdest.x = bgdest.x - 10;
+		SDL_Delay(1000 / 24);
+		SDL_RenderClear(renderer);
+		//move function should move character left or right, depending on direction facing and user input...
 	}
 
-	void jump(SDL_Renderer* renderer, SDL_Texture* bg, SDL_Texture* sprite, SDL_Rect &bgsrc, SDL_Rect &bgdest, bool &right)
+	void jump(SDL_Renderer* renderer, SDL_Texture* bg, SDL_Texture* sprite, SDL_Rect bgsrc, SDL_Rect bgdest, bool &right)
 	{
 		bool complete = false;
 		while (!complete)
@@ -184,31 +174,6 @@ public:
 					bgsrc.x = 0;
 					bgsrc.y = 0;
 				}
-			}
-		}
-	}
-
-	void runleft(SDL_Renderer* renderer, SDL_Texture* bg, SDL_Rect &bgsrc, SDL_Rect &bgdest, bool &right)
-	{
-		SDL_RenderCopy(renderer, bg, NULL, NULL);
-		SDL_RenderCopy(renderer, sprite, &bgsrc, &bgdest);
-		SDL_RenderPresent(renderer);
-		bgdest.x = bgdest.x - 10;
-		SDL_Delay(1000 / 24);
-		SDL_RenderClear(renderer);
-		if (bgsrc.y < 255) {
-			if (bgsrc.x < 450) bgsrc.x += 75;
-			else {
-				bgsrc.x = 0;
-				bgsrc.y += 85;
-			}
-		}
-		else
-		{
-			if (bgsrc.x < 375) bgsrc.x += 75;
-			else {
-				bgsrc.x = 0;
-				bgsrc.y = 0;
 			}
 		}
 	}

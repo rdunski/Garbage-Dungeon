@@ -10,6 +10,7 @@ using namespace std;
 class Game {
 protected:
 	bool done = false;
+	string bgfile = "Forest0.bmp";
 	const int SCREEN_WIDTH = 640;
 	const int SCREEN_HEIGHT = 480;
 	SDL_Window* window = NULL;
@@ -20,27 +21,6 @@ protected:
 	SDL_Event e;
 public:
 	void init() { SDL_Init(SDL_INIT_VIDEO); }
-
-	void run(string winName, string bgfile)
-	{
-		bool right = true;
-		createWindow(this->window, winName);
-		setBG(this->window, bgfile);
-		Sprite shield = shield.createSprite(renderer, "background.bmp");
-		Sprite carl = carl.createSprite(renderer, "duderight.bmp");
-		SDL_Rect carlsrc = { 0, 0, 75, 85 };
-		SDL_Rect carldest;
-		carldest.x = 0; carldest.y = 275; carldest.h = 75; carldest.w = 80;
-		SDL_Rect shieldsrc = { 0, 0, NULL, NULL };
-		SDL_Rect shielddest;
-		shielddest.x = 320; shielddest.y = 160; shielddest.h = NULL; shielddest.w = NULL;
-		carl.slowwalk(renderer, bg, carl.getSprite(), shield, carlsrc, carldest, done);
-		secscreen(carl, carl.getSprite(), carlsrc, carldest, right, done);
-	}
-	SDL_Window *getWindow() { return this->window; }
-	SDL_Texture *getBackground() { return this->bg; }
-	SDL_Surface *getSurface() { return this->surface; }
-	SDL_Renderer *getRenderer() { return this->renderer; }
 
 	void createWindow(SDL_Window* &window, string winName) {
 		window = SDL_CreateWindow(winName.c_str(), SDL_WINDOWPOS_UNDEFINED,
@@ -57,37 +37,46 @@ public:
 		SDL_RenderPresent(renderer);
 	}
 
-	void eventHandler(SDL_Event e, Sprite &carl, SDL_Renderer* renderer, SDL_Texture* sprite, SDL_Rect &bgsrc, SDL_Rect &bgdest, bool &right) {
+	void run() //This needs to go in a class for game instance
+	{
+		createWindow(this->window, "Garbage Dungeon");
+		setBG(this->window, bgfile);
+		//Sprite shield = shield.createSprite(renderer, "background.bmp");
+		Sprite carl = carl.createSprite(renderer, "duderight.bmp");
+		while (!done)
+		{
+			SDL_RenderClear(renderer);
+			SDL_RenderCopy(renderer, bg, NULL, NULL);
+			SDL_RenderCopy(renderer, carl.getSprite(), &carl.getsrc(), &carl.getdest());
+			SDL_RenderPresent(renderer);
+			if (SDL_PollEvent(&e)) eventHandler(e, carl);
+		}
+	}
+
+	SDL_Window *getWindow() { return this->window; }
+	SDL_Texture *getBackground() { return this->bg; }
+	SDL_Surface *getSurface() { return this->surface; }
+	SDL_Renderer *getRenderer() { return this->renderer; }
+
+	void eventHandler(SDL_Event e, Sprite &sprite) {
 		if (e.type == SDL_KEYDOWN) {
 			switch (e.key.keysym.sym)
 			{
 			case SDLK_RIGHT:
-				if (!right) carl.switchDirection(carl, sprite, renderer, right);
-				s->runright(renderer, bg, sprite, bgsrc, bgdest);
+				if (!right) sprite.switchDirection(sprite, sprite.getSprite(), renderer);
+				sprite.runright(renderer, bg, sprite.getSprite(), sprite.getsrc(), sprite.getdest());
 				break;
 			case SDLK_ESCAPE:
 				done = true;
 				break;
 			case SDLK_LEFT:
-				if (right) carl.switchDirection(carl, sprite, renderer, right);
-				s->runleft(renderer, bg, sprite, bgsrc, bgdest, right);
+				if (right) sprite.switchDirection(sprite, sprite.getSprite(), renderer);
+				sprite.runleft(renderer, bg, sprite.getSprite(), sprite.getsrc(), sprite.getsrc());
 				break;
 			case SDLK_UP:
-				s->jump(renderer, bg, sprite, bgsrc, bgdest, right);
+				sprite.jump(renderer, bg, sprite.getSprite(), sprite.getsrc(), sprite.getsrc());
 				break;
 			}
-		}
-	}
-
-	void secscreen(Sprite carl, SDL_Texture* sprite, SDL_Rect &carlsrc, SDL_Rect &carldest, bool &right, bool &done)
-	{
-		while (!done)
-		{
-			SDL_RenderClear(renderer);
-			SDL_RenderCopy(renderer, bg, NULL, NULL);
-			SDL_RenderCopy(renderer, sprite, &carlsrc, &carldest);
-			SDL_RenderPresent(renderer);
-			if (SDL_PollEvent(&e)) eventHandler(e, carl, renderer, carl.getSprite(), carlsrc, carldest, right);
 		}
 	}
 
@@ -101,3 +90,38 @@ public:
 		SDL_Quit();
 	}
 };
+
+/*
+	(LEARN GIT!!!)
+	-->PHYSICS<--
+	Scrolling
+	Beef up event handler (pick up, contact, etc)
+	Story (THAT'S ON ME)
+
+	doug - cody - levi
+	cameron - jacob
+	jeremy - nick - warren(?)
+	mitchell - marcus - matt
+	DAN - sean - robert
+	sayer - lucas
+	tyler - daniel - nicholas
+	-------------------------------------------------------------------------------
+
+	Java -> "synchronized" void, one at a time (keep small
+			Threading: "runnable" function 
+				void run
+				Thread class -> start (runnable)
+	C++ -> SDL Thread Management: https://wiki.libsdl.org/SDL_CreateThread
+			
+			Threads:	Rendering loop (fps goal)
+						Event Loop (event handler)
+						Physics Loop 
+
+	(void *) --> (int *) cnt;
+ 
+	SDL_Thread *thread, *thread2;
+	int threadretval, threadretval2;
+
+
+
+*/
