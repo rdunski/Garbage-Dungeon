@@ -47,7 +47,7 @@ public:
 		{
 			SDL_RenderClear(renderer);
 			SDL_RenderCopy(renderer, bg, NULL, NULL);
-			SDL_RenderCopy(renderer, carl.getSprite(), &carl.getsrc(), &carl.getdest());
+			SDL_RenderCopy(renderer, carl.getSpriteTexture(), &carl.getsrc(), &carl.getdest());
 			SDL_RenderPresent(renderer);
 			if (SDL_PollEvent(&e)) eventHandler(e, carl);
 		}
@@ -63,18 +63,18 @@ public:
 			switch (e.key.keysym.sym)
 			{
 			case SDLK_RIGHT:
-				if (!right) sprite.switchDirection(sprite, sprite.getSprite(), renderer);
-				sprite.runright(renderer, bg, sprite.getSprite(), sprite.getsrc(), sprite.getdest());
+				if (!right) sprite.switchDirection(sprite, sprite.getSpriteTexture(), renderer);
+				sprite.runright(renderer, bg, sprite.getSpriteTexture(), sprite.getsrc(), sprite.getdest());
 				break;
 			case SDLK_ESCAPE:
 				done = true;
 				break;
 			case SDLK_LEFT:
-				if (right) sprite.switchDirection(sprite, sprite.getSprite(), renderer);
-				sprite.runleft(renderer, bg, sprite.getSprite(), sprite.getsrc(), sprite.getsrc());
+				if (right) sprite.switchDirection(sprite, sprite.getSpriteTexture(), renderer);
+				sprite.runleft(renderer, bg, sprite.getSpriteTexture(), sprite.getsrc(), sprite.getsrc());
 				break;
 			case SDLK_UP:
-				sprite.jump(renderer, bg, sprite.getSprite(), sprite.getsrc(), sprite.getsrc());
+				//sprite.jump(renderer, bg, sprite.getSpriteTexture(), sprite.getsrc(), sprite.getsrc());
 				break;
 			}
 		}
