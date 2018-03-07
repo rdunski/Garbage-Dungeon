@@ -42,3 +42,5 @@
 *.cachefile
 *.VC.db
 *.VC.VC.opendb
+*.vs
+.vs
