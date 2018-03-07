@@ -14,13 +14,16 @@ protected:
 	SDL_Rect src;
 	SDL_Rect dest;
 	bool right = true;
+	//will be moving filename here, creating 
+	//getter/setter for switchdirection function
 
 public:
-	Sprite createSprite(SDL_Renderer* renderer, string filename)
+	Sprite createSprite(SDL_Renderer* renderer, string filename, 
+		int srcx, int srcy, int destx, int desty)
 	{
 		Sprite newS;
-		newS.src = { 0, 0, 75, 80 };
-		newS.dest.x = 0; newS.dest.y = 275; newS.dest.h = 75; newS.dest.w = 80;
+		newS.src = { 0, 0, srcx, srcy };
+		newS.dest.x = destx; newS.dest.y = desty; newS.dest.h = 75; newS.dest.w = 80;
 		newS.surface = SDL_LoadBMP(filename.c_str());
 		SDL_SetColorKey(newS.surface, SDL_TRUE, SDL_MapRGB(newS.surface->format, 0, 0, 0));
 		newS.text = SDL_CreateTextureFromSurface(renderer, newS.surface);
@@ -34,35 +37,33 @@ public:
 	bool isfacingright() { return right; }
 
 	void switchDirection(Sprite sprite, SDL_Renderer* renderer)
-		//Daniel is working on this now. When the direction facing and direction of action
-		//contradict, this will replace the spritesheet in use
 	{
+		//If sprite is facing one direction and the other is called, 
+		//should load a new bmp of character to use
 		if (sprite.isfacingright() && SDLK_LEFT)
 		{
 			sprite.surface = SDL_LoadBMP("dudeleft.bmp");
 			SDL_SetColorKey(sprite.surface, SDL_TRUE, SDL_MapRGB(sprite.surface->format, 0, 0, 0));
-			right = false;
+			sprite.text = SDL_CreateTextureFromSurface(renderer, sprite.surface);
+			sprite.right = false;
 		}
 		else if (!sprite.isfacingright() && SDLK_RIGHT)
 		{
-			sprite.surface = SDL_LoadBMP("duderight.bmp");
+			sprite.surface = SDL_LoadBMP("dudeleft.bmp");
 			SDL_SetColorKey(sprite.surface, SDL_TRUE, SDL_MapRGB(sprite.surface->format, 0, 0, 0));
-			right = true;
+			sprite.text = SDL_CreateTextureFromSurface(renderer, sprite.surface);
+			sprite.right = true;
 		}
-
 		sprite.text = SDL_CreateTextureFromSurface(renderer, sprite.surface);
 	}
 
-	void move(SDL_Renderer* renderer, SDL_Texture* bg, Sprite sprite)
+	void move(SDL_Renderer* renderer, SDL_Texture* bg, Sprite sprite, SDL_Event e)
 	{
-		SDL_Rect* src;
-		SDL_Rect* dest;
 		SDL_RenderCopy(renderer, bg, NULL, NULL);
-		SDL_RenderCopy(renderer, getSpriteTexture(), src, dest);
+		SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
 		SDL_RenderPresent(renderer);
 		SDL_RenderClear(renderer);
-		//move function should move character left or right, depending on direction facing and user input...
-		if (sprite.isfacingright() && SDLK_RIGHT)
+		if (sprite.isfacingright() && e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_RIGHT)
 		{
 			//if sprite is facing right and moves right
 		}
@@ -80,61 +81,64 @@ public:
 		}
 	}
 
-	void jump(SDL_Renderer* renderer, SDL_Texture* bg, SDL_Texture* sprite, SDL_Rect bgsrc, SDL_Rect bgdest, bool &right)
+	void jump(SDL_Renderer* renderer, SDL_Texture* bg, Sprite sprite)
 	{
+		//This whole function should be scrapped for one using correct physics. 
+		//Will be more complicated than simple movement, so it should probably 
+		//stay in it's own function
 		bool complete = false;
 		while (!complete)
 		{
 			SDL_RenderCopy(renderer, bg, NULL, NULL);
-			SDL_RenderCopy(renderer, sprite, &bgsrc, &bgdest);
+			SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
 			SDL_RenderPresent(renderer);
 
-			if (bgdest.y < 175) complete = true;
-			bgdest.x += 6;
-			bgdest.y -= 8;
+			if (sprite.dest.y < 175) complete = true;
+			sprite.dest.x += 6;
+			sprite.dest.y -= 8;
 			SDL_Delay(1000 / 24);
 			SDL_RenderClear(renderer);
-			if (bgsrc.y < 255)
+			if (sprite.src.y < 255)
 			{
-				if (bgsrc.x < 450) bgsrc.x += 75;
+				if (sprite.src.x < 450) sprite.src.x += 75;
 				else {
-					bgsrc.x = 0;
-					bgsrc.y += 85;
+					sprite.src.x = 0;
+					sprite.src.y += 85;
 				}
 			}
 			else
 			{
-				if (bgsrc.x < 375) bgsrc.x += 75;
+				if (sprite.src.x < 375) sprite.src.x += 75;
 				else {
-					bgsrc.x = 0;
-					bgsrc.y = 0;
+					sprite.src.x = 0;
+					sprite.src.y = 0;
 				}
 			}
-		}						//CREATE ARCH
+		}
 		while (complete)
 		{
 			SDL_RenderCopy(renderer, bg, NULL, NULL);
-			SDL_RenderCopy(renderer, sprite, &bgsrc, &bgdest);
+			SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
 			SDL_RenderPresent(renderer);
-			if (bgdest.y >= 275) complete = false;
-			bgdest.x += 5;
-			bgdest.y += 10;
+			if (sprite.dest.y >= 275) complete = false;
+			sprite.dest.x += 5;
+			sprite.dest.y += 10;
 			SDL_Delay(1000 / 24);
 			SDL_RenderClear(renderer);
-			if (bgsrc.y < 255)
+			if (sprite.src.y < 255)
 			{
-				if (bgsrc.x < 450) bgsrc.x += 75;
+				if (sprite.src.x < 450) sprite.src.x += 75;
 				else {
-					bgsrc.x = 0;
-					bgsrc.y += 85;
+					sprite.src.x = 0;
+					sprite.src.y += 85;
 				}
 			}
 			else
 			{
-				if (bgsrc.x < 375) bgsrc.x += 75;
+				if (sprite.src.x < 375) sprite.src.x += 75;
 				else {
-					bgsrc.x = 0;
-					bgsrc.y = 0;
+					sprite.src.x = 0;
+					sprite.src.y = 0;
 				}
 			}
 		}
