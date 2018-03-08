@@ -40,6 +40,6 @@
 *.opensdf
 *.sdf
 *.cachefile
-/Browse.VC.opendb
-/Browse.VC.db
-/Browse.VC
+GarbageDungeon/.vs/GarbageDungeon/v15/Browse.VC.opendb
+GarbageDungeon/.vs/GarbageDungeon/v15/Browse.VC.db
+GarbageDungeon/.vs/GarbageDungeon/v15/Browse.VC
