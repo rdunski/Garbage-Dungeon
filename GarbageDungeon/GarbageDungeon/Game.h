@@ -56,7 +56,7 @@ public:
 			SDL_RenderClear(renderer);
 			SDL_RenderCopy(renderer, bg, NULL, NULL);
 			SDL_RenderCopy(renderer, carl.getSpriteTexture(), &carl.getsrc(), &carl.getdest());
-			eventHandler(e, carl);
+			eventHandler(carl);
 			SDL_RenderPresent(renderer);
 		}
 	}
@@ -66,7 +66,7 @@ public:
 	SDL_Surface *getSurface() { return this->surface; }
 	SDL_Renderer *getRenderer() { return this->renderer; }
 
-	void eventHandler(SDL_Event e, Sprite &sprite) {
+	void eventHandler(Sprite &sprite) {
 		if (currentKeyStates[SDL_SCANCODE_RIGHT] || currentKeyStates[SDL_SCANCODE_D])
 		{
 			if (!sprite.isfacingright()) sprite.switchDirection(sprite, renderer);
