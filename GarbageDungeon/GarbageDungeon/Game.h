@@ -81,7 +81,7 @@ public:
 		}
 		if (currentKeyStates[SDL_SCANCODE_SPACE] || currentKeyStates[SDL_SCANCODE_UP])
 		{
-			sprite.jump(renderer, bg, sprite, currentKeyStates[SDL_SCANCODE_SPACE]);
+			sprite.jump(renderer, bg, sprite);
 			//jump resets dest after each command
 			sprite.move(renderer, bg, sprite, currentKeyStates[SDL_SCANCODE_SPACE]);
 		}
