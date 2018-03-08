@@ -57,25 +57,25 @@ public:
 		sprite.text = SDL_CreateTextureFromSurface(renderer, sprite.surface);
 	}
 
-	void move(SDL_Renderer* renderer, SDL_Texture* bg, Sprite sprite, const Uint8* keyState)
+	void move(SDL_Renderer* renderer, SDL_Texture* bg, Sprite sprite, SDL_Scancode keystate)
 	{
 		SDL_RenderCopy(renderer, bg, NULL, NULL);
 		SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
 		SDL_RenderPresent(renderer);
 		SDL_RenderClear(renderer);
-		if (sprite.isfacingright() && keyState[SDL_SCANCODE_RIGHT])
+		if (sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT)
 		{
 			//if sprite is facing right and moves right
 		}
-		else if (!sprite.isfacingright() && keyState[SDL_SCANCODE_LEFT])
+		else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT)
 		{
 			//if sprite is facing left and moves left
 		}
-		else if (sprite.isfacingright() && keyState[SDL_SCANCODE_LEFT])
+		else if (sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT)
 		{
 			//if sprite is facing right and moves left
 		}
-		else if (!sprite.isfacingright() && keyState[SDL_SCANCODE_RIGHT])
+		else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT)
 		{
 			//if sprite is left and moves right
 		}

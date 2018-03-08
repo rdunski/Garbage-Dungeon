@@ -1,6 +1,2 @@
 ﻿  GarbageDungeon.cpp
-c:\users\daniel\source\repos\vgd-project\garbagedungeon\garbagedungeon\sprite.h(106): error C2228: left of '.x' must have class/struct/union
-c:\users\daniel\source\repos\vgd-project\garbagedungeon\garbagedungeon\sprite.h(125): error C2228: left of '.x' must have class/struct/union
-c:\users\daniel\source\repos\vgd-project\garbagedungeon\garbagedungeon\game.h(66): warning C4551: function call missing argument list
-c:\users\daniel\source\repos\vgd-project\garbagedungeon\garbagedungeon\game.h(73): warning C4551: function call missing argument list
-c:\users\daniel\source\repos\vgd-project\garbagedungeon\garbagedungeon\game.h(77): error C2660: 'Sprite::jump': function does not take 5 arguments
+  GarbageDungeon.vcxproj -> C:\Users\Robert\Source\Repos\vgd-project\GarbageDungeon\x64\Debug\GarbageDungeon.exe

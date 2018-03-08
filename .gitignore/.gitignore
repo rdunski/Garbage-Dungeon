@@ -36,10 +36,12 @@
 *.opendb
 *.aps
 *.ncb
+*.db
+*.VC
 *.opendb
 *.opensdf
 *.sdf
 *.cachefile
-GarbageDungeon/.vs/GarbageDungeon/v15/Browse.VC.opendb
-GarbageDungeon/.vs/GarbageDungeon/v15/Browse.VC.db
-GarbageDungeon/.vs/GarbageDungeon/v15/Browse.VC
+GarbageDungeon/.vs/GarbageDungeon/v15
+!GarbageDungeon/.vs/GarbageDungeon/v15/ipch
+!GarbageDungeon/.vs/GarbageDungeon/v15/.suo
