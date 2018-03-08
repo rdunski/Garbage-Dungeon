@@ -40,7 +40,6 @@
 *.opensdf
 *.sdf
 *.cachefile
-*.VC.db
-*.VC.VC.opendb
-*.vs
-.vs
+/Browse.VC.opendb
+/Browse.VC.db
+/Browse.VC
