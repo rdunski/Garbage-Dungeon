@@ -45,11 +45,18 @@ public:
 		Sprite carl = carl.createSprite(renderer, "duderight.bmp", 75, 80, 0, 275);
 		while (!done)
 		{
+			while (SDL_PollEvent(&e) != 0)
+			{
+				if (e.type == SDL_QUIT)
+				{
+					done = true;
+				}
+			}
 			SDL_RenderClear(renderer);
 			SDL_RenderCopy(renderer, bg, NULL, NULL);
 			SDL_RenderCopy(renderer, carl.getSpriteTexture(), &carl.getsrc(), &carl.getdest());
+			eventHandler(e, carl);
 			SDL_RenderPresent(renderer);
-			if (SDL_PollEvent(&e)) eventHandler(e, carl);
 		}
 	}
 
@@ -59,26 +66,23 @@ public:
 	SDL_Renderer *getRenderer() { return this->renderer; }
 
 	void eventHandler(SDL_Event e, Sprite &sprite) {
-		if (e.type == SDL_KEYDOWN) {
-			switch (e.key.keysym.sym)
-			{
-			case SDLK_RIGHT:
-				if (!sprite.isfacingright()) sprite.switchDirection(sprite, renderer);
-				sprite.move(renderer, bg, sprite, e);
-				break;
-			case SDLK_ESCAPE:
-				done = true;
-				break;
-			case SDLK_LEFT:
-				if (sprite.isfacingright()) sprite.switchDirection(sprite, renderer);
-				sprite.move(renderer, bg, sprite, e);
-				break;
-			case SDLK_UP:
-				sprite.jump(renderer, bg, sprite);
-				//jump resets dest after each command
-				sprite.move(renderer, bg, sprite, e);
-				break;
-			}
+		if (currentKeyStates[SDL_SCANCODE_RIGHT] || currentKeyStates[SDL_SCANCODE_D])
+		{
+			if (!sprite.isfacingright()) sprite.switchDirection(sprite, renderer);
+			sprite.move(renderer, bg, sprite, e);
+		}
+		if (currentKeyStates[SDL_SCANCODE_ESCAPE])
+			done = true;
+		if (currentKeyStates[SDL_SCANCODE_LEFT] || currentKeyStates[SDL_SCANCODE_A])
+		{
+			if (sprite.isfacingright()) sprite.switchDirection(sprite, renderer);
+			sprite.move(renderer, bg, sprite, e);
+		}
+		if (currentKeyStates[SDL_SCANCODE_SPACE] || currentKeyStates[SDL_SCANCODE_UP])
+		{
+			sprite.jump(renderer, bg, sprite);
+			//jump resets dest after each command
+			sprite.move(renderer, bg, sprite, e);
 		}
 	}
 
