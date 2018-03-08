@@ -11,6 +11,7 @@ class Game {
 protected:
 	bool done = false;
 	string bgfile = "Forest0.bmp";
+	const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
 	const int SCREEN_WIDTH = 640;
 	const int SCREEN_HEIGHT = 480;
 	SDL_Window* window = NULL;
@@ -69,20 +70,20 @@ public:
 		if (currentKeyStates[SDL_SCANCODE_RIGHT] || currentKeyStates[SDL_SCANCODE_D])
 		{
 			if (!sprite.isfacingright()) sprite.switchDirection(sprite, renderer);
-			sprite.move(renderer, bg, sprite, e);
+			sprite.move(renderer, bg, sprite, currentKeyStates[SDL_SCANCODE_RIGHT]);
 		}
 		if (currentKeyStates[SDL_SCANCODE_ESCAPE])
 			done = true;
 		if (currentKeyStates[SDL_SCANCODE_LEFT] || currentKeyStates[SDL_SCANCODE_A])
 		{
 			if (sprite.isfacingright()) sprite.switchDirection(sprite, renderer);
-			sprite.move(renderer, bg, sprite, e);
+			sprite.move(renderer, bg, sprite, currentKeyStates[SDL_SCANCODE_LEFT]);
 		}
 		if (currentKeyStates[SDL_SCANCODE_SPACE] || currentKeyStates[SDL_SCANCODE_UP])
 		{
-			sprite.jump(renderer, bg, sprite);
+			sprite.jump(renderer, bg, sprite, currentKeyStates[SDL_SCANCODE_SPACE]);
 			//jump resets dest after each command
-			sprite.move(renderer, bg, sprite, e);
+			sprite.move(renderer, bg, sprite, currentKeyStates[SDL_SCANCODE_SPACE]);
 		}
 	}
 
