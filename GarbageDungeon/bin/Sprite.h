@@ -69,6 +69,7 @@ public:
 			sprite.surface = SDL_LoadBMP("dudeleft.bmp");
 			SDL_SetColorKey(sprite.surface, SDL_TRUE, SDL_MapRGB(sprite.surface->format, 0, 0, 0));
 			sprite.text = SDL_CreateTextureFromSurface(renderer, sprite.surface);
+			SDL_FreeSurface(sprite.surface);
 			sprite.right = false;
 		}
 		else if (!sprite.isfacingright() && SDLK_RIGHT)
@@ -76,9 +77,10 @@ public:
 			sprite.surface = SDL_LoadBMP("dudeleft.bmp");
 			SDL_SetColorKey(sprite.surface, SDL_TRUE, SDL_MapRGB(sprite.surface->format, 0, 0, 0));
 			sprite.text = SDL_CreateTextureFromSurface(renderer, sprite.surface);
+			SDL_FreeSurface(sprite.surface);
 			sprite.right = true;
 		}
-		sprite.text = SDL_CreateTextureFromSurface(renderer, sprite.surface);
+		//sprite.text = SDL_CreateTextureFromSurface(renderer, sprite.surface);
 	}
 
 	void move(SDL_Renderer* renderer, SDL_Texture* bg, Sprite sprite, SDL_Scancode keystate)
