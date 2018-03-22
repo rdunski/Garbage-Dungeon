@@ -44,9 +44,9 @@ public:
 		createWindow(this->window, "Garbage Dungeon");
 		setBG(this->window);
 		Sprite carl = carl.createSprite(renderer, "duderight.bmp", 75, 80, 0, 275);
-		while (!done)
+		while (!done)								// game loop
 		{
-			while (SDL_PollEvent(&e) != 0)
+			while (SDL_PollEvent(&e) != 0)			// exit check loop
 			{
 				carl.setDT();
 				if (e.type == SDL_QUIT)
@@ -54,12 +54,17 @@ public:
 					done = true;
 				}
 			}
+
 			SDL_RenderClear(renderer);
 			SDL_RenderCopy(renderer, bg, NULL, NULL);
 			SDL_RenderCopy(renderer, carl.getSpriteTexture(), &carl.getsrc(), &carl.getdest());
 			SDL_RenderPresent(renderer);
+
 			eventHandler(carl);
 		}
+
+		// clean up after ourselves
+		endGame();
 	}
 
 	SDL_Window *getWindow() { return this->window; }
@@ -83,17 +88,24 @@ public:
 		if (currentKeyStates[SDL_SCANCODE_SPACE] || currentKeyStates[SDL_SCANCODE_UP])
 		{
 			sprite.jump(renderer, bg, sprite);
-			//jump resets dest after each command
-			// what exactly is "dest"? Is this the position of the sprite 
-			// on the screen or on the sprite sheet?
+			// jump resets dest after each command
 			sprite.move(renderer, bg, sprite, SDL_SCANCODE_SPACE);
 		}
 	}
 
-	void endGame(SDL_Window* window)
+	void endGame()
 	{
-		SDL_Delay(100);
+		delete[] currentKeyStates;
+
+		// sprite destruction
+		s->close();
+		//SDL_Delay(100);
+		
+		SDL_DestroyTexture(bg);
+		SDL_FreeSurface(surface);
+		SDL_DestroyRenderer(renderer);
 		SDL_DestroyWindow(window);
+		
 		SDL_Quit();
 	}
 };

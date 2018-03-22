@@ -11,10 +11,10 @@ class Sprite {
 protected:
 	SDL_Texture * text = NULL;
 	SDL_Surface* surface = NULL;
-	SDL_Rect src;
-	SDL_Rect dest;
+	SDL_Rect src; // src is manipulating sprite sheet
+	SDL_Rect dest; // dest is sprite position on screen
+		// changeable includes x, y (instead of pX, pY)
 	bool right = true;
-	float pX, pY; // position
 	float vX, vY; // velocity
 	float aX, aY; // acceleration
 	float last, dt; // varibles for timing the physics
@@ -25,8 +25,6 @@ protected:
 public:
 	Sprite() 
 	{
-		pX = 300.0;
-		pY = 300.0;
 		vX = 100.0;
 		vY = 100.0;
 		aX = 100.0;
@@ -35,12 +33,12 @@ public:
 		last = 0.0;
 	}
 
-	void updateMovement(float &pVar, float &vVar, float &aVar, float dt) 
+	/*void updateMovement(float &pVar, float &vVar, float &aVar, float dt) 
 	{
 		last = SDL_GetTicks();
 		vVar = vVar + (aVar * dt);
 		pVar = pVar + (vVar * dt);
-	}
+	}*/
 
 	void setDT() { dt = ((float)SDL_GetTicks() - last) / (float)1000.0; }
 
@@ -85,15 +83,16 @@ public:
 
 	void move(SDL_Renderer* renderer, SDL_Texture* bg, Sprite sprite, SDL_Scancode keystate)
 	{
-		SDL_RenderCopy(renderer, bg, NULL, NULL);
+		/*SDL_RenderCopy(renderer, bg, NULL, NULL);
 		SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
 		SDL_RenderPresent(renderer);
-		SDL_RenderClear(renderer);
+		SDL_RenderClear(renderer);*/
+		// The above might be redundant and causing things to reset.
+
 		if (sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT)
 		{
 			//if sprite is facing right and moves right
 			sprite.dest.x += 100;
-			//updateMovement(pX, vX, aX, dt);
 		}
 		else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT)
 		{
@@ -109,7 +108,11 @@ public:
 			//if sprite is left and moves right
 			switchDirection(sprite, renderer);
 		}
+
+		SDL_RenderCopy(renderer, bg, NULL, NULL);											// always put this before rendering something else?
 		SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
+		SDL_RenderPresent(renderer);
+		
 	}
 
 	void jump(SDL_Renderer* renderer, SDL_Texture* bg, Sprite sprite)
@@ -127,7 +130,7 @@ public:
 			if (sprite.dest.y < 175) complete = true;
 			sprite.dest.x += 6;
 			sprite.dest.y -= 8;
-			SDL_Delay(1000 / 24);
+			SDL_Delay(1000 / 24); // set framerate to 24 FPS
 			SDL_RenderClear(renderer);
 			if (sprite.src.y < 255)
 			{
@@ -173,5 +176,11 @@ public:
 				}
 			}
 		}
+	}
+
+	void close() {
+		// garbage pickup
+		delete text;
+		delete surface;
 	}
 };
