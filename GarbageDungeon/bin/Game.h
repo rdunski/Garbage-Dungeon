@@ -73,23 +73,25 @@ public:
 	SDL_Renderer *getRenderer() { return this->renderer; }
 
 	void eventHandler(Sprite &sprite) {
+		// switchDirection causing huge memory leak
+		// SD probably reloading surfaces every time
 		if (currentKeyStates[SDL_SCANCODE_RIGHT] || currentKeyStates[SDL_SCANCODE_D])
 		{
 			if (!sprite.isfacingright()) sprite.switchDirection(sprite, renderer);
-			sprite.move(renderer, bg, sprite, SDL_SCANCODE_RIGHT);
+			//sprite.move(renderer, bg, sprite, SDL_SCANCODE_RIGHT);
 		}
 		if (currentKeyStates[SDL_SCANCODE_ESCAPE])
 			done = true;
 		if (currentKeyStates[SDL_SCANCODE_LEFT] || SDL_SCANCODE_A)
 		{
 			if (sprite.isfacingright()) sprite.switchDirection(sprite, renderer);
-			sprite.move(renderer, bg, sprite, SDL_SCANCODE_LEFT);
+			//sprite.move(renderer, bg, sprite, SDL_SCANCODE_LEFT);
 		}
 		if (currentKeyStates[SDL_SCANCODE_SPACE] || currentKeyStates[SDL_SCANCODE_UP])
 		{
-			sprite.jump(renderer, bg, sprite);
+			//sprite.jump(renderer, bg, sprite);
 			// jump resets dest after each command
-			sprite.move(renderer, bg, sprite, SDL_SCANCODE_SPACE);
+			//sprite.move(renderer, bg, sprite, SDL_SCANCODE_SPACE);
 		}
 	}
 
