@@ -14,11 +14,37 @@ protected:
 	SDL_Rect src;
 	SDL_Rect dest;
 	bool right = true;
+	float pX, pY; // position
+	float vX, vY; // velocity
+	float aX, aY; // acceleration
+	float last, dt; // varibles for timing the physics
+
 	//will be moving filename here, creating 
 	//getter/setter for switchdirection function
 
 public:
-	Sprite createSprite(SDL_Renderer* renderer, string filename, 
+	Sprite() 
+	{
+		pX = 300.0;
+		pY = 300.0;
+		vX = 100.0;
+		vY = 100.0;
+		aX = 100.0;
+		aY = 100.0;
+		dt = 0.0;
+		last = 0.0;
+	}
+
+	void updateMovement(float &pVar, float &vVar, float &aVar, float dt) 
+	{
+		last = SDL_GetTicks();
+		vVar = vVar + (aVar * dt);
+		pVar = pVar + (vVar * dt);
+	}
+
+	void setDT() { dt = ((float)SDL_GetTicks() - last) / (float)1000.0; }
+
+	Sprite createSprite(SDL_Renderer* renderer, string filename,
 		int srcx, int srcy, int destx, int desty)
 	{
 		Sprite newS;
@@ -31,9 +57,9 @@ public:
 	}
 
 	SDL_Surface* getSurface() { return this->surface; }
-	SDL_Texture* getSpriteTexture(){return this->text;}
-	SDL_Rect getsrc(){ return this->src; }
-	SDL_Rect getdest(){ return this->dest; }
+	SDL_Texture* getSpriteTexture() { return this->text; }
+	SDL_Rect getsrc() { return this->src; }
+	SDL_Rect getdest() { return this->dest; }
 	bool isfacingright() { return right; }
 
 	void switchDirection(Sprite sprite, SDL_Renderer* renderer)
@@ -66,6 +92,8 @@ public:
 		if (sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT)
 		{
 			//if sprite is facing right and moves right
+			sprite.dest.x += 100;
+			//updateMovement(pX, vX, aX, dt);
 		}
 		else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT)
 		{
@@ -74,11 +102,14 @@ public:
 		else if (sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT)
 		{
 			//if sprite is facing right and moves left
+			switchDirection(sprite, renderer);
 		}
 		else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT)
 		{
 			//if sprite is left and moves right
+			switchDirection(sprite, renderer);
 		}
+		SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
 	}
 
 	void jump(SDL_Renderer* renderer, SDL_Texture* bg, Sprite sprite)

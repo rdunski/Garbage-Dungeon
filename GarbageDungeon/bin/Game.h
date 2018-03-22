@@ -1,9 +1,9 @@
 #pragma once
 #include <stdio.h>
 #include <iostream>
-#include<string>
-#include<sstream>
-#include"Sprite.h"
+#include <string>
+#include <sstream>
+#include "Sprite.h"
 #include "SDL.h"
 using namespace std;
 
@@ -48,6 +48,7 @@ public:
 		{
 			while (SDL_PollEvent(&e) != 0)
 			{
+				carl.setDT();
 				if (e.type == SDL_QUIT)
 				{
 					done = true;
@@ -83,6 +84,8 @@ public:
 		{
 			sprite.jump(renderer, bg, sprite);
 			//jump resets dest after each command
+			// what exactly is "dest"? Is this the position of the sprite 
+			// on the screen or on the sprite sheet?
 			sprite.move(renderer, bg, sprite, SDL_SCANCODE_SPACE);
 		}
 	}

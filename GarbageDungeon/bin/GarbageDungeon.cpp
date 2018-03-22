@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <iostream>
-#include<string>
-#include<sstream>
-#include<vector>
+#include <string>
+#include <sstream>
+#include <vector>
 #include "SDL.h"
-#include"Game.h"
-#include"Sprite.h"
+#include "Game.h"
+#include "Sprite.h"
 using namespace std;
 
 Game GD;
