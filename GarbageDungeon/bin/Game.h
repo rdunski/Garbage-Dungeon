@@ -10,7 +10,7 @@ using namespace std;
 class Game {
 protected:
 	bool done = false;
-	string bgfile = "Forest0.bmp";
+	//string bgfile = "Forest0.bmp";
 	const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
 	const int SCREEN_WIDTH = 640;
 	const int SCREEN_HEIGHT = 480;
@@ -18,13 +18,14 @@ protected:
 	SDL_Texture* bg = NULL;
 	SDL_Surface* surface = NULL;
 	SDL_Renderer* renderer = NULL;
-	Sprite *s;
+	//Sprite *s;      // this isn't used at all, that I've seen.
 	SDL_Event e;
 
 public:
 	void init() { SDL_Init(SDL_INIT_VIDEO); }
 
-	void createWindow(SDL_Window* &window, string winName) {
+	void createWindow(SDL_Window* &window, string winName)
+	{
 		window = SDL_CreateWindow(winName.c_str(), SDL_WINDOWPOS_UNDEFINED,
 			SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 	}
@@ -72,8 +73,8 @@ public:
 		// switchDirection causing huge memory leak
 		// SD probably reloading surfaces every time
 		
-		// a solution would be to load both sprite sheets only once when the program is started and 
-		// simply refer to whichever one is needed when it is needed.
+		// a solution would be to load both sprite sheets only once when the program 
+		// is started and simply refer to whichever one is needed when it is needed.
 
 		if (currentKeyStates[SDL_SCANCODE_RIGHT] || currentKeyStates[SDL_SCANCODE_D])
 		{
@@ -97,9 +98,6 @@ public:
 
 	void endGame()
 	{
-		// okay for some reason if we deallocate the currentKeyStates and the sprite
-		// it throws errors. I just deleted them for now.
-
 		SDL_DestroyTexture(bg);
 		SDL_FreeSurface(surface);
 		SDL_DestroyRenderer(renderer);

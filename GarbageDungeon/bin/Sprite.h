@@ -63,8 +63,8 @@ public:
 
 	void switchDirection(Sprite sprite, SDL_Renderer* renderer)
 	{
-		//If sprite is facing one direction and the other is called, 
-		//should load a new bmp of character to use
+		// if sprite is facing one direction and the other is called, 
+		// should load a new bmp of character to use
 		if (sprite.isfacingright() && SDLK_LEFT)
 		{
 			sprite.surface = SDL_LoadBMP("dudeleft.bmp");
@@ -75,7 +75,7 @@ public:
 		}
 		else if (!sprite.isfacingright() && SDLK_RIGHT)
 		{
-			sprite.surface = SDL_LoadBMP("dudeleft.bmp");
+			sprite.surface = SDL_LoadBMP("duderight.bmp");
 			SDL_SetColorKey(sprite.surface, SDL_TRUE, SDL_MapRGB(sprite.surface->format, 0, 0, 0));
 			sprite.text = SDL_CreateTextureFromSurface(renderer, sprite.surface);
 			SDL_FreeSurface(sprite.surface);
@@ -110,7 +110,7 @@ public:
 			//if sprite is left and moves right;
 		}
 
-		SDL_RenderCopy(renderer, bg, NULL, NULL);											// always put this before rendering something else?
+		SDL_RenderCopy(renderer, bg, NULL, NULL);
 		SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
 		SDL_RenderPresent(renderer);
 
@@ -118,11 +118,11 @@ public:
 
 	void jump(SDL_Renderer* renderer, SDL_Texture* bg, Sprite sprite)
 	{
-		//This whole function should be scrapped for one using correct physics. 
-		//Will be more complicated than simple movement, so it should probably 
-		//stay in it's own function
+		// This whole function should be scrapped for one using correct physics. 
+		// Will be more complicated than simple movement, so it should probably 
+		// stay in it's own function
 		bool complete = false;
-		while (!complete)
+		while (!complete) // upwards part of jump
 		{
 			SDL_RenderCopy(renderer, bg, NULL, NULL);
 			SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
@@ -133,10 +133,12 @@ public:
 			sprite.dest.y -= 8;
 			SDL_Delay(1000 / 24); // set framerate to 24 FPS
 			SDL_RenderClear(renderer);
+
 			if (sprite.src.y < 255)
 			{
 				if (sprite.src.x < 450) sprite.src.x += 75;
-				else {
+				else 
+				{
 					sprite.src.x = 0;
 					sprite.src.y += 85;
 				}
@@ -144,26 +146,30 @@ public:
 			else
 			{
 				if (sprite.src.x < 375) sprite.src.x += 75;
-				else {
+				else 
+				{
 					sprite.src.x = 0;
 					sprite.src.y = 0;
 				}
 			}
 		}
-		while (complete)
+		while (complete) // downwards part of jump
 		{
 			SDL_RenderCopy(renderer, bg, NULL, NULL);
 			SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
 			SDL_RenderPresent(renderer);
+
 			if (sprite.dest.y >= 275) complete = false;
 			sprite.dest.x += 5;
 			sprite.dest.y += 10;
 			SDL_Delay(1000 / 24);
 			SDL_RenderClear(renderer);
+
 			if (sprite.src.y < 255)
 			{
 				if (sprite.src.x < 450) sprite.src.x += 75;
-				else {
+				else 
+				{
 					sprite.src.x = 0;
 					sprite.src.y += 85;
 				}
@@ -171,7 +177,8 @@ public:
 			else
 			{
 				if (sprite.src.x < 375) sprite.src.x += 75;
-				else {
+				else 
+				{
 					sprite.src.x = 0;
 					sprite.src.y = 0;
 				}
@@ -179,7 +186,8 @@ public:
 		}
 	}
 
-	void close() {
+	void close() 
+	{
 		// garbage pickup
 		delete text;
 		delete surface;
