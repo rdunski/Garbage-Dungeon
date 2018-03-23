@@ -34,9 +34,6 @@ public:
 		surface = SDL_LoadBMP("Forest0.bmp");
 		renderer = SDL_CreateRenderer(window, -1, 0);
 		bg = SDL_CreateTextureFromSurface(renderer, surface);
-		SDL_RenderClear(renderer);
-		SDL_RenderCopy(renderer, bg, NULL, NULL);
-		SDL_RenderPresent(renderer);
 	}
 
 	void run()
@@ -62,7 +59,6 @@ public:
 
 			eventHandler(carl);
 		}
-
 		// clean up after ourselves
 		endGame();
 	}
@@ -75,39 +71,41 @@ public:
 	void eventHandler(Sprite &sprite) {
 		// switchDirection causing huge memory leak
 		// SD probably reloading surfaces every time
+		
+		// a solution would be to load both sprite sheets only once when the program is started and 
+		// simply refer to whichever one is needed when it is needed.
+
 		if (currentKeyStates[SDL_SCANCODE_RIGHT] || currentKeyStates[SDL_SCANCODE_D])
 		{
-			if (!sprite.isfacingright()) sprite.switchDirection(sprite, renderer);
-			//sprite.move(renderer, bg, sprite, SDL_SCANCODE_RIGHT);
+			//if (!sprite.isfacingright()) sprite.switchDirection(sprite, renderer);
+			sprite.move(renderer, bg, sprite, SDL_SCANCODE_RIGHT);
 		}
 		if (currentKeyStates[SDL_SCANCODE_ESCAPE])
 			done = true;
 		if (currentKeyStates[SDL_SCANCODE_LEFT] || SDL_SCANCODE_A)
 		{
-			if (sprite.isfacingright()) sprite.switchDirection(sprite, renderer);
-			//sprite.move(renderer, bg, sprite, SDL_SCANCODE_LEFT);
+			//if (sprite.isfacingright()) sprite.switchDirection(sprite, renderer);
+			sprite.move(renderer, bg, sprite, SDL_SCANCODE_LEFT);
 		}
 		if (currentKeyStates[SDL_SCANCODE_SPACE] || currentKeyStates[SDL_SCANCODE_UP])
 		{
-			//sprite.jump(renderer, bg, sprite);
+			sprite.jump(renderer, bg, sprite);
 			// jump resets dest after each command
-			//sprite.move(renderer, bg, sprite, SDL_SCANCODE_SPACE);
+			sprite.move(renderer, bg, sprite, SDL_SCANCODE_SPACE);
 		}
 	}
 
 	void endGame()
 	{
-		delete[] currentKeyStates;
+		// okay for some reason if we deallocate the currentKeyStates and the sprite
+		// it throws errors. I just deleted them for now.
 
-		// sprite destruction
-		s->close();
-		//SDL_Delay(100);
-		
 		SDL_DestroyTexture(bg);
 		SDL_FreeSurface(surface);
 		SDL_DestroyRenderer(renderer);
 		SDL_DestroyWindow(window);
 		
+		SDL_Delay(100);
 		SDL_Quit();
 	}
 };

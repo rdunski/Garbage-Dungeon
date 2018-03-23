@@ -23,7 +23,7 @@ protected:
 	//getter/setter for switchdirection function
 
 public:
-	Sprite() 
+	Sprite()
 	{
 		vX = 100.0;
 		vY = 100.0;
@@ -33,7 +33,7 @@ public:
 		last = 0.0;
 	}
 
-	/*void updateMovement(float &pVar, float &vVar, float &aVar, float dt) 
+	/*void updateMovement(float &pVar, float &vVar, float &aVar, float dt)
 	{
 		last = SDL_GetTicks();
 		vVar = vVar + (aVar * dt);
@@ -51,6 +51,7 @@ public:
 		newS.surface = SDL_LoadBMP(filename.c_str());
 		SDL_SetColorKey(newS.surface, SDL_TRUE, SDL_MapRGB(newS.surface->format, 0, 0, 0));
 		newS.text = SDL_CreateTextureFromSurface(renderer, newS.surface);
+		SDL_FreeSurface(newS.surface);
 		return newS;
 	}
 
@@ -89,7 +90,7 @@ public:
 		SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
 		SDL_RenderPresent(renderer);
 		SDL_RenderClear(renderer);*/
-		// The above might be redundant and causing things to reset.
+		// The above might be redundant.
 
 		if (sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT)
 		{
@@ -103,18 +104,16 @@ public:
 		else if (sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT)
 		{
 			//if sprite is facing right and moves left
-			switchDirection(sprite, renderer);
 		}
 		else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT)
 		{
-			//if sprite is left and moves right
-			switchDirection(sprite, renderer);
+			//if sprite is left and moves right;
 		}
 
 		SDL_RenderCopy(renderer, bg, NULL, NULL);											// always put this before rendering something else?
 		SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
 		SDL_RenderPresent(renderer);
-		
+
 	}
 
 	void jump(SDL_Renderer* renderer, SDL_Texture* bg, Sprite sprite)
