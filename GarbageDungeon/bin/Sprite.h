@@ -9,18 +9,20 @@ using namespace std;
 
 class Sprite {
 protected:
-	SDL_Texture * text = NULL;
+	SDL_Texture* text = NULL;
+	SDL_Texture* spRight = NULL;	// texture for loading in the right-facing spring sheet to quickly reference it.
+	SDL_Texture* spLeft = NULL;		// texture for loading in the left-facing spring sheet to quickly reference it.
 	SDL_Surface* surface = NULL;
-	SDL_Rect src; // src is manipulating sprite sheet
+	SDL_Rect src;  // src is manipulating sprite sheet
 	SDL_Rect dest; // dest is sprite position on screen
 		// changeable includes x, y (instead of pX, pY)
 	bool right = true;
-	float vX, vY; // velocity
-	float aX, aY; // acceleration
+	float vX, vY;	// velocity
+	float aX, aY;	// acceleration
 	float last, dt; // varibles for timing the physics
 
-	//will be moving filename here, creating 
-	//getter/setter for switchdirection function
+	// will be moving filename here, creating 
+	// getter/setter for switchdirection function
 
 public:
 	Sprite()
@@ -48,10 +50,10 @@ public:
 		Sprite newS;
 		newS.src = { 0, 0, srcx, srcy };
 		newS.dest.x = destx; newS.dest.y = desty; newS.dest.h = 75; newS.dest.w = 80;
-		newS.surface = SDL_LoadBMP(filename.c_str());
-		SDL_SetColorKey(newS.surface, SDL_TRUE, SDL_MapRGB(newS.surface->format, 0, 0, 0));
-		newS.text = SDL_CreateTextureFromSurface(renderer, newS.surface);
-		SDL_FreeSurface(newS.surface);
+		directionInit(renderer);
+		if (filename.c_str() == "duderight.bmp") newS.text = spRight;
+		else if (filename.c_str() == "dudeleft.bmp") newS.text = spLeft;
+
 		return newS;
 	}
 
@@ -61,37 +63,41 @@ public:
 	SDL_Rect getdest() { return this->dest; }
 	bool isfacingright() { return right; }
 
+	void directionInit(SDL_Renderer* renderer) {
+		// function for creating the textures that will hold the left
+		// and right facing sprite sheets
+
+		// left
+		surface = SDL_LoadBMP("dudeleft.bmp");
+		SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0, 0, 0));
+		spLeft = SDL_CreateTextureFromSurface(renderer, surface);
+		SDL_FreeSurface(surface);
+
+		// right
+		surface = SDL_LoadBMP("duderight.bmp");
+		SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0, 0, 0));
+		spRight = SDL_CreateTextureFromSurface(renderer, surface);
+		SDL_FreeSurface(surface);
+	}
+
 	void switchDirection(Sprite sprite, SDL_Renderer* renderer)
 	{
 		// if sprite is facing one direction and the other is called, 
-		// should load a new bmp of character to use
+		// should assign current texture to the opposite
 		if (sprite.isfacingright() && SDLK_LEFT)
 		{
-			sprite.surface = SDL_LoadBMP("dudeleft.bmp");
-			SDL_SetColorKey(sprite.surface, SDL_TRUE, SDL_MapRGB(sprite.surface->format, 0, 0, 0));
-			sprite.text = SDL_CreateTextureFromSurface(renderer, sprite.surface);
-			SDL_FreeSurface(sprite.surface);
+			text = spLeft;
 			sprite.right = false;
 		}
 		else if (!sprite.isfacingright() && SDLK_RIGHT)
 		{
-			sprite.surface = SDL_LoadBMP("duderight.bmp");
-			SDL_SetColorKey(sprite.surface, SDL_TRUE, SDL_MapRGB(sprite.surface->format, 0, 0, 0));
-			sprite.text = SDL_CreateTextureFromSurface(renderer, sprite.surface);
-			SDL_FreeSurface(sprite.surface);
+			text = spRight;
 			sprite.right = true;
 		}
-		//sprite.text = SDL_CreateTextureFromSurface(renderer, sprite.surface);
 	}
 
 	void move(SDL_Renderer* renderer, SDL_Texture* bg, Sprite sprite, SDL_Scancode keystate)
 	{
-		/*SDL_RenderCopy(renderer, bg, NULL, NULL);
-		SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
-		SDL_RenderPresent(renderer);
-		SDL_RenderClear(renderer);*/
-		// The above might be redundant.
-
 		if (sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT)
 		{
 			//if sprite is facing right and moves right

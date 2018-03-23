@@ -78,14 +78,14 @@ public:
 
 		if (currentKeyStates[SDL_SCANCODE_RIGHT] || currentKeyStates[SDL_SCANCODE_D])
 		{
-			//if (!sprite.isfacingright()) sprite.switchDirection(sprite, renderer);
+			if (!sprite.isfacingright()) sprite.switchDirection(sprite, renderer);
 			sprite.move(renderer, bg, sprite, SDL_SCANCODE_RIGHT);
 		}
 		if (currentKeyStates[SDL_SCANCODE_ESCAPE])
 			done = true;
 		if (currentKeyStates[SDL_SCANCODE_LEFT] || SDL_SCANCODE_A)
 		{
-			//if (sprite.isfacingright()) sprite.switchDirection(sprite, renderer);
+			if (sprite.isfacingright()) sprite.switchDirection(sprite, renderer);
 			sprite.move(renderer, bg, sprite, SDL_SCANCODE_LEFT);
 		}
 		if (currentKeyStates[SDL_SCANCODE_SPACE] || currentKeyStates[SDL_SCANCODE_UP])
