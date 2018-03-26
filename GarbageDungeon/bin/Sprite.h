@@ -103,6 +103,7 @@ public:
 		float temp;
 		if (sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT)//if sprite is facing right and moves right
 		{
+			right = true;
 			temp = sprite.dest.x;
 			temp += 1;
 			setDestX(temp);
@@ -110,6 +111,7 @@ public:
 		else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT)
 		{
 			//if sprite is facing left and moves left
+			right = false;
 			temp = sprite.dest.x;
 			temp -= 1;
 			setDestX(temp);
@@ -117,6 +119,7 @@ public:
 		else if (sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT)
 		{
 			//if sprite is facing right and moves left
+			right = false;
 			switchDirection(sprite, renderer);
 			temp = sprite.dest.x;
 			temp -= 1;
@@ -125,6 +128,7 @@ public:
 		else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT)
 		{
 			//if sprite is left and moves right;
+			right = true;
 			switchDirection(sprite, renderer);
 			temp = sprite.dest.x;
 			temp += 1;
@@ -139,18 +143,27 @@ public:
 
 	void jump(SDL_Renderer* renderer, SDL_Texture* bg, Sprite sprite)
 	{
+
 		// This whole function should be scrapped for one using correct physics. 
 		// Will be more complicated than simple movement, so it should probably 
 		// stay in it's own function
 		bool complete = false;
+		float tempX;
 		while (!complete) // upwards part of jump
 		{
 			SDL_RenderCopy(renderer, bg, NULL, NULL);
 			SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
 			SDL_RenderPresent(renderer);
 
-			if (sprite.dest.y < 175) complete = true;
-			sprite.dest.x += 6;
+			if (sprite.dest.y < 175)
+			{
+				complete = true;
+				break;
+			}
+			if (sprite.isfacingright())
+				sprite.dest.x += 6;
+			else
+				sprite.dest.x -= 6;
 			sprite.dest.y -= 8;
 			SDL_Delay(1000 / 24); // set framerate to 24 FPS
 			SDL_RenderClear(renderer);
@@ -180,8 +193,15 @@ public:
 			SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
 			SDL_RenderPresent(renderer);
 
-			if (sprite.dest.y >= 275) complete = false;
-			sprite.dest.x += 5;
+			if (sprite.dest.y >= 275)
+			{
+				complete = false;
+				break;
+			}
+			if (sprite.isfacingright())
+				sprite.dest.x += 5;
+			else
+				sprite.dest.x -= 5;
 			sprite.dest.y += 10;
 			SDL_Delay(1000 / 24);
 			SDL_RenderClear(renderer);
@@ -205,6 +225,8 @@ public:
 				}
 			}
 		}
+		tempX = sprite.dest.x;
+		setDestX(tempX);
 	}
 
 	void close() 

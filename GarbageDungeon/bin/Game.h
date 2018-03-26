@@ -54,7 +54,6 @@ public:
 			}
 
 			SDL_Delay(1000 / 24);
-
 			SDL_RenderClear(renderer);
 			SDL_RenderCopy(renderer, bg, NULL, NULL);
 			SDL_RenderCopy(renderer, carl.getSpriteTexture(), &carl.getsrc(), &carl.getdest());
