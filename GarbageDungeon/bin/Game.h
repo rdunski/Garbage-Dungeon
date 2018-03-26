@@ -53,6 +53,8 @@ public:
 				}
 			}
 
+			SDL_Delay(1000 / 24);
+
 			SDL_RenderClear(renderer);
 			SDL_RenderCopy(renderer, bg, NULL, NULL);
 			SDL_RenderCopy(renderer, carl.getSpriteTexture(), &carl.getsrc(), &carl.getdest());
@@ -78,22 +80,23 @@ public:
 
 		if (currentKeyStates[SDL_SCANCODE_RIGHT] || currentKeyStates[SDL_SCANCODE_D])
 		{
-			if (!sprite.isfacingright()) sprite.switchDirection(sprite, renderer);
+			//if (!sprite.isfacingright()) sprite.switchDirection(sprite, renderer);
 			sprite.move(renderer, bg, sprite, SDL_SCANCODE_RIGHT);
 		}
-		if (currentKeyStates[SDL_SCANCODE_ESCAPE])
+		else if (currentKeyStates[SDL_SCANCODE_ESCAPE])
 			done = true;
-		if (currentKeyStates[SDL_SCANCODE_LEFT] || SDL_SCANCODE_A)
+		else if (currentKeyStates[SDL_SCANCODE_LEFT] || currentKeyStates[SDL_SCANCODE_A])
 		{
-			if (sprite.isfacingright()) sprite.switchDirection(sprite, renderer);
+			//if (sprite.isfacingright()) sprite.switchDirection(sprite, renderer);
 			sprite.move(renderer, bg, sprite, SDL_SCANCODE_LEFT);
 		}
-		if (currentKeyStates[SDL_SCANCODE_SPACE] || currentKeyStates[SDL_SCANCODE_UP])
+		else if (currentKeyStates[SDL_SCANCODE_SPACE] || currentKeyStates[SDL_SCANCODE_UP])
 		{
 			sprite.jump(renderer, bg, sprite);
 			// jump resets dest after each command
 			sprite.move(renderer, bg, sprite, SDL_SCANCODE_SPACE);
 		}
+		else currentKeyStates[NULL];
 	}
 
 	void endGame()

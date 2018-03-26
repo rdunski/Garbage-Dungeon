@@ -51,8 +51,8 @@ public:
 		newS.src = { 0, 0, srcx, srcy };
 		newS.dest.x = destx; newS.dest.y = desty; newS.dest.h = 75; newS.dest.w = 80;
 		directionInit(renderer);
-		if (filename.c_str() == "duderight.bmp") newS.text = spRight;
-		else if (filename.c_str() == "dudeleft.bmp") newS.text = spLeft;
+		if (filename == "duderight.bmp") newS.text = spRight;
+		else if (filename == "dudeleft.bmp") newS.text = spLeft;
 
 		return newS;
 	}
@@ -61,6 +61,8 @@ public:
 	SDL_Texture* getSpriteTexture() { return this->text; }
 	SDL_Rect getsrc() { return this->src; }
 	SDL_Rect getdest() { return this->dest; }
+	void setDestX(float x) { dest.x = x; }
+	void setDestY(float y) { dest.y = y; }
 	bool isfacingright() { return right; }
 
 	void directionInit(SDL_Renderer* renderer) {
@@ -98,22 +100,35 @@ public:
 
 	void move(SDL_Renderer* renderer, SDL_Texture* bg, Sprite sprite, SDL_Scancode keystate)
 	{
-		if (sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT)
+		float temp;
+		if (sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT)//if sprite is facing right and moves right
 		{
-			//if sprite is facing right and moves right
-			sprite.dest.x += 100;
+			temp = sprite.dest.x;
+			temp += 1;
+			setDestX(temp);
 		}
 		else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT)
 		{
 			//if sprite is facing left and moves left
+			temp = sprite.dest.x;
+			temp -= 1;
+			setDestX(temp);
 		}
 		else if (sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT)
 		{
 			//if sprite is facing right and moves left
+			switchDirection(sprite, renderer);
+			temp = sprite.dest.x;
+			temp -= 1;
+			setDestX(temp);
 		}
 		else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT)
 		{
 			//if sprite is left and moves right;
+			switchDirection(sprite, renderer);
+			temp = sprite.dest.x;
+			temp += 1;
+			setDestX(temp);
 		}
 
 		SDL_RenderCopy(renderer, bg, NULL, NULL);
