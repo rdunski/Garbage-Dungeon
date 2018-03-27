@@ -63,6 +63,8 @@ public:
 	SDL_Rect getdest() { return this->dest; }
 	void setDestX(float x) { dest.x = x; }
 	void setDestY(float y) { dest.y = y; }
+	void setSrcX(float x) { src.x = x; }
+	void setSrcY(float y) { src.y = y; }
 	bool isfacingright() { return right; }
 
 	void directionInit(SDL_Renderer* renderer) {
@@ -100,39 +102,158 @@ public:
 
 	void move(SDL_Renderer* renderer, SDL_Texture* bg, Sprite sprite, SDL_Scancode keystate)
 	{
-		float temp;
+		float tempDest;
+		float tempSrcX;
+		float tempSrcY;
 		if (sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT)//if sprite is facing right and moves right
 		{
+			SDL_RenderCopy(renderer, bg, NULL, NULL);
+			SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
+			SDL_RenderPresent(renderer);
+			if (sprite.src.y < 255)
+			{
+				if (sprite.src.x < 450)
+				{
+					sprite.src.x += 75;
+
+				}
+				else
+				{
+					sprite.src.x = 0;
+					sprite.src.y += 85;
+				}
+			}
+			else
+			{
+				if (sprite.src.x < 375) sprite.src.x += 75;
+				else
+				{
+					sprite.src.x = 0;
+					sprite.src.y = 0;
+				}
+			}
 			right = true;
-			temp = sprite.dest.x;
-			temp += 1;
-			setDestX(temp);
+			tempSrcX = sprite.src.x;
+			tempSrcY = sprite.src.y;
+			setSrcX(tempSrcX);
+			setSrcY(tempSrcY);
+			tempDest = sprite.dest.x;
+			tempDest += 3;
+			setDestX(tempDest);
 		}
 		else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT)
 		{
 			//if sprite is facing left and moves left
+			SDL_RenderCopy(renderer, bg, NULL, NULL);
+			SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
+			SDL_RenderPresent(renderer);
+			if (sprite.src.y < 255)
+			{
+				if (sprite.src.x < 450)
+				{
+					sprite.src.x += 75;
+
+				}
+				else
+				{
+					sprite.src.x = 0;
+					sprite.src.y += 85;
+				}
+			}
+			else
+			{
+				if (sprite.src.x < 375) sprite.src.x += 75;
+				else
+				{
+					sprite.src.x = 0;
+					sprite.src.y = 0;
+				}
+			}
 			right = false;
-			temp = sprite.dest.x;
-			temp -= 1;
-			setDestX(temp);
+			tempSrcX = sprite.src.x;
+			tempSrcY = sprite.src.y;
+			setSrcX(tempSrcX);
+			setSrcY(tempSrcY);
+			tempDest = sprite.dest.x;
+			tempDest -= 3;
+			setDestX(tempDest);
 		}
 		else if (sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT)
 		{
 			//if sprite is facing right and moves left
+			SDL_RenderCopy(renderer, bg, NULL, NULL);
+			SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
+			SDL_RenderPresent(renderer);
+			if (sprite.src.y < 255)
+			{
+				if (sprite.src.x < 450)
+				{
+					sprite.src.x += 75;
+
+				}
+				else
+				{
+					sprite.src.x = 0;
+					sprite.src.y += 85;
+				}
+			}
+			else
+			{
+				if (sprite.src.x < 375) sprite.src.x += 75;
+				else
+				{
+					sprite.src.x = 0;
+					sprite.src.y = 0;
+				}
+			}
 			right = false;
 			switchDirection(sprite, renderer);
-			temp = sprite.dest.x;
-			temp -= 1;
-			setDestX(temp);
+			tempSrcX = sprite.src.x;
+			tempSrcY = sprite.src.y;
+			setSrcX(tempSrcX);
+			setSrcY(tempSrcY);
+			tempDest = sprite.dest.x;
+			tempDest -= 3;
+			setDestX(tempDest);
 		}
 		else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT)
 		{
+
 			//if sprite is left and moves right;
+			SDL_RenderCopy(renderer, bg, NULL, NULL);
+			SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
+			SDL_RenderPresent(renderer);
+			if (sprite.src.y < 255)
+			{
+				if (sprite.src.x < 450)
+				{
+					sprite.src.x += 75;
+
+				}
+				else
+				{
+					sprite.src.x = 0;
+					sprite.src.y += 85;
+				}
+			}
+			else
+			{
+				if (sprite.src.x < 375) sprite.src.x += 75;
+				else
+				{
+					sprite.src.x = 0;
+					sprite.src.y = 0;
+				}
+			}
 			right = true;
 			switchDirection(sprite, renderer);
-			temp = sprite.dest.x;
-			temp += 1;
-			setDestX(temp);
+			tempSrcX = sprite.src.x;
+			tempSrcY = sprite.src.y;
+			setSrcX(tempSrcX);
+			setSrcY(tempSrcY);
+			tempDest = sprite.dest.x;
+			tempDest += 3;
+			setDestX(tempDest);
 		}
 
 		SDL_RenderCopy(renderer, bg, NULL, NULL);

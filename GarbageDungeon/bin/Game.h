@@ -44,22 +44,22 @@ public:
 		Sprite carl = carl.createSprite(renderer, "duderight.bmp", 75, 80, 0, 275);
 		while (!done)								// game loop
 		{
-			while (SDL_PollEvent(&e) != 0)			// exit check loop
+			while (SDL_PollEvent(&e) != 0)			// exit check loop, also checking single-key presses
 			{
 				carl.setDT();
 				if (e.type == SDL_QUIT)
-				{
 					done = true;
+				else if (e.type == SDL_KEYDOWN)
+				{
+					eventHandler(carl);
 				}
 			}
-
+			eventHandler(carl); //checking for continuous key presses
 			SDL_Delay(1000 / 24);
 			SDL_RenderClear(renderer);
 			SDL_RenderCopy(renderer, bg, NULL, NULL);
 			SDL_RenderCopy(renderer, carl.getSpriteTexture(), &carl.getsrc(), &carl.getdest());
 			SDL_RenderPresent(renderer);
-
-			eventHandler(carl);
 		}
 		// clean up after ourselves
 		endGame();
@@ -71,31 +71,17 @@ public:
 	SDL_Renderer *getRenderer() { return this->renderer; }
 
 	void eventHandler(Sprite &sprite) {
-		// switchDirection causing huge memory leak
-		// SD probably reloading surfaces every time
-		
-		// a solution would be to load both sprite sheets only once when the program 
-		// is started and simply refer to whichever one is needed when it is needed.
-
 		if (currentKeyStates[SDL_SCANCODE_RIGHT] || currentKeyStates[SDL_SCANCODE_D])
-		{
-			//if (!sprite.isfacingright()) sprite.switchDirection(sprite, renderer);
 			sprite.move(renderer, bg, sprite, SDL_SCANCODE_RIGHT);
-		}
 		else if (currentKeyStates[SDL_SCANCODE_ESCAPE])
 			done = true;
 		else if (currentKeyStates[SDL_SCANCODE_LEFT] || currentKeyStates[SDL_SCANCODE_A])
-		{
-			//if (sprite.isfacingright()) sprite.switchDirection(sprite, renderer);
 			sprite.move(renderer, bg, sprite, SDL_SCANCODE_LEFT);
-		}
 		else if (currentKeyStates[SDL_SCANCODE_SPACE] || currentKeyStates[SDL_SCANCODE_UP])
 		{
 			sprite.jump(renderer, bg, sprite);
-			// jump resets dest after each command
-			sprite.move(renderer, bg, sprite, SDL_SCANCODE_SPACE);
+			//sprite.move(renderer, bg, sprite, SDL_SCANCODE_SPACE);
 		}
-		else currentKeyStates[NULL];
 	}
 
 	void endGame()
