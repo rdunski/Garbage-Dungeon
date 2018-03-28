@@ -143,7 +143,6 @@ public:
 			if (sprite.src.x < 450)
 			{
 				sprite.src.x += 75;
-
 			}
 			else
 			{
