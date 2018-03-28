@@ -2,9 +2,9 @@
 #include <stdio.h>
 #include <iostream>
 #include <string>
-#include <sstream>
 #include "Sprite.h"
 #include "SDL.h"
+//#include <sstream>
 using namespace std;
 
 class Game {
@@ -18,7 +18,7 @@ protected:
 	SDL_Texture* bg = NULL;
 	SDL_Surface* surface = NULL;
 	SDL_Renderer* renderer = NULL;
-	//Sprite *s;      // this isn't used at all, that I've seen.
+	//Sprite *s;
 	SDL_Event e;
 
 public:
@@ -66,6 +66,8 @@ public:
 		endGame();
 	}
 
+	float getScreenHeight() { return this->SCREEN_HEIGHT; }
+	float getScreenWidth() { return this->SCREEN_WIDTH; }
 	SDL_Window *getWindow() { return this->window; }
 	SDL_Texture *getBackground() { return this->bg; }
 	SDL_Surface *getSurface() { return this->surface; }

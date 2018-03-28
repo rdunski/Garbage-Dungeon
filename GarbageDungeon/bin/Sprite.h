@@ -1,10 +1,5 @@
 #pragma once
-#include <stdio.h>
-#include <iostream>
-#include <string>
-#include <sstream>
 #include "Game.h"
-#include "SDL.h"
 using namespace std;
 
 class Sprite {
@@ -13,13 +8,14 @@ protected:
 	SDL_Texture* spRight = NULL;	// texture for right-facing sprite sheet
 	SDL_Texture* spLeft = NULL;		// texture for left-facing sprite sheet
 	SDL_Surface* surface = NULL;
-	SDL_Rect src;  // src is manipulating sprite sheet
-	SDL_Rect dest; // dest is sprite position on screen
-		// changeable includes x, y (instead of pX, pY)
+	SDL_Rect src;  // src = sprite sheet
+	SDL_Rect dest; // dest = sprite pos
+									// changeable includes x, y (instead of pX, pY)
 	bool right = true;
-	float vX, vY;	// velocity
-	float aX, aY;	// acceleration
-	float last, dt; // varibles for timing the physics
+	// varibles for timing the physics
+	float vX, vY;					// velocity
+	float aX, aY;					// acceleration
+	float last, dt; 
 
 	// will be moving filename here, creating 
 	// getter/setter for switchdirection function
@@ -136,9 +132,41 @@ public:
 		}
 	}
 
-	void walkingAnimate(SDL_Renderer*, SDL_Texture* bg, Sprite sprite)
+	void walkingAnimate(SDL_Renderer* renderer, SDL_Texture* bg, Sprite sprite)
 	{
 		// function to put the animation stuff in
+		SDL_RenderCopy(renderer, bg, NULL, NULL);
+		SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
+		SDL_RenderPresent(renderer);
+		if (sprite.src.y < 255)
+		{
+			if (sprite.src.x < 450)
+			{
+				sprite.src.x += 75;
+
+			}
+			else
+			{
+				sprite.src.x = 0;
+				sprite.src.y += 85;
+			}
+		}
+		else
+		{
+			if (sprite.src.x < 375) sprite.src.x += 75;
+			else
+			{
+				sprite.src.x = 0;
+				sprite.src.y = 0;
+			}
+		}
+	}
+
+	void move(SDL_Renderer* renderer, SDL_Texture* bg, Sprite sprite, SDL_Scancode keystate)
+	{
+		float tempDest;
+		float tempSrcX;
+		float tempSrcY;
 		if (sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT)//if sprite is facing right and moves right
 		{
 			SDL_RenderCopy(renderer, bg, NULL, NULL);
@@ -149,7 +177,6 @@ public:
 				if (sprite.src.x < 450)
 				{
 					sprite.src.x += 75;
-
 				}
 				else
 				{
@@ -166,325 +193,291 @@ public:
 					sprite.src.y = 0;
 				}
 			}
+			//sprite.walkingAnimate(renderer, bg, sprite);		// will work on this
+			right = true;
+			tempSrcX = sprite.src.x;
+			tempSrcY = sprite.src.y;
+			setSrcX(tempSrcX);
+			setSrcY(tempSrcY);
+			tempDest = sprite.dest.x;
+			tempDest += 3;
+			setDestX(tempDest);
 		}
-
-		void move(SDL_Renderer* renderer, SDL_Texture* bg, Sprite sprite, SDL_Scancode keystate)
+		else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT)
 		{
-			float tempDest;
-			float tempSrcX;
-			float tempSrcY;
-			if (sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT)//if sprite is facing right and moves right
-			{
-				SDL_RenderCopy(renderer, bg, NULL, NULL);
-				SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
-				SDL_RenderPresent(renderer);
-				if (sprite.src.y < 255)
-				{
-					if (sprite.src.x < 450)
-					{
-						sprite.src.x += 75;
-					}
-					else
-					{
-						sprite.src.x = 0;
-						sprite.src.y += 85;
-					}
-				}
-				else
-				{
-					if (sprite.src.x < 375) sprite.src.x += 75;
-					else
-					{
-						sprite.src.x = 0;
-						sprite.src.y = 0;
-					}
-				}
-				//sprite.walkingAnimate(renderer, bg, sprite);		// will work on this
-				right = true;
-				tempSrcX = sprite.src.x;
-				tempSrcY = sprite.src.y;
-				setSrcX(tempSrcX);
-				setSrcY(tempSrcY);
-				tempDest = sprite.dest.x;
-				tempDest += 3;
-				setDestX(tempDest);
-			}
-			else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT)
-			{
-				//if sprite is facing left and moves left
-				SDL_RenderCopy(renderer, bg, NULL, NULL);
-				SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
-				SDL_RenderPresent(renderer);
-				if (sprite.src.y < 255)
-				{
-					if (sprite.src.x < 450)
-					{
-						sprite.src.x += 75;
-					}
-					else
-					{
-						sprite.src.x = 0;
-						sprite.src.y += 85;
-					}
-				}
-				else
-				{
-					if (sprite.src.x < 375) sprite.src.x += 75;
-					else
-					{
-						sprite.src.x = 0;
-						sprite.src.y = 0;
-					}
-				}
-				right = false;
-				tempSrcX = sprite.src.x;
-				tempSrcY = sprite.src.y;
-				setSrcX(tempSrcX);
-				setSrcY(tempSrcY);
-				tempDest = sprite.dest.x;
-				tempDest -= 3;
-				setDestX(tempDest);
-			}
-			else if (sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT)
-			{
-				//if sprite is facing right and moves left
-				SDL_RenderCopy(renderer, bg, NULL, NULL);
-				SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
-				SDL_RenderPresent(renderer);
-				if (sprite.src.y < 255)
-				{
-					if (sprite.src.x < 450)
-					{
-						sprite.src.x += 75;
-					}
-					else
-					{
-						sprite.src.x = 0;
-						sprite.src.y += 85;
-					}
-				}
-				else
-				{
-					if (sprite.src.x < 375) sprite.src.x += 75;
-					else
-					{
-						sprite.src.x = 0;
-						sprite.src.y = 0;
-					}
-				}
-				right = false;
-				switchDirection(sprite, renderer);
-				tempSrcX = sprite.src.x;
-				tempSrcY = sprite.src.y;
-				setSrcX(tempSrcX);
-				setSrcY(tempSrcY);
-				tempDest = sprite.dest.x;
-				tempDest -= 3;
-				setDestX(tempDest);
-			}
-			else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT)
-			{
-				//if sprite is left and moves right;
-				SDL_RenderCopy(renderer, bg, NULL, NULL);
-				SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
-				SDL_RenderPresent(renderer);
-				if (sprite.src.y < 255)
-				{
-					if (sprite.src.x < 450)
-					{
-						sprite.src.x += 75;
-					}
-					else
-					{
-						sprite.src.x = 0;
-						sprite.src.y += 85;
-					}
-				}
-				else
-				{
-					if (sprite.src.x < 375) sprite.src.x += 75;
-					else
-					{
-						sprite.src.x = 0;
-						sprite.src.y = 0;
-					}
-				}
-				right = true;
-				switchDirection(sprite, renderer);
-				tempSrcX = sprite.src.x;
-				tempSrcY = sprite.src.y;
-				setSrcX(tempSrcX);
-				setSrcY(tempSrcY);
-				tempDest = sprite.dest.x;
-				tempDest += 3;
-				setDestX(tempDest);
-			}
+			//if sprite is facing left and moves left
 			SDL_RenderCopy(renderer, bg, NULL, NULL);
 			SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
 			SDL_RenderPresent(renderer);
-		}
-
-		//void move(SDL_Renderer* renderer, SDL_Texture* bg, Sprite sprite, SDL_Scancode keystate)
-		//{
-		//	// old move function is still above. This will be commented out until ready to switch. This here is something that I had before the last push was made.
-		//	float tempDest;
-		//	float tempSrcX;
-		//	float tempSrcY;
-		//	if (sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT) // if sprite is facing right and moves right
-		//	{
-		//		sprite.walkingAnimate(renderer, bg, sprite);
-		//		right = true;
-		//		tempDest = sprite.dest.x;
-		//		tempSrcX = sprite.src.x;
-		//		tempSrcY = sprite.src.y;
-		//		setSrcX(tempSrcX);
-		//		setSrcY(tempSrcY);
-		//		if (vX < 0) swapNegatives(vX, aX);
-		//		sprite.setLast();
-		//		sprite.updateMovement(tempDest, sprite.vX, sprite.aX, dt);
-		//		setDestX(tempDest);
-		//	}
-		//	else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT) // if sprite is facing left and moves left
-		//	{
-		//		sprite.walkingAnimate(renderer, bg, sprite);
-		//		right = false;
-		//		tempDest = sprite.dest.x;
-		//		tempSrcX = sprite.src.x;
-		//		tempSrcY = sprite.src.y;
-		//		setSrcX(tempSrcX);
-		//		setSrcY(tempSrcY);
-		//		if (vX > 0)	swapNegatives(vX, aX);
-		//		sprite.setLast();
-		//		sprite.updateMovement(tempDest, sprite.vX, sprite.aX, dt);
-		//		setDestX(tempDest);
-		//	}
-		//	else if (sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT) // if sprite is facing right and moves left
-		//	{
-		//		sprite.walkingAnimate(renderer, bg, sprite);
-		//		right = false;
-		//		switchDirection(sprite, renderer);
-		//		tempDest = sprite.dest.x;
-		//		tempSrcX = sprite.src.x;
-		//		tempSrcY = sprite.src.y;
-		//		setSrcX(tempSrcX);
-		//		setSrcY(tempSrcY);
-		//		if (vX > 0) swapNegatives(vX, aX);
-		//		sprite.setLast();
-		//		sprite.updateMovement(tempDest, sprite.vX, sprite.aX, dt);
-		//		setDestX(tempDest);
-		//	}
-		//	else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT) // if sprite is left and moves right;
-		//	{
-		//		sprite.walkingAnimate(renderer, bg, sprite);
-		//		right = true;
-		//		switchDirection(sprite, renderer);
-		//		tempDest = sprite.dest.x;
-		//		tempSrcX = sprite.src.x;
-		//		tempSrcY = sprite.src.y;
-		//		setSrcX(tempSrcX);
-		//		setSrcY(tempSrcY);
-		//		if (vX < 0) swapNegatives(vX, aX);
-		//		sprite.setLast();
-		//		sprite.updateMovement(tempDest, sprite.vX, sprite.aX, dt);
-		//		setDestX(tempDest);
-		//	}
-		//	SDL_RenderCopy(renderer, bg, NULL, NULL);
-		//	SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
-		//	SDL_RenderPresent(renderer);
-		//}
-
-		void jump(SDL_Renderer* renderer, SDL_Texture* bg, Sprite sprite)
-		{
-
-			// This whole function should be scrapped for one using correct physics. 
-			// Will be more complicated than simple movement, so it should probably 
-			// stay in it's own function
-			bool complete = false;
-			float tempX;
-			while (!complete) // upwards part of jump
+			if (sprite.src.y < 255)
 			{
-				SDL_RenderCopy(renderer, bg, NULL, NULL);
-				SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
-				SDL_RenderPresent(renderer);
-
-				if (sprite.dest.y < 175)
+				if (sprite.src.x < 450)
 				{
-					complete = true;
-					break;
-				}
-				if (sprite.isfacingright())
-					sprite.dest.x += 6;
-				else
-					sprite.dest.x -= 6;
-				sprite.dest.y -= 8;
-				SDL_Delay(1000 / 24); // set framerate to 24 FPS
-				SDL_RenderClear(renderer);
-
-				if (sprite.src.y < 255)
-				{
-					if (sprite.src.x < 450) sprite.src.x += 75;
-					else
-					{
-						sprite.src.x = 0;
-						sprite.src.y += 85;
-					}
+					sprite.src.x += 75;
 				}
 				else
 				{
-					if (sprite.src.x < 375) sprite.src.x += 75;
-					else
-					{
-						sprite.src.x = 0;
-						sprite.src.y = 0;
-					}
+					sprite.src.x = 0;
+					sprite.src.y += 85;
 				}
 			}
-			while (complete) // downwards part of jump
+			else
 			{
-				SDL_RenderCopy(renderer, bg, NULL, NULL);
-				SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
-				SDL_RenderPresent(renderer);
-
-				if (sprite.dest.y >= 275)
-				{
-					complete = false;
-					break;
-				}
-				if (sprite.isfacingright())
-					sprite.dest.x += 5;
-				else
-					sprite.dest.x -= 5;
-				sprite.dest.y += 10;
-				SDL_Delay(1000 / 24);
-				SDL_RenderClear(renderer);
-
-				if (sprite.src.y < 255)
-				{
-					if (sprite.src.x < 450) sprite.src.x += 75;
-					else
-					{
-						sprite.src.x = 0;
-						sprite.src.y += 85;
-					}
-				}
+				if (sprite.src.x < 375) sprite.src.x += 75;
 				else
 				{
-					if (sprite.src.x < 375) sprite.src.x += 75;
-					else
-					{
-						sprite.src.x = 0;
-						sprite.src.y = 0;
-					}
+					sprite.src.x = 0;
+					sprite.src.y = 0;
 				}
 			}
-			tempX = sprite.dest.x;
-			setDestX(tempX);
+			right = false;
+			tempSrcX = sprite.src.x;
+			tempSrcY = sprite.src.y;
+			setSrcX(tempSrcX);
+			setSrcY(tempSrcY);
+			tempDest = sprite.dest.x;
+			tempDest -= 3;
+			setDestX(tempDest);
 		}
-
-		void close()
+		else if (sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT)
 		{
-			// garbage pickup
-			delete text;
-			delete surface;
+			//if sprite is facing right and moves left
+			SDL_RenderCopy(renderer, bg, NULL, NULL);
+			SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
+			SDL_RenderPresent(renderer);
+			if (sprite.src.y < 255)
+			{
+				if (sprite.src.x < 450)
+				{
+					sprite.src.x += 75;
+				}
+				else
+				{
+					sprite.src.x = 0;
+					sprite.src.y += 85;
+				}
+			}
+			else
+			{
+				if (sprite.src.x < 375) sprite.src.x += 75;
+				else
+				{
+					sprite.src.x = 0;
+					sprite.src.y = 0;
+				}
+			}
+			right = false;
+			switchDirection(sprite, renderer);
+			tempSrcX = sprite.src.x;
+			tempSrcY = sprite.src.y;
+			setSrcX(tempSrcX);
+			setSrcY(tempSrcY);
+			tempDest = sprite.dest.x;
+			tempDest -= 3;
+			setDestX(tempDest);
 		}
-	};
+		else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT)
+		{
+			//if sprite is left and moves right;
+			SDL_RenderCopy(renderer, bg, NULL, NULL);
+			SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
+			SDL_RenderPresent(renderer);
+			if (sprite.src.y < 255)
+			{
+				if (sprite.src.x < 450)
+				{
+					sprite.src.x += 75;
+				}
+				else
+				{
+					sprite.src.x = 0;
+					sprite.src.y += 85;
+				}
+			}
+			else
+			{
+				if (sprite.src.x < 375) sprite.src.x += 75;
+				else
+				{
+					sprite.src.x = 0;
+					sprite.src.y = 0;
+				}
+			}
+			right = true;
+			switchDirection(sprite, renderer);
+			tempSrcX = sprite.src.x;
+			tempSrcY = sprite.src.y;
+			setSrcX(tempSrcX);
+			setSrcY(tempSrcY);
+			tempDest = sprite.dest.x;
+			tempDest += 3;
+			setDestX(tempDest);
+		}
+		SDL_RenderCopy(renderer, bg, NULL, NULL);
+		SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
+		SDL_RenderPresent(renderer);
+	}
+
+	//void move(SDL_Renderer* renderer, SDL_Texture* bg, Sprite sprite, SDL_Scancode keystate)
+	//{
+	//	float tempDest;
+	//	float tempSrcX;
+	//	float tempSrcY;
+	//	if (sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT) // if sprite is facing right and moves right
+	//	{
+	//		sprite.walkingAnimate(renderer, bg, sprite);
+	//		right = true;
+	//		tempDest = sprite.dest.x;
+	//		tempSrcX = sprite.src.x;
+	//		tempSrcY = sprite.src.y;
+	//		setSrcX(tempSrcX);
+	//		setSrcY(tempSrcY);
+	//		if (vX < 0) swapNegatives(vX, aX);
+	//		sprite.setLast();
+	//		sprite.updateMovement(tempDest, sprite.vX, sprite.aX, dt);
+	//		setDestX(tempDest);
+	//	}
+	//	else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT) // if sprite is facing left and moves left
+	//	{
+	//		sprite.walkingAnimate(renderer, bg, sprite);
+	//		right = false;
+	//		tempDest = sprite.dest.x;
+	//		tempSrcX = sprite.src.x;
+	//		tempSrcY = sprite.src.y;
+	//		setSrcX(tempSrcX);
+	//		setSrcY(tempSrcY);
+	//		if (vX > 0)	swapNegatives(vX, aX);
+	//		sprite.setLast();
+	//		sprite.updateMovement(tempDest, sprite.vX, sprite.aX, dt);
+	//		setDestX(tempDest);
+	//	}
+	//	else if (sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT) // if sprite is facing right and moves left
+	//	{
+	//		sprite.walkingAnimate(renderer, bg, sprite);
+	//		right = false;
+	//		switchDirection(sprite, renderer);
+	//		tempDest = sprite.dest.x;
+	//		tempSrcX = sprite.src.x;
+	//		tempSrcY = sprite.src.y;
+	//		setSrcX(tempSrcX);
+	//		setSrcY(tempSrcY);
+	//		if (vX > 0) swapNegatives(vX, aX);
+	//		sprite.setLast();
+	//		sprite.updateMovement(tempDest, sprite.vX, sprite.aX, dt);
+	//		setDestX(tempDest);
+	//	}
+	//	else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT) // if sprite is left and moves right;
+	//	{
+	//		sprite.walkingAnimate(renderer, bg, sprite);
+	//		right = true;
+	//		switchDirection(sprite, renderer);
+	//		tempDest = sprite.dest.x;
+	//		tempSrcX = sprite.src.x;
+	//		tempSrcY = sprite.src.y;
+	//		setSrcX(tempSrcX);
+	//		setSrcY(tempSrcY);
+	//		if (vX < 0) swapNegatives(vX, aX);
+	//		sprite.setLast();
+	//		sprite.updateMovement(tempDest, sprite.vX, sprite.aX, dt);
+	//		setDestX(tempDest);
+	//	}
+	//	SDL_RenderCopy(renderer, bg, NULL, NULL);
+	//	SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
+	//	SDL_RenderPresent(renderer);
+	//}
+
+	void jump(SDL_Renderer* renderer, SDL_Texture* bg, Sprite sprite)
+	{
+
+		// This whole function should be scrapped for one using correct physics. 
+		// Will be more complicated than simple movement, so it should probably 
+		// stay in it's own function
+		bool complete = false;
+		float tempX;
+		while (!complete) // upwards part of jump
+		{
+			SDL_RenderCopy(renderer, bg, NULL, NULL);
+			SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
+			SDL_RenderPresent(renderer);
+
+			if (sprite.dest.y < 175)
+			{
+				complete = true;
+				break;
+			}
+			if (sprite.isfacingright())
+				sprite.dest.x += 6;
+			else
+				sprite.dest.x -= 6;
+			sprite.dest.y -= 8;
+			SDL_Delay(1000 / 24); // set framerate to 24 FPS
+			SDL_RenderClear(renderer);
+
+			if (sprite.src.y < 255)
+			{
+				if (sprite.src.x < 450) sprite.src.x += 75;
+				else
+				{
+					sprite.src.x = 0;
+					sprite.src.y += 85;
+				}
+			}
+			else
+			{
+				if (sprite.src.x < 375) sprite.src.x += 75;
+				else
+				{
+					sprite.src.x = 0;
+					sprite.src.y = 0;
+				}
+			}
+		}
+		while (complete) // downwards part of jump
+		{
+			SDL_RenderCopy(renderer, bg, NULL, NULL);
+			SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
+			SDL_RenderPresent(renderer);
+
+			if (sprite.dest.y >= 275)
+			{
+				complete = false;
+				break;
+			}
+			if (sprite.isfacingright())
+				sprite.dest.x += 5;
+			else
+				sprite.dest.x -= 5;
+			sprite.dest.y += 10;
+			SDL_Delay(1000 / 24);
+			SDL_RenderClear(renderer);
+
+			if (sprite.src.y < 255)
+			{
+				if (sprite.src.x < 450) sprite.src.x += 75;
+				else
+				{
+					sprite.src.x = 0;
+					sprite.src.y += 85;
+				}
+			}
+			else
+			{
+				if (sprite.src.x < 375) sprite.src.x += 75;
+				else
+				{
+					sprite.src.x = 0;
+					sprite.src.y = 0;
+				}
+			}
+		}
+		tempX = sprite.dest.x;
+		setDestX(tempX);
+	}
+
+	void close()
+	{
+		// garbage pickup
+		delete text;
+		delete surface;
+	}
+};
