@@ -54,6 +54,7 @@ public:
 					eventHandler(carl);
 				}
 			}
+			carl.setLast();
 			eventHandler(carl); //checking for continuous key presses
 			SDL_Delay(1000 / 24);
 			SDL_RenderClear(renderer);
@@ -82,6 +83,7 @@ public:
 			sprite.jump(renderer, bg, sprite);
 			//sprite.move(renderer, bg, sprite, SDL_SCANCODE_SPACE);
 		}
+		sprite.setLast();
 	}
 
 	void endGame()
