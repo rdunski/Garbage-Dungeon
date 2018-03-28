@@ -59,7 +59,13 @@ public:
 			SDL_Delay(1000 / 24);
 			SDL_RenderClear(renderer);
 			SDL_RenderCopy(renderer, bg, NULL, NULL);
-			SDL_RenderCopy(renderer, carl.getSpriteTexture(), &carl.getsrc(), &carl.getdest());
+			if (carl.isfacingright())
+				SDL_RenderCopy(renderer, carl.getSpriteTexture(), &carl.getsrc(), &carl.getdest());
+			else
+			{
+				SDL_RenderCopyEx(renderer, carl.getSpriteTexture(), &carl.getsrc(),
+					&carl.getdest(), NULL, NULL, SDL_FLIP_HORIZONTAL);
+			}
 			SDL_RenderPresent(renderer);
 		}
 		// clean up after ourselves

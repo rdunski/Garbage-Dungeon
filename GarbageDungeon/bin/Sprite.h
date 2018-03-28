@@ -1,12 +1,11 @@
 #pragma once
+#include "SDL.h"
 #include "Game.h"
 using namespace std;
 
 class Sprite {
 protected:
 	SDL_Texture * text = NULL;
-	SDL_Texture* spRight = NULL;	// texture for right-facing sprite sheet
-	SDL_Texture* spLeft = NULL;		// texture for left-facing sprite sheet
 	SDL_Surface* surface = NULL;
 	SDL_Rect src;  // src = sprite sheet
 	SDL_Rect dest; // dest = sprite pos
@@ -44,31 +43,32 @@ public:
 		aVar = -aVar;
 	}
 
-	void checkPosition(Sprite sprite, Game* const g) {
-		if (sprite.getdest().y > 275)	// check if under the ground
-		{
-			if (sprite.aX < 0)
-			{
-				aY = -aY;
-			}
-		}
-		if (sprite.getdest().y <= 0)	// check if above screen
-		{
-			sprite.setDestY(75);
-		}
-		if (sprite.getdest().y < 275)	// check if above ground
-		{
-			sprite.vY = -400;
-		}
-		if (sprite.getdest().x < 0)		// check if touch left side of screen
-		{
-			sprite.setDestX(1);
-		}
-		if (sprite.getdest().x > (g->getScreenWidth() - 80))	// check if touch right side of screen
-		{
-			sprite.setDestX(g->getScreenHeight() - 81);
-		}
-	}
+	//void checkPosition(Sprite sprite, Game &g) 
+	//{
+	//	if (sprite.getdest().y > 275)	// check if under the ground
+	//	{
+	//		if (sprite.aX < 0)
+	//		{
+	//			aY = -aY;
+	//		}
+	//	}
+	//	if (sprite.getdest().y <= 0)	// check if above screen
+	//	{
+	//		sprite.setDestY(75);
+	//	}
+	//	if (sprite.getdest().y < 275)	// check if above ground
+	//	{
+	//		sprite.vY = -400;
+	//	}
+	//	if (sprite.getdest().x < 0)		// check if touch left side of screen
+	//	{
+	//		sprite.setDestX(1);
+	//	}
+	//	if (sprite.getdest().x > (g.getScreenWidth() - 80))	// check if touch right side of screen
+	//	{
+	//		sprite.setDestX(g.getScreenHeight() - 81);
+	//	}
+	//}
 
 	void setDT() { dt = ((float)SDL_GetTicks() - last) / (float)1000.0; }
 	void setLast() { last = SDL_GetTicks(); }
@@ -80,9 +80,9 @@ public:
 		Sprite newS;
 		newS.src = { 0, 0, srcx, srcy };
 		newS.dest.x = destx; newS.dest.y = desty; newS.dest.h = 75; newS.dest.w = 80;
-		directionInit(renderer);
-		if (filename == "duderight.bmp") newS.text = spRight;
-		else if (filename == "dudeleft.bmp") newS.text = spLeft;
+		surface = SDL_LoadBMP("duderight.bmp");
+		SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0, 0, 0));
+		newS.text = SDL_CreateTextureFromSurface(renderer, surface);
 
 		return newS;
 	}
@@ -98,36 +98,18 @@ public:
 	void setSrcX(float x) { src.x = x; }
 	void setSrcY(float y) { src.y = y; }
 
-	void directionInit(SDL_Renderer* renderer)
-	{
-		// function for creating the textures that will hold the left
-		// and right facing sprite sheets
-
-		// left
-		surface = SDL_LoadBMP("dudeleft.bmp");
-		SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0, 0, 0));
-		spLeft = SDL_CreateTextureFromSurface(renderer, surface);
-		SDL_FreeSurface(surface);
-
-		// right
-		surface = SDL_LoadBMP("duderight.bmp");
-		SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0, 0, 0));
-		spRight = SDL_CreateTextureFromSurface(renderer, surface);
-		SDL_FreeSurface(surface);
-	}
-
 	void switchDirection(Sprite sprite, SDL_Renderer* renderer)
 	{
 		// if sprite is facing one direction and the other is called, 
 		// should assign current texture to the opposite
 		if (sprite.isfacingright() && SDLK_LEFT)
 		{
-			text = spLeft;
+			//text = spLeft;
 			sprite.right = false;
 		}
 		else if (!sprite.isfacingright() && SDLK_RIGHT)
 		{
-			text = spRight;
+			//text = spRight;
 			sprite.right = true;
 		}
 	}
@@ -206,7 +188,7 @@ public:
 		{
 			//if sprite is facing left and moves left
 			SDL_RenderCopy(renderer, bg, NULL, NULL);
-			SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
+			SDL_RenderCopyEx(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest,NULL,NULL,SDL_FLIP_HORIZONTAL);
 			SDL_RenderPresent(renderer);
 			if (sprite.src.y < 255)
 			{
@@ -242,7 +224,7 @@ public:
 		{
 			//if sprite is facing right and moves left
 			SDL_RenderCopy(renderer, bg, NULL, NULL);
-			SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
+			SDL_RenderCopyEx(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest, NULL, NULL, SDL_FLIP_HORIZONTAL);
 			SDL_RenderPresent(renderer);
 			if (sprite.src.y < 255)
 			{
@@ -312,9 +294,9 @@ public:
 			tempDest += 3;
 			setDestX(tempDest);
 		}
-		SDL_RenderCopy(renderer, bg, NULL, NULL);
+		/*SDL_RenderCopy(renderer, bg, NULL, NULL);
 		SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
-		SDL_RenderPresent(renderer);
+		SDL_RenderPresent(renderer);*/
 	}
 
 	//void move(SDL_Renderer* renderer, SDL_Texture* bg, Sprite sprite, SDL_Scancode keystate)
@@ -396,7 +378,10 @@ public:
 		while (!complete) // upwards part of jump
 		{
 			SDL_RenderCopy(renderer, bg, NULL, NULL);
-			SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
+			if(sprite.isfacingright())
+				SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
+			else
+				SDL_RenderCopyEx(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest,NULL,NULL,SDL_FLIP_HORIZONTAL);
 			SDL_RenderPresent(renderer);
 
 			if (sprite.dest.y < 175)
@@ -434,7 +419,10 @@ public:
 		while (complete) // downwards part of jump
 		{
 			SDL_RenderCopy(renderer, bg, NULL, NULL);
-			SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
+			if (sprite.isfacingright())
+				SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
+			else
+				SDL_RenderCopyEx(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest, NULL, NULL, SDL_FLIP_HORIZONTAL);
 			SDL_RenderPresent(renderer);
 
 			if (sprite.dest.y >= 275)
