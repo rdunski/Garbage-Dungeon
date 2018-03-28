@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include "Sprite.h"
+#include "Physics.h"
 #include "SDL.h"
 //#include <sstream>
 using namespace std;
@@ -55,7 +56,8 @@ public:
 				}
 			}
 			carl.setLast();
-			eventHandler(carl); //checking for continuous key presses
+			eventHandler(carl); // checking for continuous key presses
+			carl.checkPosition(carl);
 			SDL_Delay(1000 / 24);
 			SDL_RenderClear(renderer);
 			SDL_RenderCopy(renderer, bg, NULL, NULL);

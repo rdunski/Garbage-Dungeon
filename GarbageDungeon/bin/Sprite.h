@@ -1,5 +1,6 @@
 #pragma once
 #include "Game.h"
+#include "SDL.h"
 using namespace std;
 
 class Sprite {
@@ -23,56 +24,7 @@ protected:
 public:
 	Sprite()
 	{
-		vX = 100.0;
-		vY = 100.0;
-		aX = 100.0;
-		aY = 100.0;
-		dt = 0.0;
-		last = 0.0;
 	}
-
-	/* PHYSICS FUNCTIONS */
-	void updateMovement(float &pVar, float &vVar, float &aVar, float dt)
-	{
-		vVar = vVar + (aVar * dt);
-		pVar = pVar + (vVar * dt);
-	}
-
-	void swapNegatives(float &vVar, float &aVar)
-	{
-		vVar = -vVar;
-		aVar = -aVar;
-	}
-
-	void checkPosition(Sprite sprite, Game* const g) {
-		if (sprite.getdest().y > 275)	// check if under the ground
-		{
-			if (sprite.aX < 0)
-			{
-				aY = -aY;
-			}
-		}
-		if (sprite.getdest().y <= 0)	// check if above screen
-		{
-			sprite.setDestY(75);
-		}
-		if (sprite.getdest().y < 275)	// check if above ground
-		{
-			sprite.vY = -400;
-		}
-		if (sprite.getdest().x < 0)		// check if touch left side of screen
-		{
-			sprite.setDestX(1);
-		}
-		if (sprite.getdest().x > (g->getScreenWidth() - 80))	// check if touch right side of screen
-		{
-			sprite.setDestX(g->getScreenHeight() - 81);
-		}
-	}
-
-	void setDT() { dt = ((float)SDL_GetTicks() - last) / (float)1000.0; }
-	void setLast() { last = SDL_GetTicks(); }
-	/* END PHYSICS FUNCTIONS */
 
 	Sprite createSprite(SDL_Renderer* renderer, string filename,
 		int srcx, int srcy, int destx, int desty)
@@ -331,9 +283,7 @@ public:
 	//		tempSrcY = sprite.src.y;
 	//		setSrcX(tempSrcX);
 	//		setSrcY(tempSrcY);
-	//		if (vX < 0) swapNegatives(vX, aX);
-	//		sprite.setLast();
-	//		sprite.updateMovement(tempDest, sprite.vX, sprite.aX, dt);
+	//		// physics runPhysics();
 	//		setDestX(tempDest);
 	//	}
 	//	else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT) // if sprite is facing left and moves left
@@ -345,9 +295,7 @@ public:
 	//		tempSrcY = sprite.src.y;
 	//		setSrcX(tempSrcX);
 	//		setSrcY(tempSrcY);
-	//		if (vX > 0)	swapNegatives(vX, aX);
-	//		sprite.setLast();
-	//		sprite.updateMovement(tempDest, sprite.vX, sprite.aX, dt);
+	//		// physics runPhysics();
 	//		setDestX(tempDest);
 	//	}
 	//	else if (sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT) // if sprite is facing right and moves left
@@ -360,9 +308,7 @@ public:
 	//		tempSrcY = sprite.src.y;
 	//		setSrcX(tempSrcX);
 	//		setSrcY(tempSrcY);
-	//		if (vX > 0) swapNegatives(vX, aX);
-	//		sprite.setLast();
-	//		sprite.updateMovement(tempDest, sprite.vX, sprite.aX, dt);
+	//		// physics runPhysics();
 	//		setDestX(tempDest);
 	//	}
 	//	else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT) // if sprite is left and moves right;
@@ -375,9 +321,7 @@ public:
 	//		tempSrcY = sprite.src.y;
 	//		setSrcX(tempSrcX);
 	//		setSrcY(tempSrcY);
-	//		if (vX < 0) swapNegatives(vX, aX);
-	//		sprite.setLast();
-	//		sprite.updateMovement(tempDest, sprite.vX, sprite.aX, dt);
+	//		// physics runPhysics();
 	//		setDestX(tempDest);
 	//	}
 	//	SDL_RenderCopy(renderer, bg, NULL, NULL);
