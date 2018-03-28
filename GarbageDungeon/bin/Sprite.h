@@ -183,7 +183,6 @@ public:
 				}
 			}
 			right = false;
-			switchDirection(sprite, renderer);
 			tempSrcX = sprite.src.x;
 			tempSrcY = sprite.src.y;
 			setSrcX(tempSrcX);
@@ -220,7 +219,6 @@ public:
 				}
 			}
 			right = true;
-			switchDirection(sprite, renderer);
 			tempSrcX = sprite.src.x;
 			tempSrcY = sprite.src.y;
 			setSrcX(tempSrcX);

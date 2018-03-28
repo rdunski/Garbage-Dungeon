@@ -47,7 +47,6 @@ public:
 		{
 			while (SDL_PollEvent(&e) != 0)			// exit check loop, also checking single-key presses
 			{
-				carl.setDT();
 				if (e.type == SDL_QUIT)
 					done = true;
 				else if (e.type == SDL_KEYDOWN)
@@ -55,9 +54,8 @@ public:
 					eventHandler(carl);
 				}
 			}
-			carl.setLast();
 			eventHandler(carl); // checking for continuous key presses
-			carl.checkPosition(carl);
+			//carl.checkPosition(carl);
 			SDL_Delay(1000 / 24);
 			SDL_RenderClear(renderer);
 			SDL_RenderCopy(renderer, bg, NULL, NULL);
@@ -93,7 +91,6 @@ public:
 			sprite.jump(renderer, bg, sprite);
 			//sprite.move(renderer, bg, sprite, SDL_SCANCODE_SPACE);
 		}
-		sprite.setLast();
 	}
 
 	void endGame()
