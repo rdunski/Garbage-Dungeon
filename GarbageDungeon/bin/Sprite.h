@@ -22,58 +22,9 @@ protected:
 public:
 	Sprite()
 	{
-		vX = 100.0;
-		vY = 100.0;
-		aX = 100.0;
-		aY = 100.0;
-		dt = 0.0;
-		last = 0.0;
 	}
 
-	/* PHYSICS FUNCTIONS */
-	void updateMovement(float &pVar, float &vVar, float &aVar, float dt)
-	{
-		vVar = vVar + (aVar * dt);
-		pVar = pVar + (vVar * dt);
-	}
-
-	void swapNegatives(float &vVar, float &aVar)
-	{
-		vVar = -vVar;
-		aVar = -aVar;
-	}
-
-	//void checkPosition(Sprite sprite, Game &g) 
-	//{
-	//	if (sprite.getdest().y > 275)	// check if under the ground
-	//	{
-	//		if (sprite.aX < 0)
-	//		{
-	//			aY = -aY;
-	//		}
-	//	}
-	//	if (sprite.getdest().y <= 0)	// check if above screen
-	//	{
-	//		sprite.setDestY(75);
-	//	}
-	//	if (sprite.getdest().y < 275)	// check if above ground
-	//	{
-	//		sprite.vY = -400;
-	//	}
-	//	if (sprite.getdest().x < 0)		// check if touch left side of screen
-	//	{
-	//		sprite.setDestX(1);
-	//	}
-	//	if (sprite.getdest().x > (g.getScreenWidth() - 80))	// check if touch right side of screen
-	//	{
-	//		sprite.setDestX(g.getScreenHeight() - 81);
-	//	}
-	//}
-
-	void setDT() { dt = ((float)SDL_GetTicks() - last) / (float)1000.0; }
-	void setLast() { last = SDL_GetTicks(); }
-	/* END PHYSICS FUNCTIONS */
-
+	
 	Sprite createSprite(SDL_Renderer* renderer, string filename,
 		int srcx, int srcy, int destx, int desty)
 	{
@@ -97,22 +48,6 @@ public:
 	void setDestY(float y) { dest.y = y; }
 	void setSrcX(float x) { src.x = x; }
 	void setSrcY(float y) { src.y = y; }
-
-	void switchDirection(Sprite sprite, SDL_Renderer* renderer)
-	{
-		// if sprite is facing one direction and the other is called, 
-		// should assign current texture to the opposite
-		if (sprite.isfacingright() && SDLK_LEFT)
-		{
-			//text = spLeft;
-			sprite.right = false;
-		}
-		else if (!sprite.isfacingright() && SDLK_RIGHT)
-		{
-			//text = spRight;
-			sprite.right = true;
-		}
-	}
 
 	void walkingAnimate(SDL_Renderer* renderer, SDL_Texture* bg, Sprite sprite)
 	{
