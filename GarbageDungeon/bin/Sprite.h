@@ -32,7 +32,7 @@ public:
 		newS.src = { 0, 0, srcx, srcy };
 		newS.dest.x = destx; newS.dest.y = desty; newS.dest.h = 75; newS.dest.w = 80;
 		surface = SDL_LoadBMP("duderight.bmp");
-		SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0, 0, 0));
+		SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0, 162, 232));
 		newS.text = SDL_CreateTextureFromSurface(renderer, surface);
 
 		return newS;
