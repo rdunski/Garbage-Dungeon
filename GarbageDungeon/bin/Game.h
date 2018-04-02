@@ -11,7 +11,6 @@ using namespace std;
 class Game {
 protected:
 	bool done = false;
-	//string bgfile = "Forest0.bmp";
 	const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
 	const int SCREEN_WIDTH = 640;
 	const int SCREEN_HEIGHT = 480;
@@ -19,10 +18,17 @@ protected:
 	SDL_Texture* bg = NULL;
 	SDL_Surface* surface = NULL;
 	SDL_Renderer* renderer = NULL;
-	//Sprite *s;
 	SDL_Event e;
 
 public:
+	float getScreenHeight() { return this->SCREEN_HEIGHT; }
+	float getScreenWidth() { return this->SCREEN_WIDTH; }
+
+	SDL_Window *getWindow() { return this->window; }
+	SDL_Texture *getBackground() { return this->bg; }
+	SDL_Surface *getSurface() { return this->surface; }
+	SDL_Renderer *getRenderer() { return this->renderer; }
+
 	void init() { SDL_Init(SDL_INIT_VIDEO); }
 
 	void createWindow(SDL_Window* &window, string winName)
@@ -54,8 +60,8 @@ public:
 					eventHandler(carl);
 				}
 			}
+			checkWindowPos(carl); // check sprite pos and simulate switching "scenes"
 			eventHandler(carl); // checking for continuous key presses
-			//carl.checkPosition(carl);
 			SDL_Delay(1000 / 24);
 			SDL_RenderClear(renderer);
 			SDL_RenderCopy(renderer, bg, NULL, NULL);
@@ -72,14 +78,23 @@ public:
 		endGame();
 	}
 
-	float getScreenHeight() { return this->SCREEN_HEIGHT; }
-	float getScreenWidth() { return this->SCREEN_WIDTH; }
-	SDL_Window *getWindow() { return this->window; }
-	SDL_Texture *getBackground() { return this->bg; }
-	SDL_Surface *getSurface() { return this->surface; }
-	SDL_Renderer *getRenderer() { return this->renderer; }
+	void checkWindowPos(Sprite &sprite)
+	{
+		SDL_Rect tempdest = sprite.getdest();
+		if (tempdest.x >= (getScreenWidth()))
+		{
+			tempdest.x = -20;
+			sprite.setDestX(tempdest.x);
+		}
+		if (tempdest.x <= 0-tempdest.w)
+		{
+			tempdest.x = getScreenWidth() - tempdest.w + 20;
+			sprite.setDestX(tempdest.x);
+		}
+	}
 
-	void eventHandler(Sprite &sprite) {
+	void eventHandler(Sprite &sprite) 
+	{
 		if (currentKeyStates[SDL_SCANCODE_RIGHT] || currentKeyStates[SDL_SCANCODE_D])
 			sprite.move(renderer, bg, sprite, SDL_SCANCODE_RIGHT);
 		else if (currentKeyStates[SDL_SCANCODE_ESCAPE])
@@ -87,10 +102,7 @@ public:
 		else if (currentKeyStates[SDL_SCANCODE_LEFT] || currentKeyStates[SDL_SCANCODE_A])
 			sprite.move(renderer, bg, sprite, SDL_SCANCODE_LEFT);
 		else if (currentKeyStates[SDL_SCANCODE_SPACE] || currentKeyStates[SDL_SCANCODE_UP])
-		{
 			sprite.jump(renderer, bg, sprite);
-			//sprite.move(renderer, bg, sprite, SDL_SCANCODE_SPACE);
-		}
 	}
 
 	void endGame()
