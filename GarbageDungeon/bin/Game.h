@@ -16,8 +16,10 @@ protected:
 	const int SCREEN_HEIGHT = 480;
 	SDL_Window* window = NULL;
 	SDL_Texture* bg = NULL;
+	SDL_Texture* barImg = NULL;
 	SDL_Surface* surface = NULL;
 	SDL_Renderer* renderer = NULL;
+	SDL_Rect bar;
 	SDL_Event e;
 
 public:
@@ -37,6 +39,17 @@ public:
 			SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 	}
 
+	void setBar()
+	{
+		bar.x = 10;
+		bar.y = SCREEN_HEIGHT-30;
+		bar.w = 150;
+		bar.h = 20;
+		surface = SDL_LoadBMP("health_bar.bmp");
+		SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 255, 255, 255));
+		barImg = SDL_CreateTextureFromSurface(renderer, surface);
+	}
+
 	void setBG(SDL_Window* window)
 	{
 		surface = SDL_LoadBMP("Forest0.bmp");
@@ -48,6 +61,7 @@ public:
 	{
 		createWindow(this->window, "Garbage Dungeon");
 		setBG(this->window);
+		setBar();
 		Sprite carl = carl.createSprite(renderer, "duderight.bmp", 75, 80, 0, 275);
 		while (!done)								// game loop
 		{
@@ -65,6 +79,7 @@ public:
 			SDL_Delay(1000 / 24);
 			SDL_RenderClear(renderer);
 			SDL_RenderCopy(renderer, bg, NULL, NULL);
+			SDL_RenderCopy(renderer, barImg, NULL, &bar);
 			if (carl.isfacingright())
 				SDL_RenderCopy(renderer, carl.getSpriteTexture(), &carl.getsrc(), &carl.getdest());
 			else
@@ -78,7 +93,7 @@ public:
 		endGame();
 	}
 
-	void checkWindowPos(Sprite &sprite)
+	void checkWindowPos(Sprite &sprite) //"scene switching" (basically reverts position based on screen edge collision)
 	{
 		SDL_Rect tempdest = sprite.getdest();
 		if (tempdest.x >= (getScreenWidth()))
