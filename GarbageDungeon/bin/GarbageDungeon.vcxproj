@@ -164,6 +164,7 @@
     <ClInclude Include="..\bin\Game.h" />
     <ClInclude Include="..\bin\Sprite.h" />
     <ClInclude Include="Physics.h" />
+    <ClInclude Include="Render.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

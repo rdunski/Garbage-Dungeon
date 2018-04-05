@@ -1,13 +1,15 @@
 #pragma once
 #include "SDL.h"
-#include "Game.h"
 #include "Physics.h"
+#include "Render.h"
+
 using namespace std;
 
 //Physics function at bottom
 
 class Sprite : Physics {
 protected:
+	Render renderer;
 	SDL_Texture * text = NULL;
 	SDL_Surface* surface = NULL;
 	SDL_Rect src;  // src = sprite sheet
@@ -44,17 +46,18 @@ public:
 		return newS;
 	}
 
-	void walkingAnimate(SDL_Renderer* renderer, SDL_Texture* bg, Sprite sprite)
+	void walkingAnimate(SDL_Texture*barImg, SDL_Rect bar, SDL_Texture* bg, Sprite sprite)
 	{
 		float tempSrcX;
 		float tempSrcY;
 		// function to put the animation stuff in
-		SDL_RenderCopy(renderer, bg, NULL, NULL);
+		renderer.render(sprite.getSpriteTexture(), sprite.getsrc(), sprite.getdest(), bg, barImg, bar, sprite.isfacingright());
+		/*SDL_RenderCopy(renderer, bg, NULL, NULL);
 		if(isfacingright())
 			SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
 		else
 			SDL_RenderCopyEx(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest, NULL, NULL, SDL_FLIP_HORIZONTAL);
-		SDL_RenderPresent(renderer);
+		SDL_RenderPresent(renderer);*/
 		if (sprite.src.y < 255)
 		{
 			if (sprite.src.x < 450)
@@ -82,14 +85,14 @@ public:
 		setSrcY(tempSrcY);
 	}
 
-	void move(SDL_Renderer* renderer, SDL_Texture* bg, Sprite sprite, SDL_Scancode keystate)
+	void move(SDL_Texture* barImg, SDL_Rect bar, SDL_Texture* bg, Sprite sprite, SDL_Scancode keystate)
 	{
 		float tempDest;
 		if (sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT)
 		{
 			//if sprite is facing right and moves right
 			
-			walkingAnimate(renderer, bg, sprite);		// will work on this
+			walkingAnimate(barImg,bar,bg, sprite);		// will work on this
 			right = true;
 			tempDest = sprite.dest.x;
 			tempDest += 3;
@@ -99,7 +102,7 @@ public:
 		{
 			//if sprite is facing left and moves left
 			
-			walkingAnimate(renderer, bg, sprite);
+			walkingAnimate(barImg, bar, bg, sprite);
 			right = false;
 			tempDest = sprite.dest.x;
 			tempDest -= 3;
@@ -108,7 +111,7 @@ public:
 		else if (sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT)
 		{
 			//if sprite is facing right and moves left
-			walkingAnimate(renderer, bg, sprite);
+			walkingAnimate(barImg, bar, bg, sprite);
 			right = false;
 			tempDest = sprite.dest.x;
 			tempDest -= 3;
@@ -117,7 +120,7 @@ public:
 		else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT)
 		{
 			//if sprite is facing left and moves right
-			walkingAnimate(renderer, bg, sprite);
+			walkingAnimate(barImg,bar,bg, sprite);
 			right = true;
 			tempDest = sprite.dest.x;
 			tempDest += 3;
