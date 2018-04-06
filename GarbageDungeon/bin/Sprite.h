@@ -19,7 +19,6 @@ public:
 	Sprite()
 	{
 	}
-
 	void setDestX(float x) { dest.x = x; }
 	void setDestY(float y) { dest.y = y; }
 	void setSrcX(float x) { src.x = x; }
@@ -51,13 +50,9 @@ public:
 		float tempSrcX;
 		float tempSrcY;
 		// function to put the animation stuff in
-		renderer.render(sprite.getSpriteTexture(), sprite.getsrc(), sprite.getdest(), bg, barImg, bar, sprite.isfacingright());
-		/*SDL_RenderCopy(renderer, bg, NULL, NULL);
-		if(isfacingright())
-			SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
-		else
-			SDL_RenderCopyEx(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest, NULL, NULL, SDL_FLIP_HORIZONTAL);
-		SDL_RenderPresent(renderer);*/
+		renderer.renderBg(bg);
+		renderer.renderHudObject(barImg, bar);
+		renderer.renderSprite(sprite.getSpriteTexture(), sprite.isfacingright(), sprite.getsrc(), sprite.getdest());
 		if (sprite.src.y < 255)
 		{
 			if (sprite.src.x < 450)

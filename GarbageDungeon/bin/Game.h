@@ -20,7 +20,6 @@ protected:
 	SDL_Surface* surface = NULL;
 	SDL_Rect bar;
 	SDL_Event e;
-
 public:
 	float getScreenHeight() { return this->SCREEN_HEIGHT; }
 	float getScreenWidth() { return this->SCREEN_WIDTH; }
@@ -74,7 +73,7 @@ public:
 
 	void run()
 	{
-		renderer.createWindow("Garbage Dungeon");
+		renderer.createWindow("Garbage Dungeon",SCREEN_WIDTH,SCREEN_HEIGHT);
 		setRenderer(renderer.getWindow());
 		setBG();
 		setBar();
@@ -93,7 +92,11 @@ public:
 			checkWindowPos(carl); // check sprite pos and simulate switching "scenes"
 			eventHandler(carl); // checking for continuous key presses
 			SDL_Delay(1000 / 24);
-			renderer.render(carl.getSpriteTexture(), carl.getsrc(),carl.getdest(),bg, barImg, bar,carl.isfacingright());
+			SDL_RenderClear(renderer.getRenderer());
+			renderer.renderBg(bg);
+			renderer.renderHudObject(barImg, bar);
+			renderer.renderSprite(carl.getSpriteTexture(), carl.isfacingright(), carl.getsrc(), carl.getdest());
+			SDL_RenderPresent(renderer.getRenderer());
 		}
 		// clean up after ourselves
 		endGame();
