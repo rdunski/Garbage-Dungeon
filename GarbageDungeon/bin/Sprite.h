@@ -5,9 +5,11 @@
 
 using namespace std;
 
-//Physics function at bottom
+// Physics function at bottom
 
-class Sprite : Physics {
+#define DEBUG(s) { cout << s << endl; }
+
+class Sprite : public Physics {
 protected:
 	Render renderer;
 	SDL_Texture * text = NULL;
@@ -15,10 +17,12 @@ protected:
 	SDL_Rect src;  // src = sprite sheet
 	SDL_Rect dest; // dest = sprite pos / game sprite
 	bool right = true;
+
 public:
 	Sprite()
 	{
 	}
+
 	void setDestX(float x) { dest.x = x; }
 	void setDestY(float y) { dest.y = y; }
 	void setSrcX(float x) { src.x = x; }
@@ -90,6 +94,7 @@ public:
 			walkingAnimate(barImg,bar,bg, sprite);		// will work on this
 			right = true;
 			tempDest = sprite.dest.x;
+			//runPhysics(sprite, tempDest, keystate);
 			tempDest += 3;
 			setDestX(tempDest);
 		}
@@ -100,6 +105,7 @@ public:
 			walkingAnimate(barImg, bar, bg, sprite);
 			right = false;
 			tempDest = sprite.dest.x;
+			//runPhysics(sprite, tempDest, keystate);	// this causes him to moonwalk?? IDK.
 			tempDest -= 3;
 			setDestX(tempDest);
 		}
@@ -109,6 +115,7 @@ public:
 			walkingAnimate(barImg, bar, bg, sprite);
 			right = false;
 			tempDest = sprite.dest.x;
+			//runPhysics(sprite, tempDest, keystate);
 			tempDest -= 3;
 			setDestX(tempDest);
 		}
@@ -118,7 +125,9 @@ public:
 			walkingAnimate(barImg,bar,bg, sprite);
 			right = true;
 			tempDest = sprite.dest.x;
+			//runPhysics(sprite, tempDest, keystate);
 			tempDest += 3;
+			//DEBUG(tempDest);
 			setDestX(tempDest);
 		}
 	}
@@ -246,30 +255,30 @@ public:
 		}
 	}
 
-	void runPhysics(Sprite &sprite, float tempDest, SDL_Scancode keystate) {
+	void runPhysics(Sprite &sprite, float &tempDest, SDL_Scancode keystate) {
 		if (sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT)
 		{
 			if (vX < 0) swapNegatives(vX, aX);
 			setLast();
-			updateMovement(tempDest, vX, aX, dt);
+			tempDest = updateMovement(tempDest, vX, aX, dt);
 		}
 		else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT) // if sprite is facing left and moves left
 		{
 			if (vX > 0)	swapNegatives(vX, aX);
 			setLast();
-			updateMovement(tempDest, vX, aX, dt);
+			tempDest = updateMovement(tempDest, vX, aX, dt);
 		}
 		else if (sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT) // if sprite is facing right and moves left
 		{
 			if (vX > 0) swapNegatives(vX, aX);
 			setLast();
-			updateMovement(tempDest, vX, aX, dt);
+			tempDest = updateMovement(tempDest, vX, aX, dt);
 		}
-		else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT) // if sprite is left and moves right;
+		else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT) // if sprite is facing left and moves right;
 		{
 			if (vX < 0) swapNegatives(vX, aX);
 			setLast();
-			updateMovement(tempDest, vX, aX, dt);
+			tempDest = updateMovement(tempDest, vX, aX, dt);
 		}
 	}
 };

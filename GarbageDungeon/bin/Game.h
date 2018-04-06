@@ -20,6 +20,7 @@ protected:
 	SDL_Surface* surface = NULL;
 	SDL_Rect bar;
 	SDL_Event e;
+
 public:
 	float getScreenHeight() { return this->SCREEN_HEIGHT; }
 	float getScreenWidth() { return this->SCREEN_WIDTH; }
@@ -28,6 +29,7 @@ public:
 
 	void init() { SDL_Init(SDL_INIT_VIDEO); }
 	void setRenderer(SDL_Window* window) { renderer.createRenderer(window); }
+
 	void setBar()
 	{
 		bar.x = 10;
@@ -38,6 +40,7 @@ public:
 		SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 255, 255, 255));
 		barImg = SDL_CreateTextureFromSurface(renderer.getRenderer(), surface);
 	}
+
 	void setBG()
 	{
 		surface = SDL_LoadBMP("Forest0.bmp");
@@ -61,6 +64,7 @@ public:
 
 	void eventHandler(Sprite &sprite)
 	{
+		sprite.setLast();
 		if (currentKeyStates[SDL_SCANCODE_RIGHT] || currentKeyStates[SDL_SCANCODE_D])
 			sprite.move(barImg, bar, bg, sprite, SDL_SCANCODE_RIGHT);
 		else if (currentKeyStates[SDL_SCANCODE_ESCAPE])
@@ -82,6 +86,7 @@ public:
 		{
 			while (SDL_PollEvent(&e) != 0)			// exit check loop, also checking single-key presses
 			{
+				carl.setDT();
 				if (e.type == SDL_QUIT)
 					done = true;
 				else if (e.type == SDL_KEYDOWN)
@@ -90,7 +95,7 @@ public:
 				}
 			}
 			checkWindowPos(carl); // check sprite pos and simulate switching "scenes"
-			eventHandler(carl); // checking for continuous key presses
+			eventHandler(carl);   // checking for continuous key presses
 			SDL_Delay(1000 / 24);
 			SDL_RenderClear(renderer.getRenderer());
 			renderer.renderBg(bg);

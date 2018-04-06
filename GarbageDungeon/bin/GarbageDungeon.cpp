@@ -14,5 +14,5 @@ int main(int argc, char* argv[])
 // THINGS TO DO:
 //
 //	add physics to jumping
+//  add physics to movement
 //			create animation for jumping?
-//	move physics to its own class?
