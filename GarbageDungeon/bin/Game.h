@@ -5,7 +5,7 @@
 #include "Sprite.h"
 #include "Physics.h"
 #include "Render.h"
-#include "SDL.h"
+//#include "SDL.h"
 using namespace std;
 
 class Game {
@@ -72,12 +72,12 @@ public:
 		else if (currentKeyStates[SDL_SCANCODE_LEFT] || currentKeyStates[SDL_SCANCODE_A])
 			sprite.move(barImg, bar, bg, sprite, SDL_SCANCODE_LEFT);
 		else if (currentKeyStates[SDL_SCANCODE_SPACE] || currentKeyStates[SDL_SCANCODE_UP])
-			sprite.jump(renderer.getRenderer(), bg, sprite);
+			sprite.jump(barImg, bar, renderer.getRenderer(), bg, sprite);
 	}
 
 	void run()
 	{
-		renderer.createWindow("Garbage Dungeon",SCREEN_WIDTH,SCREEN_HEIGHT);
+		renderer.createWindow("Garbage Dungeon", SCREEN_WIDTH, SCREEN_HEIGHT);
 		setRenderer(renderer.getWindow());
 		setBG();
 		setBar();

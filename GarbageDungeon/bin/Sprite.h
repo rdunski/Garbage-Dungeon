@@ -1,3 +1,7 @@
+#define DEBUG(s) { std::cout << s << std::endl; }
+
+
+
 #pragma once
 #include "SDL.h"
 #include "Physics.h"
@@ -5,9 +9,7 @@
 
 using namespace std;
 
-// Physics function at bottom
-
-#define DEBUG(s) { cout << s << endl; }
+// Physics functions at bottom
 
 class Sprite : public Physics {
 protected:
@@ -51,9 +53,9 @@ public:
 
 	void walkingAnimate(SDL_Texture*barImg, SDL_Rect bar, SDL_Texture* bg, Sprite sprite)
 	{
+		// function to put the animation stuff in
 		float tempSrcX;
 		float tempSrcY;
-		// function to put the animation stuff in
 		renderer.renderBg(bg);
 		renderer.renderHudObject(barImg, bar);
 		renderer.renderSprite(sprite.getSpriteTexture(), sprite.isfacingright(), sprite.getsrc(), sprite.getdest());
@@ -89,8 +91,7 @@ public:
 		float tempDest;
 		if (sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT)
 		{
-			//if sprite is facing right and moves right
-			
+			// if sprite is facing right and moves right
 			walkingAnimate(barImg,bar,bg, sprite);		// will work on this
 			right = true;
 			tempDest = sprite.dest.x;
@@ -100,8 +101,7 @@ public:
 		}
 		else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT)
 		{
-			//if sprite is facing left and moves left
-			
+			// if sprite is facing left and moves left
 			walkingAnimate(barImg, bar, bg, sprite);
 			right = false;
 			tempDest = sprite.dest.x;
@@ -111,7 +111,7 @@ public:
 		}
 		else if (sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT)
 		{
-			//if sprite is facing right and moves left
+			// if sprite is facing right and moves left
 			walkingAnimate(barImg, bar, bg, sprite);
 			right = false;
 			tempDest = sprite.dest.x;
@@ -121,7 +121,7 @@ public:
 		}
 		else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT)
 		{
-			//if sprite is facing left and moves right
+			// if sprite is facing left and moves right
 			walkingAnimate(barImg,bar,bg, sprite);
 			right = true;
 			tempDest = sprite.dest.x;
@@ -132,15 +132,14 @@ public:
 		}
 	}
 
-	void jump(SDL_Renderer* renderer, SDL_Texture* bg, Sprite sprite)
+	void jump(SDL_Texture* barImg, SDL_Rect bar, SDL_Renderer* renderer, SDL_Texture* bg, Sprite sprite)
 	{
-
-		// Will work on physics
 		bool complete = false;
 		float tempX;
 		while (!complete) // upwards part of jump
 		{
 			SDL_RenderCopy(renderer, bg, NULL, NULL);
+			sprite.renderer.renderHudObject(barImg, bar);
 			if(sprite.isfacingright())
 				SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
 			else
@@ -182,6 +181,7 @@ public:
 		while (complete) // downwards part of jump
 		{
 			SDL_RenderCopy(renderer, bg, NULL, NULL);
+			sprite.renderer.renderHudObject(barImg, bar);
 			if (sprite.isfacingright())
 				SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
 			else

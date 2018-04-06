@@ -3,10 +3,9 @@
 
 class Physics {
 protected:
-	// varibles for timing the physics
-	float vX, vY;					// velocity
-	float aX, aY;					// acceleration
-	float last, dt;
+	float vX, vY;			// velocity
+	float aX, aY;			// acceleration
+	float last, dt;			// varibles for timing the physics
 
 public:
 	Physics()
@@ -41,5 +40,6 @@ public:
 
 	void setDT() { dt = ((float)SDL_GetTicks() - last) / (float)1000.0; }
 	virtual void setLast() { last = SDL_GetTicks(); }
+
 	virtual ~Physics() { }
 };
