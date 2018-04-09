@@ -19,6 +19,7 @@ protected:
 	SDL_Rect src;  // src = sprite sheet
 	SDL_Rect dest; // dest = sprite pos / game sprite
 	bool right = true;
+	int health;
 
 public:
 	Sprite()
@@ -30,6 +31,8 @@ public:
 	void setSrcX(float x) { src.x = x; }
 	void setSrcY(float y) { src.y = y; }
 
+	void setHealth(int x) { health = x; }
+
 	SDL_Rect getsrc() { return this->src; }
 	SDL_Rect getdest() { return this->dest; }
 
@@ -37,6 +40,8 @@ public:
 	SDL_Texture* getSpriteTexture() { return this->text; }
 
 	bool isfacingright() { return right; }
+
+	int getHealth() { return health; }
 
 	Sprite createSprite(SDL_Renderer* renderer, string filename,
 		int srcx, int srcy, int destx, int desty)
@@ -51,13 +56,13 @@ public:
 		return newS;
 	}
 
-	void walkingAnimate(SDL_Texture*barImg, SDL_Rect bar, SDL_Texture* bg, Sprite sprite)
+	void walkingAnimate(SDL_Texture*barImg, SDL_Rect bar, SDL_Rect barSrc, SDL_Texture* bg, Sprite sprite)
 	{
 		// function to put the animation stuff in
 		float tempSrcX;
 		float tempSrcY;
 		renderer.renderBg(bg);
-		renderer.renderHudObject(barImg, bar);
+		renderer.renderHudObject(barImg, barSrc,bar);
 		renderer.renderSprite(sprite.getSpriteTexture(), sprite.isfacingright(), sprite.getsrc(), sprite.getdest());
 		if (sprite.src.y < 255)
 		{
@@ -86,13 +91,13 @@ public:
 		setSrcY(tempSrcY);
 	}
 
-	void move(SDL_Texture* barImg, SDL_Rect bar, SDL_Texture* bg, Sprite sprite, SDL_Scancode keystate)
+	void move(SDL_Texture* barImg, SDL_Rect bar, SDL_Rect barSrc,SDL_Texture* bg, Sprite sprite, SDL_Scancode keystate)
 	{
 		float tempDest;
 		if (sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT)
 		{
 			// if sprite is facing right and moves right
-			walkingAnimate(barImg,bar,bg, sprite);		// will work on this
+			walkingAnimate(barImg,bar,barSrc,bg, sprite);		// will work on this
 			right = true;
 			tempDest = sprite.dest.x;
 			//runPhysics(sprite, tempDest, keystate);
@@ -102,7 +107,7 @@ public:
 		else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT)
 		{
 			// if sprite is facing left and moves left
-			walkingAnimate(barImg, bar, bg, sprite);
+			walkingAnimate(barImg, bar, barSrc, bg, sprite);
 			right = false;
 			tempDest = sprite.dest.x;
 			//runPhysics(sprite, tempDest, keystate);	// this causes him to moonwalk?? IDK.
@@ -112,7 +117,7 @@ public:
 		else if (sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT)
 		{
 			// if sprite is facing right and moves left
-			walkingAnimate(barImg, bar, bg, sprite);
+			walkingAnimate(barImg, bar, barSrc, bg, sprite);
 			right = false;
 			tempDest = sprite.dest.x;
 			//runPhysics(sprite, tempDest, keystate);
@@ -122,7 +127,7 @@ public:
 		else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT)
 		{
 			// if sprite is facing left and moves right
-			walkingAnimate(barImg,bar,bg, sprite);
+			walkingAnimate(barImg, bar, barSrc, bg, sprite);
 			right = true;
 			tempDest = sprite.dest.x;
 			//runPhysics(sprite, tempDest, keystate);
@@ -132,14 +137,14 @@ public:
 		}
 	}
 
-	void jump(SDL_Texture* barImg, SDL_Rect bar, SDL_Renderer* renderer, SDL_Texture* bg, Sprite sprite)
+	void jump(SDL_Texture* barImg, SDL_Rect bar, SDL_Rect barSrc,SDL_Renderer* renderer, SDL_Texture* bg, Sprite sprite)
 	{
 		bool complete = false;
 		float tempX;
 		while (!complete) // upwards part of jump
 		{
 			SDL_RenderCopy(renderer, bg, NULL, NULL);
-			sprite.renderer.renderHudObject(barImg, bar);
+			sprite.renderer.renderHudObject(barImg, barSrc,bar);
 			if(sprite.isfacingright())
 				SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
 			else
@@ -181,7 +186,7 @@ public:
 		while (complete) // downwards part of jump
 		{
 			SDL_RenderCopy(renderer, bg, NULL, NULL);
-			sprite.renderer.renderHudObject(barImg, bar);
+			sprite.renderer.renderHudObject(barImg, barSrc,bar);
 			if (sprite.isfacingright())
 				SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
 			else

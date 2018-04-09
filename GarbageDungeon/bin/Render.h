@@ -30,9 +30,9 @@ public:
 		SDL_RenderCopy(renderer, bg, NULL, NULL);
 	}
 
-	void renderHudObject(SDL_Texture* texture, SDL_Rect location)
+	void renderHudObject(SDL_Texture* texture, SDL_Rect src, SDL_Rect dest)
 	{
-		SDL_RenderCopy(renderer, texture, NULL, &location);
+		SDL_RenderCopy(renderer, texture, &src, &dest);
 	}
 
 	void renderSprite(SDL_Texture* sprite, bool right, SDL_Rect src, SDL_Rect dest)
