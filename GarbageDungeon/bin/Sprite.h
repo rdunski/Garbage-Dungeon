@@ -14,10 +14,10 @@ using namespace std;
 class Sprite : public Physics {
 protected:
 	Render renderer;
-	SDL_Texture * text = NULL;
+	SDL_Texture* motion = NULL;
+	SDL_Texture* stand = NULL;
 	SDL_Surface* surface = NULL;
-	SDL_Rect src;  // src = sprite sheet
-	SDL_Rect dest; // dest = sprite pos / game sprite
+	SDL_Rect src, dest,standSrc,standDest; // dest = sprite pos / game sprite
 	bool right = true;
 	int health;
 
@@ -30,28 +30,37 @@ public:
 	void setDestY(float y) { dest.y = y; }
 	void setSrcX(float x) { src.x = x; }
 	void setSrcY(float y) { src.y = y; }
+	void setStandSrcX(float x) { standSrc.x = x; }
+	void setStandDestX(float x) { standDest.x = x; }
 
 	void setHealth(int x) { health = x; }
 
 	SDL_Rect getsrc() { return this->src; }
 	SDL_Rect getdest() { return this->dest; }
+	SDL_Rect getStandSrc() { return this->standSrc; }
+	SDL_Rect getStandDest() { return this->standDest; }
 
 	SDL_Surface* getSurface() { return this->surface; }
-	SDL_Texture* getSpriteTexture() { return this->text; }
+	SDL_Texture* getSpriteMotionTexture() { return this->motion; }
+	SDL_Texture* getSpriteStandTexture() { return this->stand; }
 
 	bool isfacingright() { return right; }
 
 	int getHealth() { return health; }
 
-	Sprite createSprite(SDL_Renderer* renderer, string filename,
-		int srcx, int srcy, int destx, int desty)
+	Sprite createSprite(SDL_Renderer* renderer, int srcx, int srcy, int destx, int desty)
 	{
 		Sprite newS;
 		newS.src = { 0, 0, srcx, srcy };
+		newS.standSrc = { 0,0,91, 156 };
 		newS.dest.x = destx; newS.dest.y = desty; newS.dest.h = 75; newS.dest.w = 80;
-		surface = SDL_LoadBMP("duderight.bmp");
+		newS.standDest = { destx,desty,60,75 };
+		surface = SDL_LoadBMP("duderighttest.bmp");
 		SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0, 162, 232));
-		newS.text = SDL_CreateTextureFromSurface(renderer, surface);
+		newS.motion = SDL_CreateTextureFromSurface(renderer, surface);
+		surface = SDL_LoadBMP("dudestand.bmp");
+		SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0, 162, 232));
+		newS.stand = SDL_CreateTextureFromSurface(renderer, surface);
 
 		return newS;
 	}
@@ -63,7 +72,7 @@ public:
 		float tempSrcY;
 		renderer.renderBg(bg);
 		renderer.renderHudObject(barImg, barSrc,bar);
-		renderer.renderSprite(sprite.getSpriteTexture(), sprite.isfacingright(), sprite.getsrc(), sprite.getdest());
+		renderer.renderSprite(sprite.getSpriteMotionTexture(), sprite.isfacingright(), sprite.getsrc(), sprite.getdest());
 		if (sprite.src.y < 255)
 		{
 			if (sprite.src.x < 450)
@@ -146,9 +155,9 @@ public:
 			SDL_RenderCopy(renderer, bg, NULL, NULL);
 			sprite.renderer.renderHudObject(barImg, barSrc,bar);
 			if(sprite.isfacingright())
-				SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
+				SDL_RenderCopy(renderer, sprite.getSpriteMotionTexture(), &sprite.src, &sprite.dest);
 			else
-				SDL_RenderCopyEx(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest,NULL,NULL,SDL_FLIP_HORIZONTAL);
+				SDL_RenderCopyEx(renderer, sprite.getSpriteMotionTexture(), &sprite.src, &sprite.dest,NULL,NULL,SDL_FLIP_HORIZONTAL);
 			SDL_RenderPresent(renderer);
 
 			if (sprite.dest.y < 175)
@@ -188,9 +197,9 @@ public:
 			SDL_RenderCopy(renderer, bg, NULL, NULL);
 			sprite.renderer.renderHudObject(barImg, barSrc,bar);
 			if (sprite.isfacingright())
-				SDL_RenderCopy(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest);
+				SDL_RenderCopy(renderer, sprite.getSpriteMotionTexture(), &sprite.src, &sprite.dest);
 			else
-				SDL_RenderCopyEx(renderer, sprite.getSpriteTexture(), &sprite.src, &sprite.dest, NULL, NULL, SDL_FLIP_HORIZONTAL);
+				SDL_RenderCopyEx(renderer, sprite.getSpriteMotionTexture(), &sprite.src, &sprite.dest, NULL, NULL, SDL_FLIP_HORIZONTAL);
 			SDL_RenderPresent(renderer);
 
 			if (sprite.dest.y >= 275)

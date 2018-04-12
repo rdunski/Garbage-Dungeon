@@ -11,8 +11,7 @@ using namespace std;
 class Game {
 protected:
 	Render renderer;
-	bool done = false;
-	bool dead = false;
+	bool done, dead, moving = false;
 	const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
 	const int SCREEN_WIDTH = 640;
 	const int SCREEN_HEIGHT = 480;
@@ -82,11 +81,17 @@ public:
 		int tempHealth = sprite.getHealth();
 		sprite.setLast();
 		if (currentKeyStates[SDL_SCANCODE_RIGHT] || currentKeyStates[SDL_SCANCODE_D])
+		{
 			sprite.move(barImg, bar, barSrc, bg, sprite, SDL_SCANCODE_RIGHT);
+			moving = true;
+		}
 		else if (currentKeyStates[SDL_SCANCODE_ESCAPE])
 			done = true;
 		else if (currentKeyStates[SDL_SCANCODE_LEFT] || currentKeyStates[SDL_SCANCODE_A])
+		{
 			sprite.move(barImg, bar, barSrc, bg, sprite, SDL_SCANCODE_LEFT);
+			moving = true;
+		}
 		else if (currentKeyStates[SDL_SCANCODE_SPACE] || currentKeyStates[SDL_SCANCODE_UP])
 			sprite.jump(barImg, bar, barSrc, renderer.getRenderer(), bg, sprite);
 		else if (currentKeyStates[SDL_SCANCODE_H]) //HARM
@@ -107,11 +112,11 @@ public:
 		setBG();
 		setBar();
 		setRevive();
-		Sprite carl = carl.createSprite(renderer.getRenderer(), "duderight.bmp", 75, 80, 0, 275);
+		Sprite carl = carl.createSprite(renderer.getRenderer(), 75, 80, 0, 275);
 		carl.setHealth(100);
 		while (!done)								// game loop
 		{
-			while (dead)
+			while (dead) //stay dead until revived or quit
 			{
 				SDL_RenderClear(renderer.getRenderer());
 				SDL_Delay(1000 / 24);
@@ -150,7 +155,19 @@ public:
 			renderer.renderBg(bg);
 			checkHealth(carl);
 			renderer.renderHudObject(barImg, barSrc, bar);
-			renderer.renderSprite(carl.getSpriteTexture(), carl.isfacingright(), carl.getsrc(), carl.getdest());
+			if(moving)
+				renderer.renderSprite(carl.getSpriteMotionTexture(), carl.isfacingright(), carl.getsrc(), carl.getdest());
+			else
+			{
+				carl.setStandDestX(carl.getdest().x);
+				renderer.renderSprite(carl.getSpriteStandTexture(), carl.isfacingright(), carl.getStandSrc(), carl.getStandDest());
+				if (carl.getStandSrc().x < 2052)
+					carl.setStandSrcX(carl.getStandSrc().x + 92);
+				if (carl.getStandSrc().x >= 2052)
+					carl.setStandSrcX(0);
+				renderer.renderSprite(carl.getSpriteStandTexture(), carl.isfacingright(), carl.getStandSrc(), carl.getStandDest());
+			}
+			moving = false;
 			SDL_RenderPresent(renderer.getRenderer());
 		}
 		// clean up after ourselves
