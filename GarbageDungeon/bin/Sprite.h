@@ -52,7 +52,7 @@ public:
 	{
 		Sprite newS;
 		newS.src = { 0, 0, srcx, srcy };
-		newS.standSrc = { 0,0,91, 156 };
+		newS.standSrc = { 0,0,91, 150 };
 		newS.dest.x = destx; newS.dest.y = desty; newS.dest.h = 75; newS.dest.w = 80;
 		newS.standDest = { destx,desty,60,75 };
 		surface = SDL_LoadBMP("duderighttest.bmp");
@@ -146,33 +146,13 @@ public:
 		}
 	}
 
-	void jump(SDL_Texture* barImg, SDL_Rect bar, SDL_Rect barSrc,SDL_Renderer* renderer, SDL_Texture* bg, Sprite sprite)
+	void jump(Sprite sprite)
 	{
-		bool complete = false;
-		float tempX;
-		while (!complete) // upwards part of jump
+		float tempY = sprite.dest.y;
+		if (tempY >= 175) // upwards part of jump
 		{
-			SDL_RenderCopy(renderer, bg, NULL, NULL);
-			sprite.renderer.renderHudObject(barImg, barSrc,bar);
-			if(sprite.isfacingright())
-				SDL_RenderCopy(renderer, sprite.getSpriteMotionTexture(), &sprite.src, &sprite.dest);
-			else
-				SDL_RenderCopyEx(renderer, sprite.getSpriteMotionTexture(), &sprite.src, &sprite.dest,NULL,NULL,SDL_FLIP_HORIZONTAL);
-			SDL_RenderPresent(renderer);
-
-			if (sprite.dest.y < 175)
-			{
-				complete = true;
-				break;
-			}
-			if (sprite.isfacingright())
-				sprite.dest.x += 6;
-			else
-				sprite.dest.x -= 6;
-			sprite.dest.y -= 8;
-			SDL_Delay(1000 / 24); // set framerate to 24 FPS
-			SDL_RenderClear(renderer);
-
+			tempY -= 8;
+			setDestY(tempY);
 			if (sprite.src.y < 255)
 			{
 				if (sprite.src.x < 450) sprite.src.x += 75;
@@ -192,50 +172,31 @@ public:
 				}
 			}
 		}
-		while (complete) // downwards part of jump
+	}
+
+	void drop(Sprite sprite)
+	{
+		float tempY = sprite.dest.y;
+		tempY += 8;
+		setDestY(tempY);
+		if (sprite.src.y < 255)
 		{
-			SDL_RenderCopy(renderer, bg, NULL, NULL);
-			sprite.renderer.renderHudObject(barImg, barSrc,bar);
-			if (sprite.isfacingright())
-				SDL_RenderCopy(renderer, sprite.getSpriteMotionTexture(), &sprite.src, &sprite.dest);
-			else
-				SDL_RenderCopyEx(renderer, sprite.getSpriteMotionTexture(), &sprite.src, &sprite.dest, NULL, NULL, SDL_FLIP_HORIZONTAL);
-			SDL_RenderPresent(renderer);
-
-			if (sprite.dest.y >= 275)
-			{
-				complete = false;
-				break;
-			}
-			if (sprite.isfacingright())
-				sprite.dest.x += 5;
-			else
-				sprite.dest.x -= 5;
-			sprite.dest.y += 10;
-			SDL_Delay(1000 / 24);
-			SDL_RenderClear(renderer);
-
-			if (sprite.src.y < 255)
-			{
-				if (sprite.src.x < 450) sprite.src.x += 75;
-				else
-				{
-					sprite.src.x = 0;
-					sprite.src.y += 85;
-				}
-			}
+			if (sprite.src.x < 450) sprite.src.x += 75;
 			else
 			{
-				if (sprite.src.x < 375) sprite.src.x += 75;
-				else
-				{
-					sprite.src.x = 0;
-					sprite.src.y = 0;
-				}
+				sprite.src.x = 0;
+				sprite.src.y += 85;
 			}
 		}
-		tempX = sprite.dest.x;
-		setDestX(tempX);
+		else
+		{
+			if (sprite.src.x < 375) sprite.src.x += 75;
+			else
+			{
+				sprite.src.x = 0;
+				sprite.src.y = 0;
+			}
+		}
 	}
 
 	/* ---------------------BEGIN PHYSICS---------------------

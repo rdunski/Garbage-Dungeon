@@ -85,23 +85,31 @@ public:
 			sprite.move(barImg, bar, barSrc, bg, sprite, SDL_SCANCODE_RIGHT);
 			moving = true;
 		}
-		else if (currentKeyStates[SDL_SCANCODE_ESCAPE])
+		if (currentKeyStates[SDL_SCANCODE_ESCAPE])
 			done = true;
-		else if (currentKeyStates[SDL_SCANCODE_LEFT] || currentKeyStates[SDL_SCANCODE_A])
+		if (currentKeyStates[SDL_SCANCODE_LEFT] || currentKeyStates[SDL_SCANCODE_A])
 		{
 			sprite.move(barImg, bar, barSrc, bg, sprite, SDL_SCANCODE_LEFT);
 			moving = true;
 		}
-		else if (currentKeyStates[SDL_SCANCODE_SPACE] || currentKeyStates[SDL_SCANCODE_UP])
-			sprite.jump(barImg, bar, barSrc, renderer.getRenderer(), bg, sprite);
-		else if (currentKeyStates[SDL_SCANCODE_H]) //HARM
+		if (currentKeyStates[SDL_SCANCODE_SPACE] || currentKeyStates[SDL_SCANCODE_UP])
+		{
+			sprite.jump(sprite);
+			moving = true;
+		}
+		else if (sprite.getdest().y < 275)
+		{
+			sprite.drop(sprite);
+			moving = true;
+		}
+		if (currentKeyStates[SDL_SCANCODE_H]) //HARM
 		{
 			tempHealth = tempHealth - 10;
 			sprite.setHealth(tempHealth);
 		}
-		else if (currentKeyStates[SDL_SCANCODE_G]) //KILL
+		if (currentKeyStates[SDL_SCANCODE_G]) //KILL
 			sprite.setHealth(0);
-		else if (currentKeyStates[SDL_SCANCODE_R]) //REVIVE
+		if (currentKeyStates[SDL_SCANCODE_R]) //REVIVE
 			sprite.setHealth(100);
 	}
 
