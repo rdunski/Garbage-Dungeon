@@ -11,7 +11,7 @@ using namespace std;
 class Game {
 protected:
 	Render renderer;
-	bool done, dead, moving = false;
+	bool done, dead, moving, jumping = false;
 	const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
 	const int SCREEN_WIDTH = 640;
 	const int SCREEN_HEIGHT = 480;
@@ -94,13 +94,13 @@ public:
 		}
 		if (currentKeyStates[SDL_SCANCODE_SPACE] || currentKeyStates[SDL_SCANCODE_UP])
 		{
-			sprite.jump(sprite);
-			moving = true;
+			sprite.beginJump(sprite);
+			jumping = true;
 		}
 		else if (sprite.getdest().y < 275)
 		{
 			sprite.drop(sprite);
-			moving = true;
+			jumping = true;
 		}
 		if (currentKeyStates[SDL_SCANCODE_H]) //HARM
 		{
@@ -113,13 +113,18 @@ public:
 			sprite.setHealth(100);
 	}
 
-	void run()
+	void setup()
 	{
 		renderer.createWindow("Garbage Dungeon", SCREEN_WIDTH, SCREEN_HEIGHT);
 		setRenderer(renderer.getWindow());
 		setBG();
 		setBar();
 		setRevive();
+	}
+
+	void run()
+	{
+		setup();
 		Sprite carl = carl.createSprite(renderer.getRenderer(), 75, 80, 0, 275);
 		carl.setHealth(100);
 		while (!done)								// game loop
@@ -148,6 +153,7 @@ public:
 						endGame();
 				}
 			}
+			SDL_Delay(1000 / 24);
 			while (SDL_PollEvent(&e) != 0)			// exit check loop, also checking single-key presses
 			{
 				carl.setDT();
@@ -158,15 +164,20 @@ public:
 			}
 			checkWindowPos(carl); // check sprite pos and simulate switching "scenes"
 			eventHandler(carl);   // checking for continuous key presses
-			SDL_Delay(1000 / 24);
 			SDL_RenderClear(renderer.getRenderer());
 			renderer.renderBg(bg);
 			checkHealth(carl);
 			renderer.renderHudObject(barImg, barSrc, bar);
-			if(moving)
-				renderer.renderSprite(carl.getSpriteMotionTexture(), carl.isfacingright(), carl.getsrc(), carl.getdest());
-			else
+			if (moving && !jumping)
 			{
+				renderer.renderSprite(carl.getSpriteMotionTexture(), carl.isfacingright(), carl.getsrc(), carl.getdest());
+				carl.setJumpSrcX(0);
+			}
+			if (jumping||(jumping && moving))
+				renderer.renderSprite(carl.getSpriteJumpTexture(), carl.isfacingright(), carl.getJumpSrc(), carl.getdest());
+			if (!moving && !jumping)
+			{
+				carl.setJumpSrcX(0);
 				carl.setStandDestX(carl.getdest().x);
 				renderer.renderSprite(carl.getSpriteStandTexture(), carl.isfacingright(), carl.getStandSrc(), carl.getStandDest());
 				if (carl.getStandSrc().x < 2052)
@@ -176,6 +187,7 @@ public:
 				renderer.renderSprite(carl.getSpriteStandTexture(), carl.isfacingright(), carl.getStandSrc(), carl.getStandDest());
 			}
 			moving = false;
+			jumping = false;
 			SDL_RenderPresent(renderer.getRenderer());
 		}
 		// clean up after ourselves

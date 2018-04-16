@@ -16,8 +16,9 @@ protected:
 	Render renderer;
 	SDL_Texture* motion = NULL;
 	SDL_Texture* stand = NULL;
+	SDL_Texture* jump = NULL;
 	SDL_Surface* surface = NULL;
-	SDL_Rect src, dest,standSrc,standDest; // dest = sprite pos / game sprite
+	SDL_Rect src, dest,standSrc,standDest,jumpSrc,jumpDest; // dest = sprite pos / game sprite
 	bool right = true;
 	int health;
 
@@ -32,6 +33,9 @@ public:
 	void setSrcY(float y) { src.y = y; }
 	void setStandSrcX(float x) { standSrc.x = x; }
 	void setStandDestX(float x) { standDest.x = x; }
+	void setJumpSrcX(float x) { jumpSrc.x = x; }
+	void setJumpDestX(float x) { jumpDest.x = x; }
+	void setJumpDestY(float y) { jumpDest.y = y; }
 
 	void setHealth(int x) { health = x; }
 
@@ -39,10 +43,13 @@ public:
 	SDL_Rect getdest() { return this->dest; }
 	SDL_Rect getStandSrc() { return this->standSrc; }
 	SDL_Rect getStandDest() { return this->standDest; }
+	SDL_Rect getJumpSrc() { return this->jumpSrc; }
+	SDL_Rect getJumpDest() { return this->jumpDest; }
 
 	SDL_Surface* getSurface() { return this->surface; }
 	SDL_Texture* getSpriteMotionTexture() { return this->motion; }
 	SDL_Texture* getSpriteStandTexture() { return this->stand; }
+	SDL_Texture* getSpriteJumpTexture() { return this->jump; }
 
 	bool isfacingright() { return right; }
 
@@ -52,15 +59,20 @@ public:
 	{
 		Sprite newS;
 		newS.src = { 0, 0, srcx, srcy };
+		newS.dest = { destx,desty,80,75 };
 		newS.standSrc = { 0,0,91, 150 };
-		newS.dest.x = destx; newS.dest.y = desty; newS.dest.h = 75; newS.dest.w = 80;
 		newS.standDest = { destx,desty,60,75 };
+		newS.jumpSrc = { 0,0,121,169 };
+		newS.jumpDest = { destx, desty, 80, 75 };
 		surface = SDL_LoadBMP("duderighttest.bmp");
 		SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0, 162, 232));
 		newS.motion = SDL_CreateTextureFromSurface(renderer, surface);
 		surface = SDL_LoadBMP("dudestand.bmp");
 		SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0, 162, 232));
 		newS.stand = SDL_CreateTextureFromSurface(renderer, surface);
+		surface = SDL_LoadBMP("dudejump.bmp");
+		SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0, 162, 232));
+		newS.jump = SDL_CreateTextureFromSurface(renderer, surface);
 
 		return newS;
 	}
@@ -146,14 +158,20 @@ public:
 		}
 	}
 
-	void jump(Sprite sprite)
+	void beginJump(Sprite sprite)
 	{
+		float tempSrcX;
+		float tempSrcY;
 		float tempY = sprite.dest.y;
 		if (tempY >= 175) // upwards part of jump
 		{
+			if (sprite.jumpSrc.x < 1088)
+				setJumpSrcX(getJumpSrc().x + 121);
+			if (sprite.jumpSrc.x >= 1088)
+				setJumpSrcX(0);
 			tempY -= 8;
 			setDestY(tempY);
-			if (sprite.src.y < 255)
+			/*if (sprite.src.y < 255)
 			{
 				if (sprite.src.x < 450) sprite.src.x += 75;
 				else
@@ -170,16 +188,27 @@ public:
 					sprite.src.x = 0;
 					sprite.src.y = 0;
 				}
-			}
+			}*/
+			/*tempSrcX = sprite.src.x;
+			tempSrcY = sprite.src.y;
+			setSrcX(tempSrcX);
+			setSrcY(tempSrcY);*/
+
 		}
 	}
 
 	void drop(Sprite sprite)
 	{
+		float tempSrcX;
+		float tempSrcY;
 		float tempY = sprite.dest.y;
 		tempY += 8;
 		setDestY(tempY);
-		if (sprite.src.y < 255)
+		if (sprite.jumpSrc.x < 1088)
+			setJumpSrcX(getJumpSrc().x + 121);
+		if (sprite.jumpSrc.x >= 1088)
+			setJumpSrcX(0);
+		/*if (sprite.src.y < 255)
 		{
 			if (sprite.src.x < 450) sprite.src.x += 75;
 			else
@@ -197,6 +226,10 @@ public:
 				sprite.src.y = 0;
 			}
 		}
+		tempSrcX = sprite.src.x;
+		tempSrcY = sprite.src.y;
+		setSrcX(tempSrcX);
+		setSrcY(tempSrcY);*/
 	}
 
 	/* ---------------------BEGIN PHYSICS---------------------
