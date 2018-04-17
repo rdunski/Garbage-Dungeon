@@ -76,8 +76,8 @@ public:
 
 	void eventHandler(Sprite &sprite)
 	{
-		if (sprite.getHealth() < 0)
-			sprite.setHealth(100);
+		if (sprite.getHealth() <= 0)
+			dead = true;
 		int tempHealth = sprite.getHealth();
 		sprite.setLast();
 		if (currentKeyStates[SDL_SCANCODE_RIGHT] || currentKeyStates[SDL_SCANCODE_D])
@@ -92,17 +92,16 @@ public:
 			sprite.move(barImg, bar, barSrc, bg, sprite, SDL_SCANCODE_LEFT);
 			moving = true;
 		}
-		if (currentKeyStates[SDL_SCANCODE_SPACE] || currentKeyStates[SDL_SCANCODE_UP])
+		if (sprite.getJumpSrc().x >= 968)
+			sprite.drop(sprite);
+		if ((currentKeyStates[SDL_SCANCODE_SPACE] || currentKeyStates[SDL_SCANCODE_UP]) && sprite.getJumpSrc().x <968)
 		{
 			sprite.beginJump(sprite);
 			jumping = true;
 		}
 		else if (sprite.getdest().y < 275)
-		{
-			sprite.drop(sprite);
 			jumping = true;
-		}
-		if (currentKeyStates[SDL_SCANCODE_H]) //HARM
+		if (currentKeyStates[SDL_SCANCODE_H] && !dead) //HARM
 		{
 			tempHealth = tempHealth - 10;
 			sprite.setHealth(tempHealth);
@@ -173,8 +172,12 @@ public:
 				renderer.renderSprite(carl.getSpriteMotionTexture(), carl.isfacingright(), carl.getsrc(), carl.getdest());
 				carl.setJumpSrcX(0);
 			}
-			if (jumping||(jumping && moving))
+			if (jumping || (jumping && moving))
+			{
 				renderer.renderSprite(carl.getSpriteJumpTexture(), carl.isfacingright(), carl.getJumpSrc(), carl.getdest());
+				if (carl.getJumpSrc().x == 0)
+					carl.setJumpSrcX(121);
+			}
 			if (!moving && !jumping)
 			{
 				carl.setJumpSrcX(0);

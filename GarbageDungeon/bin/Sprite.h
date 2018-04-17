@@ -3,6 +3,7 @@
 
 
 #pragma once
+#include <iostream>
 #include "SDL.h"
 #include "Physics.h"
 #include "Render.h"
@@ -62,7 +63,7 @@ public:
 		newS.dest = { destx,desty,80,75 };
 		newS.standSrc = { 0,0,91, 150 };
 		newS.standDest = { destx,desty,60,75 };
-		newS.jumpSrc = { 0,0,121,169 };
+		newS.jumpSrc = { 0,0,121,143 };
 		newS.jumpDest = { destx, desty, 80, 75 };
 		surface = SDL_LoadBMP("duderighttest.bmp");
 		SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0, 162, 232));
@@ -82,9 +83,6 @@ public:
 		// function to put the animation stuff in
 		float tempSrcX;
 		float tempSrcY;
-		renderer.renderBg(bg);
-		renderer.renderHudObject(barImg, barSrc,bar);
-		renderer.renderSprite(sprite.getSpriteMotionTexture(), sprite.isfacingright(), sprite.getsrc(), sprite.getdest());
 		if (sprite.src.y < 255)
 		{
 			if (sprite.src.x < 450)
@@ -160,76 +158,27 @@ public:
 
 	void beginJump(Sprite sprite)
 	{
-		float tempSrcX;
-		float tempSrcY;
 		float tempY = sprite.dest.y;
 		if (tempY >= 175) // upwards part of jump
 		{
-			if (sprite.jumpSrc.x < 1088)
+			if (sprite.jumpSrc.x < 968 && sprite.jumpSrc.x != 0)
 				setJumpSrcX(getJumpSrc().x + 121);
-			if (sprite.jumpSrc.x >= 1088)
-				setJumpSrcX(0);
+			/*if (sprite.jumpSrc.x >= 484)
+				setJumpSrcX(0);*/
 			tempY -= 8;
 			setDestY(tempY);
-			/*if (sprite.src.y < 255)
-			{
-				if (sprite.src.x < 450) sprite.src.x += 75;
-				else
-				{
-					sprite.src.x = 0;
-					sprite.src.y += 85;
-				}
-			}
-			else
-			{
-				if (sprite.src.x < 375) sprite.src.x += 75;
-				else
-				{
-					sprite.src.x = 0;
-					sprite.src.y = 0;
-				}
-			}*/
-			/*tempSrcX = sprite.src.x;
-			tempSrcY = sprite.src.y;
-			setSrcX(tempSrcX);
-			setSrcY(tempSrcY);*/
-
 		}
 	}
 
-	void drop(Sprite sprite)
+	void drop(Sprite sprite) //downwards part of jump
 	{
-		float tempSrcX;
-		float tempSrcY;
 		float tempY = sprite.dest.y;
+		/*if (sprite.jumpSrc.x < 968)
+			setJumpSrcX(getJumpSrc().x + 121);*/
+		/*if (sprite.jumpSrc.x >= 968)
+			setJumpSrcX(484);*/
 		tempY += 8;
 		setDestY(tempY);
-		if (sprite.jumpSrc.x < 1088)
-			setJumpSrcX(getJumpSrc().x + 121);
-		if (sprite.jumpSrc.x >= 1088)
-			setJumpSrcX(0);
-		/*if (sprite.src.y < 255)
-		{
-			if (sprite.src.x < 450) sprite.src.x += 75;
-			else
-			{
-				sprite.src.x = 0;
-				sprite.src.y += 85;
-			}
-		}
-		else
-		{
-			if (sprite.src.x < 375) sprite.src.x += 75;
-			else
-			{
-				sprite.src.x = 0;
-				sprite.src.y = 0;
-			}
-		}
-		tempSrcX = sprite.src.x;
-		tempSrcY = sprite.src.y;
-		setSrcX(tempSrcX);
-		setSrcY(tempSrcY);*/
 	}
 
 	/* ---------------------BEGIN PHYSICS---------------------
