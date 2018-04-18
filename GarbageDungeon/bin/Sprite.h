@@ -1,7 +1,5 @@
 #define DEBUG(s) { std::cout << s << std::endl; }
 
-
-
 #pragma once
 #include <iostream>
 #include "SDL.h"
@@ -9,19 +7,18 @@
 #include "Render.h"
 
 using namespace std;
-
 // Physics functions at bottom
 
 class Sprite : public Physics {
 protected:
+	bool right = true;
+	int health;
 	Render renderer;
 	SDL_Texture* motion = NULL;
 	SDL_Texture* stand = NULL;
 	SDL_Texture* jump = NULL;
 	SDL_Surface* surface = NULL;
 	SDL_Rect src, dest,standSrc,standDest,jumpSrc,jumpDest; // dest = sprite pos / game sprite
-	bool right = true;
-	int health;
 
 public:
 	Sprite()
@@ -37,7 +34,6 @@ public:
 	void setJumpSrcX(float x) { jumpSrc.x = x; }
 	void setJumpDestX(float x) { jumpDest.x = x; }
 	void setJumpDestY(float y) { jumpDest.y = y; }
-
 	void setHealth(int x) { health = x; }
 
 	SDL_Rect getsrc() { return this->src; }
@@ -47,14 +43,15 @@ public:
 	SDL_Rect getJumpSrc() { return this->jumpSrc; }
 	SDL_Rect getJumpDest() { return this->jumpDest; }
 
-	SDL_Surface* getSurface() { return this->surface; }
-	SDL_Texture* getSpriteMotionTexture() { return this->motion; }
-	SDL_Texture* getSpriteStandTexture() { return this->stand; }
-	SDL_Texture* getSpriteJumpTexture() { return this->jump; }
+	int getHealth() { return health; }
 
 	bool isfacingright() { return right; }
 
-	int getHealth() { return health; }
+	SDL_Surface* getSurface() { return this->surface; }
+
+	SDL_Texture* getSpriteMotionTexture() { return this->motion; }
+	SDL_Texture* getSpriteStandTexture() { return this->stand; }
+	SDL_Texture* getSpriteJumpTexture() { return this->jump; }
 
 	Sprite createSprite(SDL_Renderer* renderer, int srcx, int srcy, int destx, int desty)
 	{
@@ -78,7 +75,7 @@ public:
 		return newS;
 	}
 
-	void walkingAnimate(SDL_Texture*barImg, SDL_Rect bar, SDL_Rect barSrc, SDL_Texture* bg, Sprite sprite)
+	void walkingAnimate(Sprite sprite)
 	{
 		// function to put the animation stuff in
 		float tempSrcX;
@@ -110,13 +107,13 @@ public:
 		setSrcY(tempSrcY);
 	}
 
-	void move(SDL_Texture* barImg, SDL_Rect bar, SDL_Rect barSrc,SDL_Texture* bg, Sprite sprite, SDL_Scancode keystate)
+	void move(Sprite sprite, SDL_Scancode keystate)
 	{
 		float tempDest;
 		if (sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT)
 		{
 			// if sprite is facing right and moves right
-			walkingAnimate(barImg,bar,barSrc,bg, sprite);		// will work on this
+			walkingAnimate(sprite);		// will work on this
 			right = true;
 			tempDest = sprite.dest.x;
 			//runPhysics(sprite, tempDest, keystate);
@@ -126,7 +123,7 @@ public:
 		else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT)
 		{
 			// if sprite is facing left and moves left
-			walkingAnimate(barImg, bar, barSrc, bg, sprite);
+			walkingAnimate(sprite);
 			right = false;
 			tempDest = sprite.dest.x;
 			//runPhysics(sprite, tempDest, keystate);	// this causes him to moonwalk?? IDK.
@@ -136,7 +133,7 @@ public:
 		else if (sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT)
 		{
 			// if sprite is facing right and moves left
-			walkingAnimate(barImg, bar, barSrc, bg, sprite);
+			walkingAnimate(sprite);
 			right = false;
 			tempDest = sprite.dest.x;
 			//runPhysics(sprite, tempDest, keystate);
@@ -146,7 +143,7 @@ public:
 		else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT)
 		{
 			// if sprite is facing left and moves right
-			walkingAnimate(barImg, bar, barSrc, bg, sprite);
+			walkingAnimate(sprite);
 			right = true;
 			tempDest = sprite.dest.x;
 			//runPhysics(sprite, tempDest, keystate);
@@ -156,29 +153,45 @@ public:
 		}
 	}
 
-	void beginJump(Sprite sprite)
+	void beginJump(Sprite sprite, bool moving)
 	{
 		float tempY = sprite.dest.y;
+		float tempX = sprite.dest.x;
 		if (tempY >= 175) // upwards part of jump
 		{
 			if (sprite.jumpSrc.x < 968 && sprite.jumpSrc.x != 0)
 				setJumpSrcX(getJumpSrc().x + 121);
-			/*if (sprite.jumpSrc.x >= 484)
-				setJumpSrcX(0);*/
 			tempY -= 8;
 			setDestY(tempY);
+			if (moving && sprite.isfacingright())
+			{
+				tempX += 3;
+				setDestX(tempX);
+			}
+			if (moving && !sprite.isfacingright())
+			{
+				tempX -= 3;
+				setDestX(tempX);
+			}
 		}
 	}
 
-	void drop(Sprite sprite) //downwards part of jump
+	void drop(Sprite sprite, bool moving) //downwards part of jump
 	{
 		float tempY = sprite.dest.y;
-		/*if (sprite.jumpSrc.x < 968)
-			setJumpSrcX(getJumpSrc().x + 121);*/
-		/*if (sprite.jumpSrc.x >= 968)
-			setJumpSrcX(484);*/
+		float tempX = sprite.dest.x;
 		tempY += 8;
 		setDestY(tempY);
+		if (moving && sprite.isfacingright())
+		{
+			tempX += 3;
+			setDestX(tempX);
+		}
+		if (moving && !sprite.isfacingright())
+		{
+			tempX -= 3;
+			setDestX(tempX);
+		}
 	}
 
 	/* ---------------------BEGIN PHYSICS---------------------

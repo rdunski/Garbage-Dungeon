@@ -26,6 +26,7 @@ protected:
 public:
 	float getScreenHeight() { return this->SCREEN_HEIGHT; }
 	float getScreenWidth() { return this->SCREEN_WIDTH; }
+
 	SDL_Texture *getBackground() { return this->bg; }
 	SDL_Surface *getSurface() { return this->surface; }
 
@@ -35,7 +36,7 @@ public:
 	void setBar()
 	{
 		bar.x = 10;
-		bar.y = SCREEN_HEIGHT - 30;
+		bar.y = getScreenHeight() - 30;
 		bar.w = 150;
 		bar.h = 20;
 		barSrc.x = 0;
@@ -82,25 +83,26 @@ public:
 		sprite.setLast();
 		if (currentKeyStates[SDL_SCANCODE_RIGHT] || currentKeyStates[SDL_SCANCODE_D])
 		{
-			sprite.move(barImg, bar, barSrc, bg, sprite, SDL_SCANCODE_RIGHT);
+			sprite.move(sprite, SDL_SCANCODE_RIGHT);
 			moving = true;
 		}
 		if (currentKeyStates[SDL_SCANCODE_ESCAPE])
 			done = true;
 		if (currentKeyStates[SDL_SCANCODE_LEFT] || currentKeyStates[SDL_SCANCODE_A])
 		{
-			sprite.move(barImg, bar, barSrc, bg, sprite, SDL_SCANCODE_LEFT);
+			sprite.move(sprite, SDL_SCANCODE_LEFT);
 			moving = true;
 		}
-		if (sprite.getJumpSrc().x >= 968)
-			sprite.drop(sprite);
 		if ((currentKeyStates[SDL_SCANCODE_SPACE] || currentKeyStates[SDL_SCANCODE_UP]) && sprite.getJumpSrc().x <968)
 		{
-			sprite.beginJump(sprite);
+			sprite.beginJump(sprite, moving);
 			jumping = true;
 		}
 		else if (sprite.getdest().y < 275)
+		{
 			jumping = true;
+			sprite.drop(sprite, moving);
+		}
 		if (currentKeyStates[SDL_SCANCODE_H] && !dead) //HARM
 		{
 			tempHealth = tempHealth - 10;
@@ -114,7 +116,7 @@ public:
 
 	void setup()
 	{
-		renderer.createWindow("Garbage Dungeon", SCREEN_WIDTH, SCREEN_HEIGHT);
+		renderer.createWindow("Garbage Dungeon", getScreenWidth(), getScreenHeight());
 		setRenderer(renderer.getWindow());
 		setBG();
 		setBar();
@@ -131,7 +133,7 @@ public:
 			while (dead) //stay dead until revived or quit
 			{
 				SDL_RenderClear(renderer.getRenderer());
-				SDL_Delay(1000 / 24);
+				SDL_Delay(1000 / 30);
 				renderer.renderBg(revive);
 				renderer.renderHudObject(barImg, barSrc, bar);
 				SDL_RenderPresent(renderer.getRenderer());
@@ -152,7 +154,7 @@ public:
 						endGame();
 				}
 			}
-			SDL_Delay(1000 / 24);
+			SDL_Delay(1000 / 30);
 			while (SDL_PollEvent(&e) != 0)			// exit check loop, also checking single-key presses
 			{
 				carl.setDT();
