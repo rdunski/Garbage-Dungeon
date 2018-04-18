@@ -18,7 +18,6 @@ protected:
 	const int SCREEN_WIDTH = 640;
 	const int SCREEN_HEIGHT = 480;
 	SDL_Texture* bg = NULL;
-	SDL_Texture* barImg = NULL;
 	SDL_Texture* revive = NULL;
 	SDL_Surface* surface = NULL;
 	SDL_Event e;
