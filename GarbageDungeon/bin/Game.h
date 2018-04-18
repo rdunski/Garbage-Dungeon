@@ -34,7 +34,8 @@ public:
 
 	void setBar()
 	{
-		healthBar.setInitObjectDest(10, (getScreenHeight() - 30), 150, 20);
+		healthBar.setInitObjectDest((getScreenWidth()*.015625), (getScreenHeight()*.9375), 
+			(getScreenWidth()*.234375), (getScreenHeight()*.041666));
 		healthBar.setInitObjectSrc(0, 0, 75, 10);
 		surface = SDL_LoadBMP("health_bar_sheet.bmp");
 		SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 255, 255, 255));
@@ -55,17 +56,10 @@ public:
 
 	void checkWindowPos(Sprite &sprite) //"scene switching" (basically reverts position based on screen edge collision)
 	{
-		SDL_Rect tempdest = sprite.getdest();
-		if (tempdest.x >= (getScreenWidth()))
-		{
-			tempdest.x = -20;
-			sprite.setDestX(tempdest.x);
-		}
-		if (tempdest.x <= 0 - tempdest.w)
-		{
-			tempdest.x = getScreenWidth() - tempdest.w + 20;
-			sprite.setDestX(tempdest.x);
-		}
+		if (sprite.getdest().x >= (getScreenWidth()))
+			sprite.setDestX(getScreenWidth()*.03125);
+		if (sprite.getdest().x <= (0 - sprite.getdest().w))
+			sprite.setDestX(getScreenWidth() - sprite.getdest().w + (getScreenWidth()*.03125));
 	}
 
 	void eventHandler(Sprite &sprite)
@@ -91,7 +85,7 @@ public:
 			sprite.beginJump(sprite, moving);
 			jumping = true;
 		}
-		else if (sprite.getdest().y < 275)
+		else if (sprite.getdest().y < (getScreenHeight()*.572916))
 		{
 			jumping = true;
 			sprite.drop(sprite, moving);
@@ -153,11 +147,9 @@ public:
 				carl.setDT();
 				if (e.type == SDL_QUIT)
 					done = true;
-				else if (e.type == SDL_KEYDOWN)
-					eventHandler(carl);
 			}
 			checkWindowPos(carl); // check sprite pos and simulate switching "scenes"
-			eventHandler(carl);   // checking for continuous key presses
+			eventHandler(carl);   // checking for key presses
 			SDL_RenderClear(renderer.getRenderer());
 			renderer.renderBg(bg);
 			checkHealth(carl);
