@@ -250,8 +250,8 @@ public:
 	void endGame()
 	{
 		SDL_DestroyTexture(bg);
-		SDL_DestroyTexture(barImg);
 		SDL_DestroyTexture(revive);
+		healthBar.destroyImage();
 		SDL_FreeSurface(surface);
 		SDL_DestroyRenderer(renderer.getRenderer());
 		SDL_DestroyWindow(renderer.getWindow());

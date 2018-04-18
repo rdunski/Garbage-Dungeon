@@ -44,5 +44,6 @@ public:
 		return this->image;
 	}
 
+	void destroyImage() { SDL_DestroyTexture(image); }
 
 };
