@@ -5,12 +5,14 @@
 #include "Sprite.h"
 #include "Physics.h"
 #include "Render.h"
+#include "Object.h"
 //#include "SDL.h"
 using namespace std;
 
 class Game {
 protected:
 	Render renderer;
+	Object healthBar;
 	bool done, dead, moving, jumping = false;
 	const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
 	const int SCREEN_WIDTH = 640;
@@ -19,8 +21,6 @@ protected:
 	SDL_Texture* barImg = NULL;
 	SDL_Texture* revive = NULL;
 	SDL_Surface* surface = NULL;
-	SDL_Rect bar;
-	SDL_Rect barSrc;
 	SDL_Event e;
 
 public:
@@ -35,17 +35,11 @@ public:
 
 	void setBar()
 	{
-		bar.x = 10;
-		bar.y = getScreenHeight() - 30;
-		bar.w = 150;
-		bar.h = 20;
-		barSrc.x = 0;
-		barSrc.y = 0;
-		barSrc.w = 75;
-		barSrc.h = 10;
+		healthBar.setInitObjectDest(10, (getScreenHeight() - 30), 150, 20);
+		healthBar.setInitObjectSrc(0, 0, 75, 10);
 		surface = SDL_LoadBMP("health_bar_sheet.bmp");
 		SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 255, 255, 255));
-		barImg = SDL_CreateTextureFromSurface(renderer.getRenderer(), surface);
+		healthBar.setImage(healthBar.createImage(surface,renderer));
 	}
 
 	void setBG()
@@ -135,7 +129,7 @@ public:
 				SDL_RenderClear(renderer.getRenderer());
 				SDL_Delay(1000 / 30);
 				renderer.renderBg(revive);
-				renderer.renderHudObject(barImg, barSrc, bar);
+				renderer.renderHudObject(healthBar.getImage(), healthBar.getObjectSrc(), healthBar.getObjectDest());
 				SDL_RenderPresent(renderer.getRenderer());
 				while (SDL_PollEvent(&e) != 0)
 				{
@@ -168,7 +162,7 @@ public:
 			SDL_RenderClear(renderer.getRenderer());
 			renderer.renderBg(bg);
 			checkHealth(carl);
-			renderer.renderHudObject(barImg, barSrc, bar);
+			renderer.renderHudObject(healthBar.getImage(), healthBar.getObjectSrc(), healthBar.getObjectDest());
 			if (moving && !jumping)
 			{
 				renderer.renderSprite(carl.getSpriteMotionTexture(), carl.isfacingright(), carl.getsrc(), carl.getdest());
@@ -207,49 +201,49 @@ public:
 		switch (hp)
 		{
 		case 100:
-			barSrc.x = 0;
-			barSrc.y = 0;
+			healthBar.setObjectSrcX(0);
+			healthBar.setObjectSrcY(0);
 			break;
 		case 90:
-			barSrc.x = 0;
-			barSrc.y = 11;
+			healthBar.setObjectSrcX(0);
+			healthBar.setObjectSrcY(11);
 			break;
 		case 80:
-			barSrc.x = 0;
-			barSrc.y = 22;
+			healthBar.setObjectSrcX(0);
+			healthBar.setObjectSrcY(22);
 			break;
 		case 70:
-			barSrc.x = 0;
-			barSrc.y = 33;
+			healthBar.setObjectSrcX(0);
+			healthBar.setObjectSrcY(33);
 			break;
 		case 60:
-			barSrc.x = 0;
-			barSrc.y = 44;
+			healthBar.setObjectSrcX(0);
+			healthBar.setObjectSrcY(44);
 			break;
 		case 50:
-			barSrc.x = 80;
-			barSrc.y = 0;
+			healthBar.setObjectSrcX(80);
+			healthBar.setObjectSrcY(0);
 			break;
 		case 40:
-			barSrc.x = 80;
-			barSrc.y = 11;
+			healthBar.setObjectSrcX(80);
+			healthBar.setObjectSrcY(11);
 			break;
 		case 30:
-			barSrc.x = 80;
-			barSrc.y = 22;
+			healthBar.setObjectSrcX(80);
+			healthBar.setObjectSrcY(22);
 			break;
 		case 20:
-			barSrc.x = 80;
-			barSrc.y = 33;
+			healthBar.setObjectSrcX(80);
+			healthBar.setObjectSrcY(33);
 			break;
 		case 10:
-			barSrc.x = 80;
-			barSrc.y = 44;
+			healthBar.setObjectSrcX(80);
+			healthBar.setObjectSrcY(44);
 			break;
 		case 0:
 			dead = true;
-			barSrc.x = 80;
-			barSrc.y = 55;
+			healthBar.setObjectSrcX(80);
+			healthBar.setObjectSrcY(55);
 			break;
 		}
 	}

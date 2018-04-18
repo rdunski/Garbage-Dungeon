@@ -163,6 +163,7 @@
   <ItemGroup>
     <ClInclude Include="..\bin\Game.h" />
     <ClInclude Include="..\bin\Sprite.h" />
+    <ClInclude Include="Object.h" />
     <ClInclude Include="Physics.h" />
     <ClInclude Include="Render.h" />
   </ItemGroup>
