@@ -11,7 +11,7 @@ public:
 	Object()
 	{
 	}
-	void setInitObjectDest(float x, float y, float w, float h)
+	void setObjectDest(float x, float y, float w, float h)
 	{
 		this->objectDest.x = x;
 		this->objectDest.y = y;
@@ -19,7 +19,7 @@ public:
 		this->objectDest.h = h;
 	}
 
-	void setInitObjectSrc(float x, float y, float w, float h)
+	void setObjectSrc(float x, float y, float w, float h)
 	{
 		this->objectSrc.x = x;
 		this->objectSrc.y = y;

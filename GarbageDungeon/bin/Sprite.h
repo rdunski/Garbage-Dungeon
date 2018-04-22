@@ -31,10 +31,14 @@ public:
 	void setSrcY(float y) { src.y = y; }
 	void setStandSrcX(float x) { standSrc.x = x; }
 	void setStandDestX(float x) { standDest.x = x; }
+	void setStandDestY(float y) { standDest.y = y; }
 	void setJumpSrcX(float x) { jumpSrc.x = x; }
 	void setJumpDestX(float x) { jumpDest.x = x; }
 	void setJumpDestY(float y) { jumpDest.y = y; }
 	void setHealth(int x) { health = x; }
+	void setDestScale(int w, int h) { dest.w = w; dest.h = h; }
+	void setStandDestScale(int w, int h) { standDest.w = w; standDest.h = h; }
+	void setJumpDestScale(int w, int h) { jumpDest.w = w; jumpDest.h = h; }
 
 	SDL_Rect getsrc() { return this->src; }
 	SDL_Rect getdest() { return this->dest; }
@@ -53,15 +57,15 @@ public:
 	SDL_Texture* getSpriteStandTexture() { return this->stand; }
 	SDL_Texture* getSpriteJumpTexture() { return this->jump; }
 
-	Sprite createSprite(SDL_Renderer* renderer, int srcx, int srcy, int destx, int desty)
+	Sprite createSprite(SDL_Renderer* renderer, int destx, int desty, int screen_height, int screen_width)
 	{
 		Sprite newS;
-		newS.src = { 0, 0, srcx, srcy };
-		newS.dest = { destx,desty,80,75 };
+		newS.src = { 0, 0, 75, 80 };
+		newS.dest = { destx,desty,(static_cast<int>(screen_width*.125)),(static_cast<int>(screen_height*.15625)) };
 		newS.standSrc = { 0,0,91, 150 };
-		newS.standDest = { destx,desty,60,75 };
+		newS.standDest = { destx,desty,(static_cast<int>(screen_width*.09375)), (static_cast<int>(screen_height*.15625)) };
 		newS.jumpSrc = { 0,0,121,143 };
-		newS.jumpDest = { destx, desty, 80, 75 };
+		newS.jumpDest = { destx, desty, (static_cast<int>(screen_width*.125)), (static_cast<int>(screen_height*.15625)) };
 		surface = SDL_LoadBMP("duderighttest.bmp");
 		SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0, 162, 232));
 		newS.motion = SDL_CreateTextureFromSurface(renderer, surface);
@@ -73,6 +77,15 @@ public:
 		newS.jump = SDL_CreateTextureFromSurface(renderer, surface);
 
 		return newS;
+	}
+
+	void updateSprite(Sprite sprite, int destx, int desty, int screen_height, int screen_width)
+	{
+		sprite.setDestX(destx);
+		sprite.setDestY(desty);
+		sprite.setDestScale((static_cast<int>(screen_width*.125)), (static_cast<int>(screen_height*.15625)));
+		sprite.setStandDestScale((static_cast<int>(screen_width*.09375)), (static_cast<int>(screen_height*.15625)));
+		sprite.setJumpDestScale((static_cast<int>(screen_width*.125)), (static_cast<int>(screen_height*.15625)));
 	}
 
 	void walkingAnimate(Sprite sprite)
@@ -107,7 +120,7 @@ public:
 		setSrcY(tempSrcY);
 	}
 
-	void move(Sprite sprite, SDL_Scancode keystate)
+	void move(Sprite sprite, SDL_Scancode keystate, int screen_height, int screen_width)
 	{
 		float tempDest;
 		if (sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT)
@@ -117,7 +130,7 @@ public:
 			right = true;
 			tempDest = sprite.dest.x;
 			//runPhysics(sprite, tempDest, keystate);
-			tempDest += 3;
+			tempDest += (screen_width*.005);
 			setDestX(tempDest);
 		}
 		else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT)
@@ -127,7 +140,7 @@ public:
 			right = false;
 			tempDest = sprite.dest.x;
 			//runPhysics(sprite, tempDest, keystate);	// this causes him to moonwalk?? IDK.
-			tempDest -= 3;
+			tempDest -= (screen_width*.005);
 			setDestX(tempDest);
 		}
 		else if (sprite.isfacingright() && keystate == SDL_SCANCODE_LEFT)
@@ -137,7 +150,7 @@ public:
 			right = false;
 			tempDest = sprite.dest.x;
 			//runPhysics(sprite, tempDest, keystate);
-			tempDest -= 3;
+			tempDest -= (screen_width*.005);
 			setDestX(tempDest);
 		}
 		else if (!sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT)
@@ -147,49 +160,47 @@ public:
 			right = true;
 			tempDest = sprite.dest.x;
 			//runPhysics(sprite, tempDest, keystate);
-			tempDest += 3;
+			tempDest += (screen_width*.005);
 			//DEBUG(tempDest);
 			setDestX(tempDest);
 		}
 	}
 
-	void beginJump(Sprite sprite, bool moving)
+	void beginJump(Sprite sprite, bool moving, int screen_height, int screen_width)
 	{
 		float tempY = sprite.dest.y;
 		float tempX = sprite.dest.x;
-		if (tempY >= 175) // upwards part of jump
-		{
-			if (sprite.jumpSrc.x < 968 && sprite.jumpSrc.x != 0)
-				setJumpSrcX(getJumpSrc().x + 121);
-			tempY -= 8;
-			setDestY(tempY);
-			if (moving && sprite.isfacingright())
-			{
-				tempX += 3;
-				setDestX(tempX);
-			}
-			if (moving && !sprite.isfacingright())
-			{
-				tempX -= 3;
-				setDestX(tempX);
-			}
-		}
-	}
 
-	void drop(Sprite sprite, bool moving) //downwards part of jump
-	{
-		float tempY = sprite.dest.y;
-		float tempX = sprite.dest.x;
-		tempY += 8;
+		if (sprite.jumpSrc.x < 968 && sprite.jumpSrc.x != 0)
+			setJumpSrcX(getJumpSrc().x + 121);
+		tempY -= (screen_height*.016666);
 		setDestY(tempY);
 		if (moving && sprite.isfacingright())
 		{
-			tempX += 3;
+			tempX += (screen_width*.002);
 			setDestX(tempX);
 		}
 		if (moving && !sprite.isfacingright())
 		{
-			tempX -= 3;
+			tempX -= (screen_width*.002);
+			setDestX(tempX);
+		}
+	}
+
+	void drop(Sprite sprite, bool moving, int screen_height, int screen_width) //downwards part of jump
+	{
+		float tempY = sprite.dest.y;
+		float tempX = sprite.dest.x;
+		tempY += (screen_height*.016666);
+		setDestY(tempY);
+		if (moving && sprite.isfacingright())
+		{
+			tempX += (screen_width*.001);
+			setDestX(tempX);
+		}
+		if (moving && !sprite.isfacingright())
+		{
+			tempX -= (screen_width*.001);
 			setDestX(tempX);
 		}
 	}

@@ -13,10 +13,13 @@ class Game {
 protected:
 	Render renderer;
 	Object healthBar;
+	Sprite carl;
 	bool done, dead, moving, jumping = false;
 	const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
-	const int SCREEN_WIDTH = 640;
-	const int SCREEN_HEIGHT = 480;
+	int SCREEN_WIDTH = 640;
+	int SCREEN_HEIGHT = 480;
+	int counter = 0;
+	SDL_DisplayMode DM;
 	SDL_Texture* bg = NULL;
 	SDL_Texture* revive = NULL;
 	SDL_Surface* surface = NULL;
@@ -26,6 +29,9 @@ public:
 	float getScreenHeight() { return this->SCREEN_HEIGHT; }
 	float getScreenWidth() { return this->SCREEN_WIDTH; }
 
+	void setScreenWidth(int width) { SCREEN_WIDTH = width; }
+	void setScreenHeight(int height) { SCREEN_HEIGHT = height; }
+
 	SDL_Texture *getBackground() { return this->bg; }
 	SDL_Surface *getSurface() { return this->surface; }
 
@@ -34,9 +40,9 @@ public:
 
 	void setBar()
 	{
-		healthBar.setInitObjectDest((getScreenWidth()*.015625), (getScreenHeight()*.9375), 
+		healthBar.setObjectDest((getScreenWidth()*.015625), (getScreenHeight()*.9375), 
 			(getScreenWidth()*.234375), (getScreenHeight()*.041666));
-		healthBar.setInitObjectSrc(0, 0, 75, 10);
+		healthBar.setObjectSrc(0, 0, 75, 10);
 		surface = SDL_LoadBMP("health_bar_sheet.bmp");
 		SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 255, 255, 255));
 		healthBar.setImage(healthBar.createImage(surface,renderer));
@@ -70,25 +76,26 @@ public:
 		sprite.setLast();
 		if (currentKeyStates[SDL_SCANCODE_RIGHT] || currentKeyStates[SDL_SCANCODE_D])
 		{
-			sprite.move(sprite, SDL_SCANCODE_RIGHT);
+			sprite.move(sprite, SDL_SCANCODE_RIGHT,getScreenHeight(), getScreenWidth());
 			moving = true;
 		}
 		if (currentKeyStates[SDL_SCANCODE_ESCAPE])
 			done = true;
 		if (currentKeyStates[SDL_SCANCODE_LEFT] || currentKeyStates[SDL_SCANCODE_A])
 		{
-			sprite.move(sprite, SDL_SCANCODE_LEFT);
+			sprite.move(sprite, SDL_SCANCODE_LEFT, getScreenHeight(), getScreenWidth());
 			moving = true;
 		}
-		if ((currentKeyStates[SDL_SCANCODE_SPACE] || currentKeyStates[SDL_SCANCODE_UP]) && sprite.getJumpSrc().x <968)
+		if ((currentKeyStates[SDL_SCANCODE_SPACE] || currentKeyStates[SDL_SCANCODE_UP]) && counter < 12)
 		{
-			sprite.beginJump(sprite, moving);
+			counter += 1;
+			sprite.beginJump(sprite, moving, getScreenHeight(), getScreenWidth());
 			jumping = true;
 		}
 		else if (sprite.getdest().y < (getScreenHeight()*.572916))
 		{
 			jumping = true;
-			sprite.drop(sprite, moving);
+			sprite.drop(sprite, moving, getScreenHeight(), getScreenWidth());
 		}
 		if (currentKeyStates[SDL_SCANCODE_H] && !dead) //HARM
 		{
@@ -110,13 +117,23 @@ public:
 		setRevive();
 	}
 
+	void updateWin()
+	{
+		setScreenHeight(SDL_GetWindowSurface(renderer.getWindow())->h);
+		setScreenWidth(SDL_GetWindowSurface(renderer.getWindow())->w);
+	}
+
 	void run()
 	{
 		setup();
-		Sprite carl = carl.createSprite(renderer.getRenderer(), 75, 80, 0, 275);
+		carl = carl.createSprite(renderer.getRenderer(), 0, (getScreenHeight()*.59), getScreenHeight(),getScreenWidth());
 		carl.setHealth(100);
 		while (!done)								// game loop
 		{
+			updateWin();
+			carl.updateSprite(carl, 0, (getScreenHeight()*.59), getScreenHeight(), getScreenWidth());
+			healthBar.setObjectDest((getScreenWidth()*.015625), (getScreenHeight()*.9375),
+				(getScreenWidth()*.234375), (getScreenHeight()*.041666));
 			while (dead) //stay dead until revived or quit
 			{
 				SDL_RenderClear(renderer.getRenderer());
@@ -158,6 +175,7 @@ public:
 			{
 				renderer.renderSprite(carl.getSpriteMotionTexture(), carl.isfacingright(), carl.getsrc(), carl.getdest());
 				carl.setJumpSrcX(0);
+				counter = 0;
 			}
 			if (jumping || (jumping && moving))
 			{
@@ -167,8 +185,10 @@ public:
 			}
 			if (!moving && !jumping)
 			{
+				counter = 0;
 				carl.setJumpSrcX(0);
 				carl.setStandDestX(carl.getdest().x);
+				carl.setStandDestY(carl.getdest().y);
 				renderer.renderSprite(carl.getSpriteStandTexture(), carl.isfacingright(), carl.getStandSrc(), carl.getStandDest());
 				if (carl.getStandSrc().x < 2052)
 					carl.setStandSrcX(carl.getStandSrc().x + 92);

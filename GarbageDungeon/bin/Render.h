@@ -16,10 +16,10 @@ public:
 		renderer = SDL_CreateRenderer(window, -1, 0);
 	}
 
-	void createWindow(const char *title, const int SCREEN_WIDTH, const int SCREEN_HEIGHT)
+	void createWindow(const char *title, int SCREEN_WIDTH, int SCREEN_HEIGHT)
 	{
 		window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED,
-			SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+			SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, (SDL_WINDOW_SHOWN, SDL_WINDOW_RESIZABLE));
 	}
 
 	SDL_Window *getWindow() { return this->window; }
