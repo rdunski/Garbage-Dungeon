@@ -11,20 +11,21 @@ using namespace std;
 
 class Sprite : public Physics {
 protected:
-	bool right = true;
-	int health;
-	Render renderer;
-	SDL_Texture* motion = NULL;
-	SDL_Texture* stand = NULL;
-	SDL_Texture* jump = NULL;
-	SDL_Surface* surface = NULL;
-	SDL_Rect src, dest,standSrc,standDest,jumpSrc,jumpDest; // dest = sprite pos / game sprite
+	bool right = true; //boolean to check if sprite is facing right or not
+	int health; //health variable
+	Render renderer; //the renderer...
+	SDL_Texture* motion = NULL; //moving texture
+	SDL_Texture* stand = NULL; //standing texture
+	SDL_Texture* jump = NULL; //jumping texture
+	SDL_Surface* surface = NULL; //placeholder surface for intializing
+	SDL_Rect src, dest,standSrc,standDest,jumpSrc,jumpDest; // source and destination rects for the various textures
 
 public:
 	Sprite()
 	{
 	}
 
+	//alot of setters (may need cleaning up)
 	void setDestX(float x) { dest.x = x; }
 	void setDestY(float y) { dest.y = y; }
 	void setSrcX(float x) { src.x = x; }
@@ -40,6 +41,7 @@ public:
 	void setStandDestScale(int w, int h) { standDest.w = w; standDest.h = h; }
 	void setJumpDestScale(int w, int h) { jumpDest.w = w; jumpDest.h = h; }
 
+	//getters
 	SDL_Rect getsrc() { return this->src; }
 	SDL_Rect getdest() { return this->dest; }
 	SDL_Rect getStandSrc() { return this->standSrc; }
@@ -47,9 +49,6 @@ public:
 	SDL_Rect getJumpSrc() { return this->jumpSrc; }
 	SDL_Rect getJumpDest() { return this->jumpDest; }
 
-	int getHealth() { return health; }
-
-	bool isfacingright() { return right; }
 
 	SDL_Surface* getSurface() { return this->surface; }
 
@@ -57,6 +56,12 @@ public:
 	SDL_Texture* getSpriteStandTexture() { return this->stand; }
 	SDL_Texture* getSpriteJumpTexture() { return this->jump; }
 
+	int getHealth() { return health; }
+
+	//boolean check
+	bool isfacingright() { return right; }
+
+	//intialize the sprite (may need cleaning up)
 	Sprite createSprite(SDL_Renderer* renderer, int destx, int desty, int screen_height, int screen_width)
 	{
 		Sprite newS;
@@ -79,6 +84,7 @@ public:
 		return newS;
 	}
 
+	//adjust the sprite width and height to match changing window resolution
 	void updateSprite(int screen_height, int screen_width)
 	{
 		this->setDestScale((static_cast<int>(screen_width*.125)), (static_cast<int>(screen_height*.15625)));
@@ -86,9 +92,9 @@ public:
 		this->setJumpDestScale((static_cast<int>(screen_width*.125)), (static_cast<int>(screen_height*.15625)));
 	}
 
+	//ANIMATE (shouldn't need any changes/ might break the animation if anything is changed)
 	void walkingAnimate(Sprite sprite)
 	{
-		// function to put the animation stuff in
 		float tempSrcX;
 		float tempSrcY;
 		if (sprite.src.y < 255)
@@ -118,6 +124,7 @@ public:
 		setSrcY(tempSrcY);
 	}
 
+	//MOVE (may need cleaning up)
 	void move(Sprite sprite, SDL_Scancode keystate, int screen_height, int screen_width)
 	{
 		float tempDest;
@@ -164,6 +171,7 @@ public:
 		}
 	}
 
+	//start jumping!
 	void beginJump(Sprite sprite, bool moving, int screen_height, int screen_width)
 	{
 		float tempY = sprite.dest.y;
@@ -185,6 +193,7 @@ public:
 		}
 	}
 
+	//get down!
 	void drop(Sprite sprite, bool moving, int screen_height, int screen_width) //downwards part of jump
 	{
 		float tempY = sprite.dest.y;

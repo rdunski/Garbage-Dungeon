@@ -14,7 +14,7 @@ protected:
 	Render renderer; //the renderer...
 	Object healthBar; //the health bar
 	Sprite carl; //our guy
-	bool done, dead, moving, jumping = false; //boolean checks
+	bool quitter, dead, moving, jumping = false; //boolean checks
 	const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL); //keyboard press events
 	int SCREEN_WIDTH = 640; //initial screen width, CAN NOW CHANGE
 	int SCREEN_HEIGHT = 480; //inital screen height, CAN NOW CHANGE
@@ -73,7 +73,7 @@ public:
 	void eventHandler(Sprite &sprite) //handles events, who would've thought
 	{
 		if (currentKeyStates[SDL_SCANCODE_ESCAPE])
-			done = true; //you're done
+			quitter = true; //you're a quitter
 
 		if (sprite.getHealth() <= 0) //you're dead
 			dead = true;
@@ -120,7 +120,7 @@ public:
 			sprite.setHealth(100);
 	}
 
-	void setup()
+	void setup() //creating window and renderer...
 	{
 		renderer.createWindow("Garbage Dungeon", getScreenWidth(), getScreenHeight());
 		setRenderer(renderer.getWindow());
@@ -129,15 +129,15 @@ public:
 		setRevive();
 	}
 
-	void updateWin()
+	void updateWin() //if the window is rescaled
 	{
 		setScreenHeight(SDL_GetWindowSurface(renderer.getWindow())->h);
 		setScreenWidth(SDL_GetWindowSurface(renderer.getWindow())->w);
 	}
 
-	void runDead()
+	void playDead()
 	{
-		while (dead) //stay dead until revived or quit
+		while (dead) //stay dead until revived or there's a quitter, we don't want any zombies unless we say so
 		{
 			SDL_RenderClear(renderer.getRenderer());
 			SDL_Delay(1000 / 30);
@@ -150,7 +150,7 @@ public:
 			{
 
 				carl.setDT();
-				if (e.type == SDL_QUIT) //quiter
+				if (e.type == SDL_QUIT) //you're a quitter, stop lying to yourself
 					endGame();
 
 				else if (currentKeyStates[SDL_SCANCODE_R]) //IT'S ALIVE
@@ -162,7 +162,7 @@ public:
 					carl.setHealth(100);
 				}
 
-				if (currentKeyStates[SDL_SCANCODE_ESCAPE]) //yup you're still quiter
+				if (currentKeyStates[SDL_SCANCODE_ESCAPE]) //yup you're still quitter
 					endGame();
 			}
 		}
@@ -176,23 +176,23 @@ public:
 		carl = carl.createSprite(renderer.getRenderer(), 0, (getScreenHeight()*.59), getScreenHeight(),getScreenWidth());
 		carl.setHealth(100);
 
-		while (!done)// main game loop
+		while (!quitter)// main game loop
 		{
-
-			updateWin(); //check for updated window heights and widths
+			//check for updated window heights and widths
+			updateWin(); 
 			carl.updateSprite(getScreenHeight(), getScreenWidth());
 			healthBar.setObjectDest((getScreenWidth()*.015625), (getScreenHeight()*.9375),
 				(getScreenWidth()*.234375), (getScreenHeight()*.041666));
 
 			if (dead)
-				runDead(); //if you died...
+				playDead(); //if you died...
 
 			SDL_Delay(1000 / 30);
-			while (SDL_PollEvent(&e) != 0)	// exit check loop
+			while (SDL_PollEvent(&e) != 0)	// exit check
 			{
 				carl.setDT();
 				if (e.type == SDL_QUIT)
-					done = true;
+					quitter = true; //again, you're a quitter
 			}
 
 			checkWindowPos(carl); // check sprite pos and simulate switching "scenes"
@@ -238,7 +238,7 @@ public:
 			SDL_RenderPresent(renderer.getRenderer());
 		}
 
-		// clean up after ourselves when done
+		// clean up after ourselves when there's a quitter
 		endGame();
 	}
 
