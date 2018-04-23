@@ -11,21 +11,23 @@ using namespace std;
 
 class Game {
 protected:
-	Render renderer;
-	Object healthBar;
-	Sprite carl;
-	bool done, dead, moving, jumping = false;
-	const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
-	int SCREEN_WIDTH = 640;
-	int SCREEN_HEIGHT = 480;
-	int counter = 0;
-	SDL_DisplayMode DM;
-	SDL_Texture* bg = NULL;
-	SDL_Texture* revive = NULL;
-	SDL_Surface* surface = NULL;
-	SDL_Event e;
+	Render renderer; //the renderer...
+	Object healthBar; //the health bar
+	Sprite carl; //our guy
+	bool done, dead, moving, jumping = false; //boolean checks
+	const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL); //keyboard press events
+	int SCREEN_WIDTH = 640; //initial screen width, CAN NOW CHANGE
+	int SCREEN_HEIGHT = 480; //inital screen height, CAN NOW CHANGE
+	int counter = 0; //counter for jumping
+	SDL_DisplayMode DM; //currently unused, gets maximum resolution of computer
+	SDL_Texture* bg = NULL; //background
+	SDL_Texture* revive = NULL;//revive/dead background
+	SDL_Surface* surface = NULL;//surface for assigning textures
+	SDL_Event e; //a single keypress event
 
 public:
+
+	//self explanatory functions
 	float getScreenHeight() { return this->SCREEN_HEIGHT; }
 	float getScreenWidth() { return this->SCREEN_WIDTH; }
 
@@ -62,49 +64,59 @@ public:
 
 	void checkWindowPos(Sprite &sprite) //"scene switching" (basically reverts position based on screen edge collision)
 	{
-		if (sprite.getdest().x >= (getScreenWidth()))
-			sprite.setDestX(getScreenWidth()*.03125);
-		if (sprite.getdest().x <= (0 - sprite.getdest().w))
-			sprite.setDestX(getScreenWidth() - sprite.getdest().w + (getScreenWidth()*.03125));
+		if (sprite.getdest().x > (getScreenWidth())+sprite.getdest().w - (getScreenWidth()*.03125))
+			sprite.setDestX(-sprite.getdest().w+(getScreenWidth()*.03125));
+		if (sprite.getdest().x < (-sprite.getdest().w + (getScreenWidth()*.03125)))
+			sprite.setDestX((getScreenWidth()+sprite.getdest().w) - (getScreenWidth()*.03125));
 	}
 
-	void eventHandler(Sprite &sprite)
+	void eventHandler(Sprite &sprite) //handles events, who would've thought
 	{
-		if (sprite.getHealth() <= 0)
-			dead = true;
-		int tempHealth = sprite.getHealth();
-		sprite.setLast();
-		if (currentKeyStates[SDL_SCANCODE_RIGHT] || currentKeyStates[SDL_SCANCODE_D])
-		{
-			sprite.move(sprite, SDL_SCANCODE_RIGHT,getScreenHeight(), getScreenWidth());
-			moving = true;
-		}
 		if (currentKeyStates[SDL_SCANCODE_ESCAPE])
-			done = true;
-		if (currentKeyStates[SDL_SCANCODE_LEFT] || currentKeyStates[SDL_SCANCODE_A])
+			done = true; //you're done
+
+		if (sprite.getHealth() <= 0) //you're dead
+			dead = true;
+
+		sprite.setLast();
+
+		if (currentKeyStates[SDL_SCANCODE_RIGHT] || currentKeyStates[SDL_SCANCODE_D]) //if you move right
 		{
-			sprite.move(sprite, SDL_SCANCODE_LEFT, getScreenHeight(), getScreenWidth());
-			moving = true;
+			if (currentKeyStates[SDL_SCANCODE_LSHIFT]) //sprint == DOUBLE SPEED
+				sprite.move(sprite, SDL_SCANCODE_RIGHT, getScreenHeight(), getScreenWidth());
+
+			sprite.move(sprite, SDL_SCANCODE_RIGHT,getScreenHeight(), getScreenWidth());
+			moving = true; //you're moving
 		}
+
+		if (currentKeyStates[SDL_SCANCODE_LEFT] || currentKeyStates[SDL_SCANCODE_A]) //if you move left
+		{
+			if (currentKeyStates[SDL_SCANCODE_LSHIFT]) //sprint == DOUBLE SPEED
+				sprite.move(sprite, SDL_SCANCODE_LEFT, getScreenHeight(), getScreenWidth());
+
+			sprite.move(sprite, SDL_SCANCODE_LEFT, getScreenHeight(), getScreenWidth());
+			moving = true; //you're moving
+		}
+
 		if ((currentKeyStates[SDL_SCANCODE_SPACE] || currentKeyStates[SDL_SCANCODE_UP]) && counter < 12)
 		{
 			counter += 1;
 			sprite.beginJump(sprite, moving, getScreenHeight(), getScreenWidth());
-			jumping = true;
+			jumping = true; //you're jumpin'
 		}
 		else if (sprite.getdest().y < (getScreenHeight()*.572916))
 		{
-			jumping = true;
-			sprite.drop(sprite, moving, getScreenHeight(), getScreenWidth());
+			jumping = true; //you're jumpin' (well technically falling)
+			sprite.drop(sprite, moving, getScreenHeight(), getScreenWidth()); //stop drop and dont roll cause we haven't programmed it
 		}
-		if (currentKeyStates[SDL_SCANCODE_H] && !dead) //HARM
-		{
-			tempHealth = tempHealth - 10;
-			sprite.setHealth(tempHealth);
-		}
-		if (currentKeyStates[SDL_SCANCODE_G]) //KILL
+
+		if (currentKeyStates[SDL_SCANCODE_H] && !dead) //A slow death
+			sprite.setHealth(sprite.getHealth()-10);
+
+		if (currentKeyStates[SDL_SCANCODE_G]) //a swift death
 			sprite.setHealth(0);
-		if (currentKeyStates[SDL_SCANCODE_R]) //REVIVE
+
+		if (currentKeyStates[SDL_SCANCODE_R]) //resurrection
 			sprite.setHealth(100);
 	}
 
@@ -123,67 +135,90 @@ public:
 		setScreenWidth(SDL_GetWindowSurface(renderer.getWindow())->w);
 	}
 
+	void runDead()
+	{
+		while (dead) //stay dead until revived or quit
+		{
+			SDL_RenderClear(renderer.getRenderer());
+			SDL_Delay(1000 / 30);
+
+			renderer.renderBg(revive);
+			renderer.renderHudObject(healthBar.getImage(), healthBar.getObjectSrc(), healthBar.getObjectDest());
+			SDL_RenderPresent(renderer.getRenderer());
+
+			while (SDL_PollEvent(&e) != 0)
+			{
+
+				carl.setDT();
+				if (e.type == SDL_QUIT) //quiter
+					endGame();
+
+				else if (currentKeyStates[SDL_SCANCODE_R]) //IT'S ALIVE
+				{
+					dead = false;
+					carl.setDestX(0);
+					carl.setSrcX(0);
+					carl.setSrcY(0);
+					carl.setHealth(100);
+				}
+
+				if (currentKeyStates[SDL_SCANCODE_ESCAPE]) //yup you're still quiter
+					endGame();
+			}
+		}
+	}
+
 	void run()
 	{
+		//initializing...
 		setup();
+
 		carl = carl.createSprite(renderer.getRenderer(), 0, (getScreenHeight()*.59), getScreenHeight(),getScreenWidth());
 		carl.setHealth(100);
-		while (!done)								// game loop
+
+		while (!done)// main game loop
 		{
-			updateWin();
-			carl.updateSprite(carl, 0, (getScreenHeight()*.59), getScreenHeight(), getScreenWidth());
+
+			updateWin(); //check for updated window heights and widths
+			carl.updateSprite(getScreenHeight(), getScreenWidth());
 			healthBar.setObjectDest((getScreenWidth()*.015625), (getScreenHeight()*.9375),
 				(getScreenWidth()*.234375), (getScreenHeight()*.041666));
-			while (dead) //stay dead until revived or quit
-			{
-				SDL_RenderClear(renderer.getRenderer());
-				SDL_Delay(1000 / 30);
-				renderer.renderBg(revive);
-				renderer.renderHudObject(healthBar.getImage(), healthBar.getObjectSrc(), healthBar.getObjectDest());
-				SDL_RenderPresent(renderer.getRenderer());
-				while (SDL_PollEvent(&e) != 0)
-				{
-					carl.setDT();
-					if (e.type == SDL_QUIT)
-						endGame();
-					else if (currentKeyStates[SDL_SCANCODE_R])
-					{
-						dead = false;
-						carl.setDestX(0);
-						carl.setSrcX(0);
-						carl.setSrcY(0);
-						carl.setHealth(100);
-					}
-					if (currentKeyStates[SDL_SCANCODE_ESCAPE])
-						endGame();
-				}
-			}
+
+			if (dead)
+				runDead(); //if you died...
+
 			SDL_Delay(1000 / 30);
-			while (SDL_PollEvent(&e) != 0)			// exit check loop, also checking single-key presses
+			while (SDL_PollEvent(&e) != 0)	// exit check loop
 			{
 				carl.setDT();
 				if (e.type == SDL_QUIT)
 					done = true;
 			}
+
 			checkWindowPos(carl); // check sprite pos and simulate switching "scenes"
 			eventHandler(carl);   // checking for key presses
+
 			SDL_RenderClear(renderer.getRenderer());
-			renderer.renderBg(bg);
-			checkHealth(carl);
+			renderer.renderBg(bg); //render background
+
+			checkHealth(carl); //check health and render bar to corresponding health
 			renderer.renderHudObject(healthBar.getImage(), healthBar.getObjectSrc(), healthBar.getObjectDest());
-			if (moving && !jumping)
+
+			if (moving && !jumping) //if moving and not jumping, render running/walking animation
 			{
 				renderer.renderSprite(carl.getSpriteMotionTexture(), carl.isfacingright(), carl.getsrc(), carl.getdest());
 				carl.setJumpSrcX(0);
 				counter = 0;
 			}
-			if (jumping || (jumping && moving))
+
+			if (jumping || (jumping && moving)) //if jumping OR jumping and moving, render jump animation
 			{
 				renderer.renderSprite(carl.getSpriteJumpTexture(), carl.isfacingright(), carl.getJumpSrc(), carl.getdest());
 				if (carl.getJumpSrc().x == 0)
 					carl.setJumpSrcX(121);
 			}
-			if (!moving && !jumping)
+
+			if (!moving && !jumping) //if standing still, render standing animation --- should clean this up a bit
 			{
 				counter = 0;
 				carl.setJumpSrcX(0);
@@ -196,20 +231,25 @@ public:
 					carl.setStandSrcX(0);
 				renderer.renderSprite(carl.getSpriteStandTexture(), carl.isfacingright(), carl.getStandSrc(), carl.getStandDest());
 			}
-			moving = false;
+
+			moving = false; //reset jumping and moving for re-evaluation
 			jumping = false;
+
 			SDL_RenderPresent(renderer.getRenderer());
 		}
-		// clean up after ourselves
+
+		// clean up after ourselves when done
 		endGame();
 	}
 
 	void checkHealth(Sprite sprite)
 	{
-		if(sprite.getHealth() <0)
+		if(sprite.getHealth() < 0) //after dying and reviving, set health to full
 			sprite.setHealth(100);
-		int hp = sprite.getHealth();
-		switch (hp)
+
+		int hp = sprite.getHealth(); //variable for switch
+
+		switch (hp) //update health bar based on current health
 		{
 		case 100:
 			healthBar.setObjectSrcX(0);
@@ -259,7 +299,7 @@ public:
 		}
 	}
 
-	void endGame()
+	void endGame() //destroy all the things!
 	{
 		SDL_DestroyTexture(bg);
 		SDL_DestroyTexture(revive);

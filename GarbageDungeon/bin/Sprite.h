@@ -79,13 +79,11 @@ public:
 		return newS;
 	}
 
-	void updateSprite(Sprite sprite, int destx, int desty, int screen_height, int screen_width)
+	void updateSprite(int screen_height, int screen_width)
 	{
-		sprite.setDestX(destx);
-		sprite.setDestY(desty);
-		sprite.setDestScale((static_cast<int>(screen_width*.125)), (static_cast<int>(screen_height*.15625)));
-		sprite.setStandDestScale((static_cast<int>(screen_width*.09375)), (static_cast<int>(screen_height*.15625)));
-		sprite.setJumpDestScale((static_cast<int>(screen_width*.125)), (static_cast<int>(screen_height*.15625)));
+		this->setDestScale((static_cast<int>(screen_width*.125)), (static_cast<int>(screen_height*.15625)));
+		this->setStandDestScale((static_cast<int>(screen_width*.09375)), (static_cast<int>(screen_height*.15625)));
+		this->setJumpDestScale((static_cast<int>(screen_width*.125)), (static_cast<int>(screen_height*.15625)));
 	}
 
 	void walkingAnimate(Sprite sprite)
