@@ -14,13 +14,14 @@ protected:
 	Render renderer; //the renderer...
 	Object healthBar; //the health bar
 	Sprite carl; //our guy
-	bool quitter, dead, moving, jumping = false; //boolean checks
+	bool quitter, dead, moving, jumping,paused = false; //boolean checks
 	const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL); //keyboard press events
 	int SCREEN_WIDTH = 640; //initial screen width, CAN NOW CHANGE
 	int SCREEN_HEIGHT = 480; //inital screen height, CAN NOW CHANGE
 	int counter = 0; //counter for jumping
 	SDL_DisplayMode DM; //currently unused, gets maximum resolution of computer
 	SDL_Texture* bg = NULL; //background
+	SDL_Texture* pause = NULL;
 	SDL_Texture* revive = NULL;//revive/dead background
 	SDL_Surface* surface = NULL;//surface for assigning textures
 	SDL_Event e; //a single keypress event
@@ -62,6 +63,13 @@ public:
 		revive = SDL_CreateTextureFromSurface(renderer.getRenderer(), surface);
 	}
 
+	void setPause()
+	{
+		surface = SDL_LoadBMP("pause.bmp");
+		pause = SDL_CreateTextureFromSurface(renderer.getRenderer(), surface);
+		SDL_SetTextureAlphaMod(pause, 200);
+	}
+
 	void checkWindowPos(Sprite &sprite) //"scene switching" (basically reverts position based on screen edge collision)
 	{
 		if (sprite.getdest().x > (getScreenWidth())+sprite.getdest().w - (getScreenWidth()*.03125))
@@ -70,11 +78,45 @@ public:
 			sprite.setDestX((getScreenWidth()+sprite.getdest().w) - (getScreenWidth()*.03125));
 	}
 
+	void startPause(Sprite &sprite) //pause procedure, includes pause when and the various controls
+	{
+		paused = true; //the game is paused
+
+		while (paused) //game stays paused until...
+		{
+			SDL_RenderClear(renderer.getRenderer());
+			SDL_Delay(1000 / 30);
+
+			renderer.renderBg(bg);
+			renderer.renderHudObject(healthBar.getImage(), healthBar.getObjectSrc(), healthBar.getObjectDest());
+			if (moving && !jumping)
+				renderer.renderSprite(sprite.getSpriteMotionTexture(), sprite.isfacingright(), sprite.getsrc(), sprite.getdest());
+			else if (jumping || (jumping && moving))
+				renderer.renderSprite(sprite.getSpriteJumpTexture(), sprite.isfacingright(), sprite.getJumpSrc(), sprite.getdest());
+			else if (!jumping && !moving)
+				renderer.renderSprite(sprite.getSpriteStandTexture(), sprite.isfacingright(), sprite.getStandSrc(), sprite.getStandDest());
+			renderer.renderBg(pause); //Alpha-modded background for fancy transparency
+			SDL_RenderPresent(renderer.getRenderer());
+
+			while (SDL_PollEvent(&e) != 0)
+			{
+				if (e.type == SDL_KEYDOWN && e.type != SDL_KEYUP)
+				{
+					if (currentKeyStates[SDL_SCANCODE_C]) //continue
+						paused = false;
+					if (currentKeyStates[SDL_SCANCODE_Q]) //looks like we got a...
+					{
+						quitter = true; //QUITTER!!
+						paused = false; //when there's a quitter, they forfeit their rights to game controls
+					}//endif-Q
+				}//endif-event
+			}//endwhile-event
+		}//endwhile-pause
+
+	}
+
 	void eventHandler(Sprite &sprite) //handles events, who would've thought
 	{
-		if (currentKeyStates[SDL_SCANCODE_ESCAPE])
-			quitter = true; //you're a quitter
-
 		if (sprite.getHealth() <= 0) //you're dead
 			dead = true;
 
@@ -107,9 +149,11 @@ public:
 		else if (sprite.getdest().y < (getScreenHeight()*.572916))
 		{
 			jumping = true; //you're jumpin' (well technically falling)
-			sprite.drop(sprite, moving, getScreenHeight(), getScreenWidth()); //stop drop and dont roll cause we haven't programmed it
+			sprite.drop(sprite, moving, getScreenHeight(), getScreenWidth()); 
+			//stop, drop, but dont roll cause we haven't programmed it
 		}
 
+		//debugging health system
 		if (currentKeyStates[SDL_SCANCODE_H] && !dead) //A slow death
 			sprite.setHealth(sprite.getHealth()-10);
 
@@ -118,6 +162,10 @@ public:
 
 		if (currentKeyStates[SDL_SCANCODE_R]) //resurrection
 			sprite.setHealth(100);
+
+		//pause
+		if (currentKeyStates[SDL_SCANCODE_ESCAPE] && e.type == SDL_KEYDOWN && e.type != SDL_KEYUP)
+			startPause(sprite);
 	}
 
 	void setup() //creating window and renderer...
@@ -127,6 +175,7 @@ public:
 		setBG();
 		setBar();
 		setRevive();
+		setPause();
 	}
 
 	void updateWin() //if the window is rescaled
@@ -153,7 +202,7 @@ public:
 				if (e.type == SDL_QUIT) //you're a quitter, stop lying to yourself
 					endGame();
 
-				else if (currentKeyStates[SDL_SCANCODE_R]) //IT'S ALIVE
+				else if (currentKeyStates[SDL_SCANCODE_R]) //ZOMBIE!!! but we said so, so it's okay... for now
 				{
 					dead = false;
 					carl.setDestX(0);
@@ -162,7 +211,7 @@ public:
 					carl.setHealth(100);
 				}
 
-				if (currentKeyStates[SDL_SCANCODE_ESCAPE]) //yup you're still quitter
+				if (currentKeyStates[SDL_SCANCODE_ESCAPE]) //yup you're still a quitter
 					endGame();
 			}
 		}
@@ -303,6 +352,7 @@ public:
 	{
 		SDL_DestroyTexture(bg);
 		SDL_DestroyTexture(revive);
+		SDL_DestroyTexture(pause);
 		healthBar.destroyImage();
 		SDL_FreeSurface(surface);
 		SDL_DestroyRenderer(renderer.getRenderer());
