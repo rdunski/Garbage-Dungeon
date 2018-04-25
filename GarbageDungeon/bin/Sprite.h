@@ -11,13 +11,13 @@ using namespace std;
 
 class Sprite : public Physics {
 protected:
-	bool right = true; //boolean to check if sprite is facing right or not
-	int health; //health variable
-	Render renderer; //the renderer...
-	SDL_Texture* motion = NULL; //moving texture
-	SDL_Texture* stand = NULL; //standing texture
-	SDL_Texture* jump = NULL; //jumping texture
-	SDL_Surface* surface = NULL; //placeholder surface for intializing
+	bool right = true;										// boolean to check if sprite is facing right or not
+	int health;												// health variable
+	Render renderer;										// the renderer...
+	SDL_Texture* motion = NULL;								// moving texture
+	SDL_Texture* stand = NULL;								// standing texture
+	SDL_Texture* jump = NULL;								// jumping texture
+	SDL_Surface* surface = NULL;							// placeholder surface for intializing
 	SDL_Rect src, dest,standSrc,standDest,jumpSrc,jumpDest; // source and destination rects for the various textures
 
 public:
@@ -25,7 +25,7 @@ public:
 	{
 	}
 
-	//alot of setters (may need cleaning up)
+	// alot of setters (may need cleaning up)
 	void setDestX(float x) { this->dest.x = x; }
 	void setDestY(float y) { this->dest.y = y; }
 	void setSrcX(float x) { this->src.x = x; }
@@ -41,14 +41,13 @@ public:
 	void setStandDestScale(int w, int h) { this->standDest.w = w; this->standDest.h = h; }
 	void setJumpDestScale(int w, int h) { this->jumpDest.w = w; this->jumpDest.h = h; }
 
-	//getters
+	// getters
 	SDL_Rect getsrc() { return this->src; }
 	SDL_Rect getdest() { return this->dest; }
 	SDL_Rect getStandSrc() { return this->standSrc; }
 	SDL_Rect getStandDest() { return this->standDest; }
 	SDL_Rect getJumpSrc() { return this->jumpSrc; }
 	SDL_Rect getJumpDest() { return this->jumpDest; }
-
 
 	SDL_Surface* getSurface() { return this->surface; }
 
@@ -58,7 +57,7 @@ public:
 
 	int getHealth() { return this->health; }
 
-	//boolean check
+	// boolean check
 	bool isfacingright() { return this->right; }
 
 	void initCarlResources(SDL_Renderer* renderer, int destx, int desty, int screen_height, int screen_width)
@@ -83,7 +82,7 @@ public:
 		this->jumpDest = { destx, desty, (static_cast<int>(screen_width*.125)), (static_cast<int>(screen_height*.15625)) };
 	}
 
-	//adjust the sprite width and height to match changing window resolution
+	// adjust the sprite width and height to match changing window resolution
 	void updateSprite(int screen_height, int screen_width)
 	{
 		this->setDestScale((static_cast<int>(screen_width*.125)), (static_cast<int>(screen_height*.15625)));
@@ -91,7 +90,7 @@ public:
 		this->setJumpDestScale((static_cast<int>(screen_width*.125)), (static_cast<int>(screen_height*.15625)));
 	}
 
-	//ANIMATE (shouldn't need any changes/ might break the animation if anything is changed)
+	// ANIMATE (shouldn't need any changes/ might break the animation if anything is changed)
 	void walkingAnimate(Sprite sprite)
 	{
 		float tempSrcX;
@@ -123,7 +122,7 @@ public:
 		setSrcY(tempSrcY);
 	}
 
-	//MOVE (may need cleaning up)
+	// MOVE (may need cleaning up)
 	void move(Sprite sprite, SDL_Scancode keystate, int screen_height, int screen_width)
 	{
 		float tempDest;
@@ -170,7 +169,7 @@ public:
 		}
 	}
 
-	//start jumping!
+	// start jumping!
 	void beginJump(Sprite sprite, bool moving, int screen_height, int screen_width)
 	{
 		float tempY = sprite.dest.y;
@@ -192,8 +191,8 @@ public:
 		}
 	}
 
-	//get down!
-	void drop(Sprite sprite, bool moving, int screen_height, int screen_width) //downwards part of jump
+	// get down!
+	void drop(Sprite sprite, bool moving, int screen_height, int screen_width)
 	{
 		float tempY = sprite.dest.y;
 		float tempX = sprite.dest.x;
@@ -217,22 +216,22 @@ public:
 	---------------------------------------------------------------*/
 
 	void checkPosition(Sprite sprite) {
-		if (sprite.getdest().y > 275)	// check if under the ground
+		if (sprite.getdest().y > 275)		// check if under the ground
 		{
 			if (aX < 0)
 			{
 				aY = -aY;
 			}
 		}
-		if (sprite.getdest().y <= 0)	// check if above screen
+		if (sprite.getdest().y <= 0)		// check if above screen
 		{
 			sprite.setDestY(75);
 		}
-		if (sprite.getdest().y < 275)	// check if above ground
+		if (sprite.getdest().y < 275)		// check if above ground
 		{
 			vY = -400;
 		}
-		if (sprite.getdest().x < 0)		// check if touch left side of screen
+		if (sprite.getdest().x < 0)			// check if touch left side of screen
 		{
 			sprite.setDestX(1);
 		}
