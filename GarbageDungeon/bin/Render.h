@@ -23,7 +23,7 @@ public:
 	void createWindow(const char *title, int SCREEN_WIDTH, int SCREEN_HEIGHT) //create window
 	{
 		window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED,
-			SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, (SDL_WINDOW_SHOWN, SDL_WINDOW_RESIZABLE));
+			SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, (SDL_WINDOW_SHOWN, SDL_WINDOW_RESIZABLE)); //supports resizing
 	}
 
 	void renderBg(SDL_Texture* bg) //render background

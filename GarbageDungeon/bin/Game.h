@@ -6,7 +6,8 @@
 #include "Physics.h"
 #include "Render.h"
 #include "Object.h"
-//#include "SDL.h"
+#include "Sound.h"
+#include "SDL.h"
 using namespace std;
 
 class Game {
@@ -14,6 +15,7 @@ protected:
 	Render renderer; //the renderer...
 	Object healthBar; //the health bar
 	Sprite carl; //our guy
+	Sound mixer; //sound machine
 	bool quitter, dead, moving, jumping,paused = false; //boolean checks
 	const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL); //keyboard press events
 	int SCREEN_WIDTH = 640; //initial screen width, CAN NOW CHANGE
@@ -38,7 +40,7 @@ public:
 	SDL_Texture *getBackground() { return this->bg; }
 	SDL_Surface *getSurface() { return this->surface; }
 
-	void init() { SDL_Init(SDL_INIT_VIDEO); }
+	void init() { SDL_Init(SDL_INIT_VIDEO); SDL_Init(SDL_INIT_AUDIO); }
 	void setRenderer(SDL_Window* window) { renderer.createRenderer(window); }
 
 	void setBar()
@@ -118,7 +120,10 @@ public:
 	void eventHandler(Sprite &sprite) //handles events, who would've thought
 	{
 		if (sprite.getHealth() <= 0) //you're dead
+		{
 			dead = true;
+			mixer.playDeath();
+		}
 
 		sprite.setLast();
 
@@ -155,7 +160,10 @@ public:
 
 		//debugging health system
 		if (currentKeyStates[SDL_SCANCODE_H] && !dead) //A slow death
-			sprite.setHealth(sprite.getHealth()-10);
+		{
+			sprite.setHealth(sprite.getHealth() - 10);
+			mixer.playHurt();
+		}
 
 		if (currentKeyStates[SDL_SCANCODE_G]) //a swift death
 			sprite.setHealth(0);
@@ -176,6 +184,7 @@ public:
 		setBar();
 		setRevive();
 		setPause();
+		mixer.setSoundFiles();
 	}
 
 	void updateWin() //if the window is rescaled
@@ -186,6 +195,7 @@ public:
 
 	void playDead()
 	{
+		mixer.playDeath();
 		while (dead) //stay dead until revived or there's a quitter, we don't want any zombies unless we say so
 		{
 			SDL_RenderClear(renderer.getRenderer());
