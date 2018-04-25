@@ -26,20 +26,20 @@ public:
 	}
 
 	//alot of setters (may need cleaning up)
-	void setDestX(float x) { dest.x = x; }
-	void setDestY(float y) { dest.y = y; }
-	void setSrcX(float x) { src.x = x; }
-	void setSrcY(float y) { src.y = y; }
-	void setStandSrcX(float x) { standSrc.x = x; }
-	void setStandDestX(float x) { standDest.x = x; }
-	void setStandDestY(float y) { standDest.y = y; }
-	void setJumpSrcX(float x) { jumpSrc.x = x; }
-	void setJumpDestX(float x) { jumpDest.x = x; }
-	void setJumpDestY(float y) { jumpDest.y = y; }
-	void setHealth(int x) { health = x; }
-	void setDestScale(int w, int h) { dest.w = w; dest.h = h; }
-	void setStandDestScale(int w, int h) { standDest.w = w; standDest.h = h; }
-	void setJumpDestScale(int w, int h) { jumpDest.w = w; jumpDest.h = h; }
+	void setDestX(float x) { this->dest.x = x; }
+	void setDestY(float y) { this->dest.y = y; }
+	void setSrcX(float x) { this->src.x = x; }
+	void setSrcY(float y) { this->src.y = y; }
+	void setStandSrcX(float x) { this->standSrc.x = x; }
+	void setStandDestX(float x) { this->standDest.x = x; }
+	void setStandDestY(float y) { this->standDest.y = y; }
+	void setJumpSrcX(float x) { this->jumpSrc.x = x; }
+	void setJumpDestX(float x) { this->jumpDest.x = x; }
+	void setJumpDestY(float y) { this->jumpDest.y = y; }
+	void setHealth(int x) { this->health = x; }
+	void setDestScale(int w, int h) { this->dest.w = w; this->dest.h = h; }
+	void setStandDestScale(int w, int h) { this->standDest.w = w; this->standDest.h = h; }
+	void setJumpDestScale(int w, int h) { this->jumpDest.w = w; this->jumpDest.h = h; }
 
 	//getters
 	SDL_Rect getsrc() { return this->src; }
@@ -56,32 +56,31 @@ public:
 	SDL_Texture* getSpriteStandTexture() { return this->stand; }
 	SDL_Texture* getSpriteJumpTexture() { return this->jump; }
 
-	int getHealth() { return health; }
+	int getHealth() { return this->health; }
 
 	//boolean check
-	bool isfacingright() { return right; }
+	bool isfacingright() { return this->right; }
 
-	//intialize the sprite (may need cleaning up)
-	Sprite createSprite(SDL_Renderer* renderer, int destx, int desty, int screen_height, int screen_width)
+	void initCarlResources(SDL_Renderer* renderer, int destx, int desty, int screen_height, int screen_width)
 	{
-		Sprite newS;
-		newS.src = { 0, 0, 75, 80 };
-		newS.dest = { destx,desty,(static_cast<int>(screen_width*.125)),(static_cast<int>(screen_height*.15625)) };
-		newS.standSrc = { 0,0,91, 150 };
-		newS.standDest = { destx,desty,(static_cast<int>(screen_width*.09375)), (static_cast<int>(screen_height*.15625)) };
-		newS.jumpSrc = { 0,0,121,143 };
-		newS.jumpDest = { destx, desty, (static_cast<int>(screen_width*.125)), (static_cast<int>(screen_height*.15625)) };
-		surface = SDL_LoadBMP("duderighttest.bmp");
-		SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0, 162, 232));
-		newS.motion = SDL_CreateTextureFromSurface(renderer, surface);
-		surface = SDL_LoadBMP("dudestand.bmp");
-		SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0, 162, 232));
-		newS.stand = SDL_CreateTextureFromSurface(renderer, surface);
-		surface = SDL_LoadBMP("dudejump.bmp");
-		SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0, 162, 232));
-		newS.jump = SDL_CreateTextureFromSurface(renderer, surface);
+		this->surface = SDL_LoadBMP("duderighttest.bmp");
+		SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(this->surface->format, 0, 162, 232));
+		this->motion = SDL_CreateTextureFromSurface(renderer, this->surface);
 
-		return newS;
+		this->surface = SDL_LoadBMP("dudestand.bmp");
+		SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(this->surface->format, 0, 162, 232));
+		this->stand = SDL_CreateTextureFromSurface(renderer, this->surface);
+
+		this->surface = SDL_LoadBMP("dudejump.bmp");
+		SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(this->surface->format, 0, 162, 232));
+		this->jump = SDL_CreateTextureFromSurface(renderer, this->surface);
+
+		this->src = { 0, 0, 75, 80 };
+		this->dest = { destx,desty,(static_cast<int>(screen_width*.125)),(static_cast<int>(screen_height*.15625)) };
+		this->standSrc = { 0,0,91, 150 };
+		this->standDest = { destx,desty,(static_cast<int>(screen_width*.09375)), (static_cast<int>(screen_height*.15625)) };
+		this->jumpSrc = { 0,0,121,143 };
+		this->jumpDest = { destx, desty, (static_cast<int>(screen_width*.125)), (static_cast<int>(screen_height*.15625)) };
 	}
 
 	//adjust the sprite width and height to match changing window resolution

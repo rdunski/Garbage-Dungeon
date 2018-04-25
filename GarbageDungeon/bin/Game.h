@@ -14,7 +14,7 @@ class Game {
 protected:
 	Render renderer; //the renderer...
 	Object healthBar; //the health bar
-	Sprite carl; //our guy
+	Sprite carl, evilCarl; //our guy (also evil Carl)
 	Sound mixer; //sound machine
 	bool quitter, dead, moving, jumping,paused = false; //boolean checks
 	const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL); //keyboard press events
@@ -232,7 +232,11 @@ public:
 		//initializing...
 		setup();
 
-		carl = carl.createSprite(renderer.getRenderer(), 0, (getScreenHeight()*.59), getScreenHeight(),getScreenWidth());
+		carl.initCarlResources(renderer.getRenderer(), 0, (getScreenHeight()*.59), getScreenHeight(),getScreenWidth());
+
+		evilCarl.initCarlResources(renderer.getRenderer(), 480, 
+			(getScreenHeight()*.59), getScreenHeight(), getScreenWidth()); //added sprite, no controls
+
 		carl.setHealth(100);
 
 		while (!quitter)// main game loop
@@ -240,6 +244,7 @@ public:
 			//check for updated window heights and widths
 			updateWin(); 
 			carl.updateSprite(getScreenHeight(), getScreenWidth());
+			evilCarl.updateSprite(getScreenHeight(), getScreenWidth());
 			healthBar.setObjectDest((getScreenWidth()*.015625), (getScreenHeight()*.9375),
 				(getScreenWidth()*.234375), (getScreenHeight()*.041666));
 
@@ -262,6 +267,9 @@ public:
 
 			checkHealth(carl); //check health and render bar to corresponding health
 			renderer.renderHudObject(healthBar.getImage(), healthBar.getObjectSrc(), healthBar.getObjectDest());
+
+			renderer.renderSprite(evilCarl.getSpriteStandTexture(), evilCarl.isfacingright(), 
+				evilCarl.getStandSrc(), evilCarl.getStandDest()); //render evil carl
 
 			if (moving && !jumping) //if moving and not jumping, render running/walking animation
 			{
@@ -303,7 +311,7 @@ public:
 
 	void checkHealth(Sprite sprite)
 	{
-		if(sprite.getHealth() < 0) //after dying and reviving, set health to full
+		if(sprite.getHealth() < 0) //after becoming a zombie, set health to full
 			sprite.setHealth(100);
 
 		int hp = sprite.getHealth(); //variable for switch
