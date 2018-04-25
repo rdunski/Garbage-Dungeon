@@ -25,4 +25,9 @@ public:
 	{
 		Mix_PlayMusic(death, 1);
 	}
+	void killMusic()
+	{
+		Mix_FreeMusic(hurt);
+		Mix_FreeMusic(death);
+	}
 };

@@ -365,6 +365,7 @@ public:
 		SDL_DestroyTexture(pause);
 		healthBar.destroyImage();
 		SDL_FreeSurface(surface);
+		mixer.killMusic();
 		SDL_DestroyRenderer(renderer.getRenderer());
 		SDL_DestroyWindow(renderer.getWindow());
 		
