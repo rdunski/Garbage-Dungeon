@@ -168,6 +168,23 @@
     <ClInclude Include="Physics.h" />
     <ClInclude Include="Render.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Media Include="dirt_jump_land.mp3" />
+    <Media Include="roblox-death-sound-effect.mp3" />
+    <Media Include="soft_grass_footstep.mp3" />
+    <Media Include="WilhelmScream.mp3" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="dudejump.bmp" />
+    <Image Include="duderighttest.bmp" />
+    <Image Include="dudestand.bmp" />
+    <Image Include="Forest0.bmp" />
+    <Image Include="health_bar.bmp" />
+    <Image Include="health_bar_sheet.bmp" />
+    <Image Include="pause.bmp" />
+    <Image Include="revive.bmp" />
+    <Image Include="spritesheet1.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

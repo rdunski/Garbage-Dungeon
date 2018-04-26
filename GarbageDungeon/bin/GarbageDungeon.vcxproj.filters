@@ -32,11 +32,54 @@
     <ClInclude Include="Render.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Object.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Sound.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Object.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="dirt_jump_land.mp3">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="roblox-death-sound-effect.mp3">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="soft_grass_footstep.mp3">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="WilhelmScream.mp3">
+      <Filter>Resource Files</Filter>
+    </Media>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="dudejump.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="duderighttest.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="dudestand.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Forest0.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="health_bar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="health_bar_sheet.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="pause.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="revive.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="spritesheet1.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

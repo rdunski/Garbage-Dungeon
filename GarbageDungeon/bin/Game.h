@@ -121,7 +121,6 @@ public:
 		if (sprite.getHealth() <= 0) // you're dead
 		{
 			dead = true;
-			mixer.playDeath();
 		}
 
 		sprite.setLast();
@@ -129,18 +128,18 @@ public:
 		if (currentKeyStates[SDL_SCANCODE_RIGHT] || currentKeyStates[SDL_SCANCODE_D]) // if you move right
 		{
 			if (currentKeyStates[SDL_SCANCODE_LSHIFT]) // sprint == DOUBLE SPEED
-				sprite.move(sprite, SDL_SCANCODE_RIGHT, getScreenHeight(), getScreenWidth());
+				sprite.move(sprite, mixer, SDL_SCANCODE_RIGHT, getScreenHeight(), getScreenWidth());
 
-			sprite.move(sprite, SDL_SCANCODE_RIGHT,getScreenHeight(), getScreenWidth());
+			sprite.move(sprite, mixer, SDL_SCANCODE_RIGHT,getScreenHeight(), getScreenWidth());
 			moving = true; // you're moving
 		}
 
 		if (currentKeyStates[SDL_SCANCODE_LEFT] || currentKeyStates[SDL_SCANCODE_A]) // if you move left
 		{
 			if (currentKeyStates[SDL_SCANCODE_LSHIFT]) // sprint == DOUBLE SPEED
-				sprite.move(sprite, SDL_SCANCODE_LEFT, getScreenHeight(), getScreenWidth());
+				sprite.move(sprite, mixer, SDL_SCANCODE_LEFT, getScreenHeight(), getScreenWidth());
 
-			sprite.move(sprite, SDL_SCANCODE_LEFT, getScreenHeight(), getScreenWidth());
+			sprite.move(sprite, mixer, SDL_SCANCODE_LEFT, getScreenHeight(), getScreenWidth());
 			moving = true; // you're moving
 		}
 

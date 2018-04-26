@@ -5,6 +5,7 @@
 #include "SDL.h"
 #include "Physics.h"
 #include "Render.h"
+#include "Sound.h"
 
 using namespace std;
 // Physics functions at bottom
@@ -123,8 +124,9 @@ public:
 	}
 
 	// MOVE (may need cleaning up)
-	void move(Sprite sprite, SDL_Scancode keystate, int screen_height, int screen_width)
+	void move(Sprite sprite, Sound mixer, SDL_Scancode keystate, int screen_height, int screen_width)
 	{
+		mixer.playStep();
 		float tempDest;
 		if (sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT)
 		{

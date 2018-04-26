@@ -1,39 +1,68 @@
 #pragma once
 #include "SDL.h"
 #include "SDL_mixer.h"
+#include "SDL_thread.h"
+
+bool moving;
 
 class Sound {
 protected:
 	Mix_Music* hurt = NULL;
 	Mix_Music* death = NULL;
-	//Mix_Music* step = NULL;
-	//Mix_Music* thud = NULL;
+	Mix_Music* step = NULL;
+	Mix_Music* thud = NULL;
+	SDL_Thread* soundThread = NULL;
 
 public:
+	Mix_Music * getStep() { return this->step; }
+	void setSoundThread(SDL_Thread* thread) { this->soundThread = thread; }
+	void setMoving(bool boolean) { moving = boolean; }
+
+	void beginThread()
+	{
+		startThread(this);
+	}
+
+	void stopThread()
+	{
+
+	}
+
 	void setSoundFiles()
 	{
 		Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 640);
 		hurt = Mix_LoadMUS("roblox-death-sound-effect.mp3");
 		death = Mix_LoadMUS("WilhelmScream.mp3");
-		//step = Mix_LoadMUS("soft_grass_footstep.mp3");
-		//thud = Mix_LoadMUS("dirt_jump_land.mp3");
+		step = Mix_LoadMUS("soft_grass_footstep.mp3");
+		thud = Mix_LoadMUS("dirt_jump_land.mp3");
 	}
 
 	void playHurt()
-	{
-		Mix_PlayMusic(hurt, 1);
-	}
+	{ Mix_PlayMusic(hurt, 1); }
 
 	void playDeath()
-	{
-		Mix_PlayMusic(death, 1);
-	}
+	{ Mix_PlayMusic(death, 1); }
+
+	void playThud()
+	{ Mix_PlayMusic(thud, 1); }
 
 	void killMusic()
 	{
 		Mix_FreeMusic(hurt);
 		Mix_FreeMusic(death);
-		//Mix_FreeMusic(step);
-		//Mix_FreeMusic(thud);
+		Mix_FreeMusic(step);
+		Mix_FreeMusic(thud);
 	}
 };
+
+void startThread(Sound* sound)
+{
+	sound->setSoundThread(SDL_CreateThread(playStep, NULL, sound));
+}
+
+int playStep(void *data)
+{
+	Sound* tempData = reinterpret_cast<Sound*>(data);
+	Mix_PlayMusic(tempData->getStep(), 1);
+	return 0;
+}
