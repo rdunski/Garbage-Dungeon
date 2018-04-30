@@ -3,30 +3,14 @@
 #include "SDL_mixer.h"
 #include "SDL_thread.h"
 
-bool moving;
-
 class Sound {
 protected:
 	Mix_Music* hurt = NULL;
 	Mix_Music* death = NULL;
 	Mix_Music* step = NULL;
 	Mix_Music* thud = NULL;
-	SDL_Thread* soundThread = NULL;
 
 public:
-	Mix_Music * getStep() { return this->step; }
-	void setSoundThread(SDL_Thread* thread) { this->soundThread = thread; }
-	void setMoving(bool boolean) { moving = boolean; }
-
-	void beginThread()
-	{
-		startThread(this);
-	}
-
-	void stopThread()
-	{
-
-	}
 
 	void setSoundFiles()
 	{
@@ -54,15 +38,3 @@ public:
 		Mix_FreeMusic(thud);
 	}
 };
-
-void startThread(Sound* sound)
-{
-	sound->setSoundThread(SDL_CreateThread(playStep, NULL, sound));
-}
-
-int playStep(void *data)
-{
-	Sound* tempData = reinterpret_cast<Sound*>(data);
-	Mix_PlayMusic(tempData->getStep(), 1);
-	return 0;
-}

@@ -126,7 +126,6 @@ public:
 	// MOVE (may need cleaning up)
 	void move(Sprite sprite, Sound mixer, SDL_Scancode keystate, int screen_height, int screen_width)
 	{
-		mixer.playStep();
 		float tempDest;
 		if (sprite.isfacingright() && keystate == SDL_SCANCODE_RIGHT)
 		{
