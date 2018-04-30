@@ -119,29 +119,9 @@ public:
 	void eventHandler(Sprite &sprite) // handles events, who would've thought
 	{
 		if (sprite.getHealth() <= 0) // you're dead
-		{
 			dead = true;
-		}
 
 		sprite.setLast();
-
-		if (currentKeyStates[SDL_SCANCODE_RIGHT] || currentKeyStates[SDL_SCANCODE_D]) // if you move right
-		{
-			if (currentKeyStates[SDL_SCANCODE_LSHIFT]) // sprint == DOUBLE SPEED
-				sprite.move(sprite, mixer, SDL_SCANCODE_RIGHT, getScreenHeight(), getScreenWidth());
-
-			sprite.move(sprite, mixer, SDL_SCANCODE_RIGHT,getScreenHeight(), getScreenWidth());
-			moving = true; // you're moving
-		}
-
-		if (currentKeyStates[SDL_SCANCODE_LEFT] || currentKeyStates[SDL_SCANCODE_A]) // if you move left
-		{
-			if (currentKeyStates[SDL_SCANCODE_LSHIFT]) // sprint == DOUBLE SPEED
-				sprite.move(sprite, mixer, SDL_SCANCODE_LEFT, getScreenHeight(), getScreenWidth());
-
-			sprite.move(sprite, mixer, SDL_SCANCODE_LEFT, getScreenHeight(), getScreenWidth());
-			moving = true; // you're moving
-		}
 
 		if ((currentKeyStates[SDL_SCANCODE_SPACE] || currentKeyStates[SDL_SCANCODE_UP]) && counter < 12)
 		{
@@ -149,12 +129,42 @@ public:
 			sprite.beginJump(sprite, moving, getScreenHeight(), getScreenWidth());
 			jumping = true; // you're jumpin'
 		}
-		else if (sprite.getdest().y < (getScreenHeight()*.572916))
+		else if (sprite.getdest().y < (getScreenHeight()*.58))
 		{
 			jumping = true; // you're jumpin' (well technically falling)
-			sprite.drop(sprite, moving, getScreenHeight(), getScreenWidth()); 
+			sprite.drop(sprite, moving, getScreenHeight(), getScreenWidth());
 			// stop, drop, but don't roll cause we haven't programmed it
 			// play thud sound here?
+			if (sprite.getdest().y > (getScreenHeight()*.58))
+			{
+				mixer.playThud();
+			}
+		}
+
+		if (currentKeyStates[SDL_SCANCODE_RIGHT] || currentKeyStates[SDL_SCANCODE_D] || currentKeyStates[SDL_SCANCODE_LEFT] || currentKeyStates[SDL_SCANCODE_A]) // if you move right
+		{
+			if ((!mixer.isPlaying(1) || !mixer.isPlaying(2)) && !jumping)
+				mixer.playStep();
+
+			if (currentKeyStates[SDL_SCANCODE_LSHIFT]) // sprint == DOUBLE SPEED
+			{
+				if(currentKeyStates[SDL_SCANCODE_RIGHT] || currentKeyStates[SDL_SCANCODE_D])
+					sprite.move(sprite, mixer, SDL_SCANCODE_RIGHT, getScreenHeight(), getScreenWidth());
+
+				else if(currentKeyStates[SDL_SCANCODE_LEFT] || currentKeyStates[SDL_SCANCODE_A])
+					sprite.move(sprite, mixer, SDL_SCANCODE_LEFT, getScreenHeight(), getScreenWidth());
+
+				if(!jumping)
+					mixer.playStep();
+			}
+
+			if (currentKeyStates[SDL_SCANCODE_RIGHT] || currentKeyStates[SDL_SCANCODE_D])
+				sprite.move(sprite, mixer, SDL_SCANCODE_RIGHT, getScreenHeight(), getScreenWidth());
+
+			else if (currentKeyStates[SDL_SCANCODE_LEFT] || currentKeyStates[SDL_SCANCODE_A])
+				sprite.move(sprite, mixer, SDL_SCANCODE_LEFT, getScreenHeight(), getScreenWidth());
+
+			moving = true; // you're moving
 		}
 
 		// debugging health system
