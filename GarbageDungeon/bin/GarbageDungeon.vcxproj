@@ -158,32 +158,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\bin\GarbageDungeon.cpp" />
+    <Image Include="images\dudejump.bmp" />
+    <Image Include="images\duderight.bmp" />
+    <Image Include="images\dudestand.bmp" />
+    <Image Include="images\Forest0.bmp" />
+    <Image Include="images\health_bar_sheet.bmp" />
+    <Image Include="images\pause.bmp" />
+    <Image Include="images\revive.bmp" />
+    <Image Include="images\spritesheet1.png" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\bin\Game.h" />
-    <ClInclude Include="..\bin\Sprite.h" />
-    <ClInclude Include="Sound.h" />
-    <ClInclude Include="Object.h" />
-    <ClInclude Include="Physics.h" />
-    <ClInclude Include="Render.h" />
+    <Media Include="sounds\dirt_jump_land.wav" />
+    <Media Include="sounds\roblox-death-sound-effect.wav" />
+    <Media Include="sounds\soft_grass_footstep.wav" />
+    <Media Include="sounds\WilhelmScream.wav" />
   </ItemGroup>
   <ItemGroup>
-    <Media Include="dirt_jump_land.mp3" />
-    <Media Include="roblox-death-sound-effect.mp3" />
-    <Media Include="soft_grass_footstep.mp3" />
-    <Media Include="WilhelmScream.mp3" />
+    <ClInclude Include="..\src\Game.h" />
+    <ClInclude Include="..\src\Object.h" />
+    <ClInclude Include="..\src\Physics.h" />
+    <ClInclude Include="..\src\Render.h" />
+    <ClInclude Include="..\src\Sound.h" />
+    <ClInclude Include="..\src\Sprite.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="dudejump.bmp" />
-    <Image Include="duderighttest.bmp" />
-    <Image Include="dudestand.bmp" />
-    <Image Include="Forest0.bmp" />
-    <Image Include="health_bar.bmp" />
-    <Image Include="health_bar_sheet.bmp" />
-    <Image Include="pause.bmp" />
-    <Image Include="revive.bmp" />
-    <Image Include="spritesheet1.png" />
+    <ClCompile Include="..\src\GarbageDungeon.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -13,73 +13,76 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Resource Files\images">
+      <UniqueIdentifier>{3651e1ac-f54b-4197-bb61-49cc06ed7323}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\sounds">
+      <UniqueIdentifier>{4cd37efd-acdf-41ed-ba06-7fb15b1520ab}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\bin\GarbageDungeon.cpp">
+    <Image Include="images\dudejump.bmp">
+      <Filter>Resource Files\images</Filter>
+    </Image>
+    <Image Include="images\duderight.bmp">
+      <Filter>Resource Files\images</Filter>
+    </Image>
+    <Image Include="images\dudestand.bmp">
+      <Filter>Resource Files\images</Filter>
+    </Image>
+    <Image Include="images\Forest0.bmp">
+      <Filter>Resource Files\images</Filter>
+    </Image>
+    <Image Include="images\health_bar_sheet.bmp">
+      <Filter>Resource Files\images</Filter>
+    </Image>
+    <Image Include="images\pause.bmp">
+      <Filter>Resource Files\images</Filter>
+    </Image>
+    <Image Include="images\revive.bmp">
+      <Filter>Resource Files\images</Filter>
+    </Image>
+    <Image Include="images\spritesheet1.png">
+      <Filter>Resource Files\images</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="sounds\dirt_jump_land.wav">
+      <Filter>Resource Files\sounds</Filter>
+    </Media>
+    <Media Include="sounds\roblox-death-sound-effect.wav">
+      <Filter>Resource Files\sounds</Filter>
+    </Media>
+    <Media Include="sounds\soft_grass_footstep.wav">
+      <Filter>Resource Files\sounds</Filter>
+    </Media>
+    <Media Include="sounds\WilhelmScream.wav">
+      <Filter>Resource Files\sounds</Filter>
+    </Media>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\Game.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Object.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Physics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Render.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Sound.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Sprite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\GarbageDungeon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\bin\Sprite.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\bin\Game.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Physics.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Render.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sound.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Object.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Media Include="dirt_jump_land.mp3">
-      <Filter>Resource Files</Filter>
-    </Media>
-    <Media Include="roblox-death-sound-effect.mp3">
-      <Filter>Resource Files</Filter>
-    </Media>
-    <Media Include="soft_grass_footstep.mp3">
-      <Filter>Resource Files</Filter>
-    </Media>
-    <Media Include="WilhelmScream.mp3">
-      <Filter>Resource Files</Filter>
-    </Media>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="dudejump.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="duderighttest.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="dudestand.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Forest0.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="health_bar.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="health_bar_sheet.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="pause.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="revive.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="spritesheet1.png">
-      <Filter>Resource Files</Filter>
-    </Image>
   </ItemGroup>
 </Project>
