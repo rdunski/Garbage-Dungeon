@@ -21,6 +21,7 @@ protected:
 	int SCREEN_WIDTH = 640;											// initial screen width, CAN NOW CHANGE
 	int SCREEN_HEIGHT = 480;										// inital screen height, CAN NOW CHANGE
 	int counter = 0;												// counter for jumping
+	int start = 0;
 	SDL_DisplayMode DM;												// currently unused, gets maximum resolution of computer
 	SDL_Texture* bg = NULL;											// background
 	SDL_Texture* pause = NULL;
@@ -76,6 +77,7 @@ public:
 	{
 		if (sprite.getdest().x > (getScreenWidth())+sprite.getdest().w - (getScreenWidth()*.03125))
 			sprite.setDestX(-sprite.getdest().w+(getScreenWidth()*.03125));
+
 		if (sprite.getdest().x < (-sprite.getdest().w + (getScreenWidth()*.03125)))
 			sprite.setDestX((getScreenWidth()+sprite.getdest().w) - (getScreenWidth()*.03125));
 	}
@@ -170,6 +172,7 @@ public:
 		// debugging health system
 		if (currentKeyStates[SDL_SCANCODE_H] && !dead) // A slow death
 		{
+			
 			sprite.setHealth(sprite.getHealth() - 10);
 			mixer.playHurt();
 		}
@@ -225,6 +228,9 @@ public:
 				else if (currentKeyStates[SDL_SCANCODE_R]) // ZOMBIE!!! but we said so, so it's okay... for now
 				{
 					dead = false;
+					evilCarl.setDestX(480);
+					evilCarl.setSrcX(0);
+					evilCarl.setSrcY(0);
 					carl.setDestX(0);
 					carl.setSrcX(0);
 					carl.setSrcY(0);
@@ -278,8 +284,20 @@ public:
 			checkHealth(carl);					// check health and render bar to corresponding health
 			renderer.renderHudObject(healthBar.getImage(), healthBar.getObjectSrc(), healthBar.getObjectDest());
 
-			renderer.renderSprite(evilCarl.getSpriteStandTexture(), evilCarl.isfacingright(), 
-				evilCarl.getStandSrc(), evilCarl.getStandDest()); // render evil carl
+			checkWindowPos(evilCarl);
+			evilCarl.move(evilCarl, mixer, SDL_SCANCODE_LEFT, getScreenHeight(), getScreenWidth());
+			renderer.renderSprite(evilCarl.getSpriteMotionTexture(), evilCarl.isfacingright(), 
+				evilCarl.getsrc(), evilCarl.getdest()); // render evil carl running left
+
+			//if (SDL_HasIntersection(&evilCarl.getdest(), &carl.getdest()) && !dead) // if you touch evil carl you get hurted
+			//{
+			//	//carl.setHealth(carl.getHealth() - 10);
+			//	if ((SDL_GetTicks() - start) > 1000) {
+			//		carl.setHealth(carl.getHealth() - 1);				// HE NEEDS SOME MILK
+			//		mixer.playHurt();
+			//	}
+			//}
+			//start = SDL_GetTicks();
 
 			if (moving && !jumping)				// if moving and not jumping, render running/walking animation
 			{

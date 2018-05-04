@@ -20,10 +20,10 @@ public:
 		thud = Mix_LoadWAV("sounds/dirt_jump_land.wav");
 	}
 
-	void playHurt() { Mix_PlayChannel(-1, hurt,1); }
-	void playDeath() { Mix_PlayChannel(-1, death, 1); }
-	void playThud() { Mix_PlayChannel(-1, thud, 1); }
-	void playStep() { Mix_PlayChannel(1, step, 1); }
+	void playHurt() { Mix_PlayChannel(-1, hurt,0); }
+	void playDeath() { Mix_PlayChannel(-1, death, 0); }
+	void playThud() { Mix_PlayChannel(-1, thud, 0); }
+	void playStep() { Mix_PlayChannel(-1, step, 0); }
 
 	bool isPlaying(int channel) { return Mix_Playing(channel); }
 
