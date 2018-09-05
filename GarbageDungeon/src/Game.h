@@ -8,81 +8,30 @@
 #include "Object.h"
 #include "Sound.h"
 #include "SDL.h"
+#include "UI.h"
 using namespace std;
 
 class Game {
 protected:
 	Render renderer;												// the renderer...
-	Object healthBar;												// the health bar
+	UI face;														// the user interface
 	Sprite carl, evilCarl;											// our guy (also evil Carl)
 	Sound mixer;													// da sound machine
-	bool quitter, dead, moving, jumping,paused = false;				// boolean checks
+	bool quitter, dead, moving, jumping, paused = false;			// boolean checks
 	const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);		// keyboard press events
-	int SCREEN_WIDTH = 640;											// initial screen width, CAN NOW CHANGE
-	int SCREEN_HEIGHT = 480;										// inital screen height, CAN NOW CHANGE
 	int counter = 0;												// counter for jumping
 	int start = 0;
 	SDL_DisplayMode DM;												// currently unused, gets maximum resolution of computer
-	SDL_Texture* bg = NULL;											// background
-	SDL_Texture* pause = NULL;
-	SDL_Texture* revive = NULL;										// revive/dead background
-	SDL_Surface* surface = NULL;									// surface for assigning textures
 	SDL_Event e;													// a single keypress event
 
 public:
 
 	// self explanatory functions
-	float getScreenHeight() { return this->SCREEN_HEIGHT; }
-	float getScreenWidth() { return this->SCREEN_WIDTH; }
-
-	void setScreenWidth(int width) { SCREEN_WIDTH = width; }
-	void setScreenHeight(int height) { SCREEN_HEIGHT = height; }
-
-	SDL_Texture *getBackground() { return this->bg; }
-	SDL_Surface *getSurface() { return this->surface; }
 
 	void init() { SDL_Init(SDL_INIT_VIDEO); SDL_Init(SDL_INIT_AUDIO); }
 	void setRenderer(SDL_Window* window) { renderer.createRenderer(window); }
 
-	void setBar()
-	{
-		healthBar.setObjectDest((getScreenWidth()*.015625), (getScreenHeight()*.9375), 
-			(getScreenWidth()*.234375), (getScreenHeight()*.041666));
-		healthBar.setObjectSrc(0, 0, 75, 10);
-		surface = SDL_LoadBMP("images/health_bar_sheet.bmp");
-		SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 255, 255, 255));
-		healthBar.setImage(healthBar.createImage(surface,renderer));
-	}
-
-	void setBG()
-	{
-		surface = SDL_LoadBMP("images/Forest0.bmp");
-		bg = SDL_CreateTextureFromSurface(renderer.getRenderer(), surface);
-	}
-
-	void setRevive()
-	{
-		surface = SDL_LoadBMP("images/revive.bmp");
-		revive = SDL_CreateTextureFromSurface(renderer.getRenderer(), surface);
-	}
-
-	void setPause()
-	{
-		surface = SDL_LoadBMP("images/pause.bmp");
-		pause = SDL_CreateTextureFromSurface(renderer.getRenderer(), surface);
-		SDL_SetTextureAlphaMod(pause, 200);
-	}
-
-	void checkWindowPos(Sprite &sprite) // "scene switching" (basically reverts position based on screen edge collision)
-	{
-		if (sprite.getdest().x > (getScreenWidth())+sprite.getdest().w - (getScreenWidth()*.03125))
-			sprite.setDestX(-sprite.getdest().w+(getScreenWidth()*.03125));
-
-		if (sprite.getdest().x < (-sprite.getdest().w + (getScreenWidth()*.03125)))
-			sprite.setDestX((getScreenWidth()+sprite.getdest().w) - (getScreenWidth()*.03125));
-	}
-
-	void startPause(Sprite &sprite) // pause procedure, includes pause when and the various controls
+	void startPause(Sprite &sprite) // pause procedure, includes pause and the various controls
 	{
 		paused = true; //the game is paused
 
@@ -91,15 +40,15 @@ public:
 			SDL_RenderClear(renderer.getRenderer());
 			SDL_Delay(1000 / 30);
 
-			renderer.renderBg(bg);
-			renderer.renderHudObject(healthBar.getImage(), healthBar.getObjectSrc(), healthBar.getObjectDest());
+			renderer.renderBg(face.getBackground());
+			renderer.renderHudObject(face.getBar().getImage(), face.getBar().getObjectSrc(), face.getBar().getObjectDest());
 			if (moving && !jumping)
 				renderer.renderSprite(sprite.getSpriteMotionTexture(), sprite.isfacingright(), sprite.getsrc(), sprite.getdest());
 			else if (jumping || (jumping && moving))
 				renderer.renderSprite(sprite.getSpriteJumpTexture(), sprite.isfacingright(), sprite.getJumpSrc(), sprite.getdest());
 			else if (!jumping && !moving)
 				renderer.renderSprite(sprite.getSpriteStandTexture(), sprite.isfacingright(), sprite.getStandSrc(), sprite.getStandDest());
-			renderer.renderBg(pause); // Alpha-modded background for fancy transparency
+			renderer.renderBg(face.getPause()); // Alpha-modded background for fancy transparency
 			SDL_RenderPresent(renderer.getRenderer());
 
 			while (SDL_PollEvent(&e) != 0)
@@ -128,16 +77,16 @@ public:
 		if ((currentKeyStates[SDL_SCANCODE_SPACE] || currentKeyStates[SDL_SCANCODE_UP]) && counter < 12)
 		{
 			counter += 1;
-			sprite.beginJump(sprite, moving, getScreenHeight(), getScreenWidth());
+			sprite.beginJump(sprite, moving, face.getScreenHeight(), face.getScreenWidth());
 			jumping = true; // you're jumpin'
 		}
-		else if (sprite.getdest().y < (getScreenHeight()*.58))
+		else if (sprite.getdest().y < (face.getScreenHeight()*.58))
 		{
 			jumping = true; // you're jumpin' (well technically falling)
-			sprite.drop(sprite, moving, getScreenHeight(), getScreenWidth());
+			sprite.drop(sprite, moving, face.getScreenHeight(), face.getScreenWidth());
 			// stop, drop, but don't roll cause we haven't programmed it
 			// play thud sound here?
-			if (sprite.getdest().y > (getScreenHeight()*.58))
+			if (sprite.getdest().y > (face.getScreenHeight()*.58))
 			{
 				mixer.playThud();
 			}
@@ -151,20 +100,20 @@ public:
 			if (currentKeyStates[SDL_SCANCODE_LSHIFT]) // sprint == DOUBLE SPEED
 			{
 				if(currentKeyStates[SDL_SCANCODE_RIGHT] || currentKeyStates[SDL_SCANCODE_D])
-					sprite.move(sprite, mixer, SDL_SCANCODE_RIGHT, getScreenHeight(), getScreenWidth());
+					sprite.move(sprite, mixer, SDL_SCANCODE_RIGHT, face.getScreenHeight(), face.getScreenWidth());
 
 				else if(currentKeyStates[SDL_SCANCODE_LEFT] || currentKeyStates[SDL_SCANCODE_A])
-					sprite.move(sprite, mixer, SDL_SCANCODE_LEFT, getScreenHeight(), getScreenWidth());
+					sprite.move(sprite, mixer, SDL_SCANCODE_LEFT, face.getScreenHeight(), face.getScreenWidth());
 
 				if(!jumping)
 					mixer.playStep();
 			}
 
 			if (currentKeyStates[SDL_SCANCODE_RIGHT] || currentKeyStates[SDL_SCANCODE_D])
-				sprite.move(sprite, mixer, SDL_SCANCODE_RIGHT, getScreenHeight(), getScreenWidth());
+				sprite.move(sprite, mixer, SDL_SCANCODE_RIGHT, face.getScreenHeight(), face.getScreenWidth());
 
 			else if (currentKeyStates[SDL_SCANCODE_LEFT] || currentKeyStates[SDL_SCANCODE_A])
-				sprite.move(sprite, mixer, SDL_SCANCODE_LEFT, getScreenHeight(), getScreenWidth());
+				sprite.move(sprite, mixer, SDL_SCANCODE_LEFT, face.getScreenHeight(), face.getScreenWidth());
 
 			moving = true; // you're moving
 		}
@@ -190,20 +139,13 @@ public:
 
 	void setup()		// creating window and renderer...
 	{
-		renderer.createWindow("Garbage Dungeon", getScreenWidth(), getScreenHeight());
+		renderer.createWindow("Garbage Dungeon", face.getScreenWidth(), face.getScreenHeight());
 		setRenderer(renderer.getWindow());
-		setBG();
-		setBar();
-		setRevive();
-		setPause();
+		face.setBG(renderer);
+		face.setBar(renderer);
+		face.setRevive(renderer);
+		face.setPause(renderer);
 		mixer.setSoundFiles();
-	}
-
-	void updateWin()	// if the window is rescaled
-	{
-		setScreenHeight(SDL_GetWindowSurface(renderer.getWindow())->h);
-		setScreenWidth(SDL_GetWindowSurface(renderer.getWindow())->w);
-		// do we call jump here?
 	}
 
 	void playDead()
@@ -214,8 +156,8 @@ public:
 			SDL_RenderClear(renderer.getRenderer());
 			SDL_Delay(1000 / 30);
 
-			renderer.renderBg(revive);
-			renderer.renderHudObject(healthBar.getImage(), healthBar.getObjectSrc(), healthBar.getObjectDest());
+			renderer.renderBg(face.getRevive());
+			renderer.renderHudObject(face.getBar().getImage(), face.getBar().getObjectSrc(), face.getBar().getObjectDest());
 			SDL_RenderPresent(renderer.getRenderer());
 
 			while (SDL_PollEvent(&e) != 0)
@@ -248,21 +190,22 @@ public:
 		// initializing...
 		setup();
 
-		carl.initCarlResources(renderer.getRenderer(), 0, (getScreenHeight()*.59), getScreenHeight(),getScreenWidth());
+		carl.initCarlResources(renderer.getRenderer(), 0, (face.getScreenHeight()*.59), face.getScreenHeight(),
+			face.getScreenWidth());
 
 		evilCarl.initCarlResources(renderer.getRenderer(), 480, 
-			(getScreenHeight()*.59), getScreenHeight(), getScreenWidth()); // added sprite, no controls
+			(face.getScreenHeight()*.59), face.getScreenHeight(), face.getScreenWidth()); // added sprite, no controls
 
 		carl.setHealth(100);
 
 		while (!quitter)		// main game loop
 		{
 			//check for updated window heights and widths
-			updateWin(); 
-			carl.updateSprite(getScreenHeight(), getScreenWidth());
-			evilCarl.updateSprite(getScreenHeight(), getScreenWidth());
-			healthBar.setObjectDest((getScreenWidth()*.015625), (getScreenHeight()*.9375),
-				(getScreenWidth()*.234375), (getScreenHeight()*.041666));
+			face.updateWin(renderer); 
+			carl.updateSprite(face.getScreenHeight(), face.getScreenWidth());
+			evilCarl.updateSprite(face.getScreenHeight(), face.getScreenWidth());
+			face.getBar().setObjectDest((face.getScreenWidth()*.015625), (face.getScreenHeight()*.9375),
+				(face.getScreenWidth()*.234375), (face.getScreenHeight()*.041666));
 
 			if (dead)
 				playDead();						// if you died...
@@ -275,17 +218,18 @@ public:
 					quitter = true;				// again, you're a quitter
 			}
 
-			checkWindowPos(carl);				// check sprite pos and simulate switching "scenes"
+			face.checkWindowPos(carl);				// check sprite pos and simulate switching "scenes"
 			eventHandler(carl);					// checking for key presses
 
 			SDL_RenderClear(renderer.getRenderer());
-			renderer.renderBg(bg);				// render background
+			renderer.renderBg(face.getBackground());				// render background
 
-			checkHealth(carl);					// check health and render bar to corresponding health
-			renderer.renderHudObject(healthBar.getImage(), healthBar.getObjectSrc(), healthBar.getObjectDest());
+			face.checkHealth(carl);					// check health and render bar to corresponding health
+			renderer.renderHudObject(face.getBar().getImage(), face.getBar().getObjectSrc(), 
+				face.getBar().getObjectDest());
 
-			checkWindowPos(evilCarl);
-			evilCarl.move(evilCarl, mixer, SDL_SCANCODE_LEFT, getScreenHeight(), getScreenWidth());
+			face.checkWindowPos(evilCarl);
+			evilCarl.move(evilCarl, mixer, SDL_SCANCODE_LEFT, face.getScreenHeight(), face.getScreenWidth());
 			renderer.renderSprite(evilCarl.getSpriteMotionTexture(), evilCarl.isfacingright(), 
 				evilCarl.getsrc(), evilCarl.getdest()); // render evil carl running left
 
@@ -337,70 +281,13 @@ public:
 		endGame();
 	}
 
-	void checkHealth(Sprite sprite)
-	{
-		if(sprite.getHealth() < 0)		// after becoming a zombie, set health to full
-			sprite.setHealth(100);
-
-		int hp = sprite.getHealth();	// variable for switch
-
-		switch (hp)						// update health bar based on current health
-		{
-		case 100:
-			healthBar.setObjectSrcX(0);
-			healthBar.setObjectSrcY(0);
-			break;
-		case 90:
-			healthBar.setObjectSrcX(0);
-			healthBar.setObjectSrcY(11);
-			break;
-		case 80:
-			healthBar.setObjectSrcX(0);
-			healthBar.setObjectSrcY(22);
-			break;
-		case 70:
-			healthBar.setObjectSrcX(0);
-			healthBar.setObjectSrcY(33);
-			break;
-		case 60:
-			healthBar.setObjectSrcX(0);
-			healthBar.setObjectSrcY(44);
-			break;
-		case 50:
-			healthBar.setObjectSrcX(80);
-			healthBar.setObjectSrcY(0);
-			break;
-		case 40:
-			healthBar.setObjectSrcX(80);
-			healthBar.setObjectSrcY(11);
-			break;
-		case 30:
-			healthBar.setObjectSrcX(80);
-			healthBar.setObjectSrcY(22);
-			break;
-		case 20:
-			healthBar.setObjectSrcX(80);
-			healthBar.setObjectSrcY(33);
-			break;
-		case 10:
-			healthBar.setObjectSrcX(80);
-			healthBar.setObjectSrcY(44);
-			break;
-		case 0:
-			dead = true;
-			healthBar.setObjectSrcX(80);
-			healthBar.setObjectSrcY(55);
-			break;
-		}
-	}
-
 	void endGame() // destroy all the things!
 	{
-		SDL_DestroyTexture(bg);
-		SDL_DestroyTexture(revive);
-		SDL_DestroyTexture(pause);
-		healthBar.destroyImage();
-		SDL_FreeSurface(surface);
+		SDL_DestroyTexture(face.getBackground());
+		SDL_DestroyTexture(face.getRevive());
+		SDL_DestroyTexture(face.getPause());
+		face.getBar().destroyImage();
+		SDL_FreeSurface(face.getSurface());
 		mixer.killMusic();
 		SDL_DestroyRenderer(renderer.getRenderer());
 		SDL_DestroyWindow(renderer.getWindow());

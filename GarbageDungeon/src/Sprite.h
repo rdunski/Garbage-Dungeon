@@ -26,7 +26,7 @@ public:
 	{
 	}
 
-	// alot of setters (may need cleaning up)
+	// Setters (may need cleaning up)
 	void setDestX(float x) { this->dest.x = x; }
 	void setDestY(float y) { this->dest.y = y; }
 	void setSrcX(float x) { this->src.x = x; }
@@ -42,7 +42,7 @@ public:
 	void setStandDestScale(int w, int h) { this->standDest.w = w; this->standDest.h = h; }
 	void setJumpDestScale(int w, int h) { this->jumpDest.w = w; this->jumpDest.h = h; }
 
-	// getters
+	// Getters
 	SDL_Rect getsrc() { return this->src; }
 	SDL_Rect getdest() { return this->dest; }
 	SDL_Rect getStandSrc() { return this->standSrc; }
@@ -170,7 +170,7 @@ public:
 		}
 	}
 
-	// start jumping!
+	// Start jumping!
 	void beginJump(Sprite sprite, bool moving, int screen_height, int screen_width)
 	{
 		float tempY = sprite.dest.y;
@@ -192,7 +192,7 @@ public:
 		}
 	}
 
-	// get down!
+	// Get down!
 	void drop(Sprite sprite, bool moving, int screen_height, int screen_width)
 	{
 		float tempY = sprite.dest.y;
