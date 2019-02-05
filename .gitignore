@@ -31,6 +31,9 @@
 *.out
 *.app
 
+# Linux directory file
+*.directory
+
 # Visual Studio
 *.VC.opendb
 *.opendb
