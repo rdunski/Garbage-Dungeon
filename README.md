@@ -1,5 +1,8 @@
 # Garbage-Dungeon
-## Authors: Robert Dunski, Scott "Sean" Lowe, and Daniel Seagraves (currently MIA)
+## Authors: 
++ Robert Dunski 
++ Scott "Sean" Lowe
++ Daniel Seagraves (currently MIA)
 ### Final Project for Video Game Design
 
 Originally intended to be a comedic 2D sidescrolling adventure-RPG, 
